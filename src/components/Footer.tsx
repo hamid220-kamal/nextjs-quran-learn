@@ -124,4 +124,6 @@ const Footer: React.FC = () => {
   );
 };
 
+// learning Quran, recitation, tafsir, tajweed, prayer times, community engagement, audio resources
+
 export default Footer;

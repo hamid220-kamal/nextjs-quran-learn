@@ -1,0 +1,114 @@
+.juz-header {
+  text-align: center;
+  background-color: #f0f9ff;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.juz-title-arabic {
+  font-family: 'Scheherazade New', 'Traditional Arabic', serif;
+  font-size: 2.5rem;
+  color: #0e9f6e;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.juz-title-english {
+  font-size: 2rem;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.juz-subtitle {
+  font-size: 1.25rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.juz-meta {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1rem;
+}
+
+.juz-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.juz-meta-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.juz-meta-value {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.juz-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.action-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.action-button-primary {
+  background-color: #0ea57a;
+  color: white;
+}
+
+.action-button-primary:hover {
+  background-color: #0c8c66;
+}
+
+.action-button-secondary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.action-button-secondary:hover {
+  background-color: #2563eb;
+}
+
+.action-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .juz-meta {
+    gap: 1.5rem;
+  }
+  
+  .juz-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,669 @@
+﻿// Audio player utility for Quran audio playback
+import { getAyahAudioUrl, getSurahAudioUrl, EDITIONS } from './quranApi';
+
+// Export the class type for type checking
+export class QuranAudioPlayer {
+  private audioElement: HTMLAudioElement | null = null;
+  private currentAyah: { surah: number; ayah: number } | null = null;
+  private currentSurah: number | null = null;
+  private audioEdition: string = EDITIONS.AUDIO_ALAFASY;
+  private isPlaying: boolean = false;
+  private isLoading: boolean = false;
+  private pendingPlayRequest: {
+    type: 'ayah' | 'surah';
+    surah: number;
+    ayah?: number;
+  } | null = null;
+  private ayahQueue: { surah: number; ayah: number }[] = [];
+  private onPlayCallback: (() => void) | null = null;
+  private onPauseCallback: (() => void) | null = null;
+  private onEndCallback: (() => void) | null = null;
+  private onLoadingCallback: ((isLoading: boolean) => void) | null = null;
+  
+  constructor() {
+    // Initialize audio element if in browser environment
+    if (typeof window !== 'undefined') {
+      this.audioElement = new Audio();
+      
+      // Set up event listeners
+      this.audioElement.addEventListener('ended', this.handleAudioEnded);
+      this.audioElement.addEventListener('play', () => {
+        this.isPlaying = true;
+        if (this.onPlayCallback) this.onPlayCallback();
+      });
+      this.audioElement.addEventListener('pause', () => {
+        this.isPlaying = false;
+        if (this.onPauseCallback) this.onPauseCallback();
+      });
+    }
+  }
+  
+  /**
+   * Helper method to extract detailed error information from media errors
+   */
+  private getDetailedErrorMessage(event: Event | Error | unknown): string {
+    if (!event) {
+      return 'Unknown error';
+    }
+    
+    // If the event is an Error object
+    if (event instanceof Error) {
+      return event.message || 'Unknown error';
+    }
+    
+    // If it's an ErrorEvent
+    if (typeof ErrorEvent !== 'undefined' && event instanceof ErrorEvent && event.message) {
+      return event.message;
+    }
+    
+    // Check if we can access the audio element's error property
+    if (this.audioElement && this.audioElement.error) {
+      const mediaError = this.audioElement.error;
+      
+      // Map error codes to user-friendly messages
+      const errorMessages: {[key: number]: string} = {
+        1: 'Playback was aborted',
+        2: 'Network error occurred while loading audio',
+        3: 'Audio decoding failed - file may be corrupted',
+        4: 'Audio format is not supported by your browser'
+      };
+      
+      const errorCode = mediaError.code;
+      const errorDetails = mediaError.message ? `: ${mediaError.message}` : '';
+      
+      return `${errorMessages[errorCode] || `Media error (code ${errorCode})`}${errorDetails}`;
+    }
+    
+    // If it's an event with message property
+    if (typeof event === 'object' && event !== null && 'message' in event) {
+      return (event as any).message || 'Unknown error';
+    }
+    
+    return 'Unknown audio error';
+  }
+  
+  /**
+   * Helper method to extract detailed error information from media errors
+   */
+  private getDetailedErrorMessage(event: Event | Error | unknown): string {
+    if (!event) {
+      return 'Unknown error';
+    }
+    
+    // If the event is an Error object
+    if (event instanceof Error) {
+      return event.message || 'Unknown error';
+    }
+    
+    // If it's an ErrorEvent
+    if (event instanceof ErrorEvent && event.message) {
+      return event.message;
+    }
+    
+    // Check if we can access the audio element's error property
+    if (this.audioElement && this.audioElement.error) {
+      const mediaError = this.audioElement.error;
+      
+      // Map error codes to user-friendly messages
+      const errorMessages = {
+        1: 'Playback was aborted',
+        2: 'Network error occurred while loading audio',
+        3: 'Audio decoding failed - file may be corrupted',
+        4: 'Audio format is not supported by your browser'
+      };
+      
+      const errorCode = mediaError.code;
+      const errorDetails = mediaError.message ? `: ${mediaError.message}` : '';
+      
+      return `${errorMessages[errorCode] || `Media error (code ${errorCode})`}${errorDetails}`;
+    }
+    
+    // If it's an event with message property
+    if (typeof event === 'object' && event !== null && 'message' in event) {
+      return (event as any).message || 'Unknown error';
+    }
+    
+    return 'Unknown audio error';
+  }
+  
+  /**
+   * Set the audio edition to use
+   * @param edition One of the audio editions from EDITIONS
+   */
+  setAudioEdition(edition: string): void {
+    this.audioEdition = edition;
+  }
+  
+  /**
+   * Play a specific ayah
+   * @param surahNumber Surah number (1-114)
+   * @param ayahNumber Ayah number within the surah
+   */
+  async playAyah(surahNumber: number, ayahNumber: number): Promise<void> {
+    if (!this.audioElement) return;
+    
+    // If already loading audio, store this request as pending
+    if (this.isLoading) {
+      this.pendingPlayRequest = {
+        type: 'ayah',
+        surah: surahNumber,
+        ayah: ayahNumber
+      };
+      return;
+    }
+    
+    try {
+      this.isLoading = true;
+      if (this.onLoadingCallback) this.onLoadingCallback(true);
+      
+      // Stop any currently playing audio
+      this.audioElement.pause();
+      
+      // Set current ayah 
+      this.currentAyah = { surah: surahNumber, ayah: ayahNumber };
+      this.currentSurah = null;
+      
+      // Wait a short time to ensure pause has completed
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Check if we got a new request while pausing
+      if (this.pendingPlayRequest && 
+          (this.pendingPlayRequest.type !== 'ayah' || 
+           this.pendingPlayRequest.surah !== surahNumber || 
+           this.pendingPlayRequest.ayah !== ayahNumber)) {
+        // If there's a different pending request, abort this one
+        this.isLoading = false;
+        if (this.onLoadingCallback) this.onLoadingCallback(false);
+        
+        // Execute the pending request
+        const pendingRequest = this.pendingPlayRequest;
+        this.pendingPlayRequest = null;
+        
+        if (pendingRequest.type === 'ayah' && pendingRequest.ayah !== undefined) {
+          await this.playAyah(pendingRequest.surah, pendingRequest.ayah);
+        } else {
+          await this.playSurah(pendingRequest.surah);
+        }
+        return;
+      }
+      
+      // Clear any pending request for this ayah
+      if (this.pendingPlayRequest?.type === 'ayah' && 
+          this.pendingPlayRequest.surah === surahNumber && 
+          this.pendingPlayRequest.ayah === ayahNumber) {
+        this.pendingPlayRequest = null;
+      }
+      
+      // Get audio URL (now async)
+      let audioUrl = await getAyahAudioUrl(surahNumber, ayahNumber, this.audioEdition);
+      
+      // Set source and load audio without playing yet
+      this.audioElement.src = audioUrl;
+      
+      // Wait for audio metadata to load before playing
+      await new Promise((resolve, reject) => {
+        if (!this.audioElement) {
+          reject(new Error('Audio element not available'));
+          return;
+        }
+        
+        const handleCanPlay = () => {
+          this.audioElement?.removeEventListener('canplay', handleCanPlay);
+          resolve(null);
+        };
+        
+        const handleError = (e: Event) => {
+          this.audioElement?.removeEventListener('error', handleError);
+          const errorMessage = this.getDetailedErrorMessage(e);
+          reject(new Error(`Failed to load audio: ${errorMessage}`));
+        };
+        
+        this.audioElement.addEventListener('canplay', handleCanPlay);
+        this.audioElement.addEventListener('error', handleError);
+        
+        // Start loading the audio
+        this.audioElement.load();
+      });
+      
+      // Try to play the audio
+      try {
+        await this.audioElement.play();
+      } catch (playError) {
+        // If playback fails, try fallback URLs
+        console.warn('Falling back to direct CDN URL for audio');
+        
+        // Extract reciter code from audioEdition
+        const reciterCode = this.audioEdition.split('.')[1]; // e.g., 'alafasy' from 'ar.alafasy'
+        
+        // Try different fallback formats
+        const fallbackUrls = [
+          // Format 1: Direct global ayah number
+          `https://cdn.islamic.network/quran/audio/128/${reciterCode}/${this.calculateGlobalAyahNumber(surahNumber, ayahNumber)}.mp3`,
+          // Format 2: Direct surah-based numbering
+          `https://cdn.islamic.network/quran/audio/128/${reciterCode}/${surahNumber*1000 + ayahNumber}.mp3`,
+          // Format 3: Another common format
+          `https://verses.quran.com/Alafasy/mp3/${this.calculateGlobalAyahNumber(surahNumber, ayahNumber)}.mp3`
+        ];
+        
+        // Try each fallback URL
+        for (const url of fallbackUrls) {
+          try {
+            this.audioElement.src = url;
+            await this.audioElement.load();
+            await this.audioElement.play();
+            console.log(`Successfully loaded audio from ${url}`);
+            break;
+          } catch (fallbackError) {
+            console.warn(`Failed to play from ${url}`);
+            // Continue to next fallback
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error playing ayah audio:', error);
+      // Reset playing state on error
+      if (this.onPauseCallback) this.onPauseCallback();
+      throw error;
+    } finally {
+      this.isLoading = false;
+      if (this.onLoadingCallback) this.onLoadingCallback(false);
+      
+      // If we have another pending request that's different, execute it
+      if (this.pendingPlayRequest) {
+        const pendingRequest = this.pendingPlayRequest;
+        this.pendingPlayRequest = null;
+        
+        if (pendingRequest.type === 'ayah' && pendingRequest.ayah !== undefined) {
+          await this.playAyah(pendingRequest.surah, pendingRequest.ayah);
+        } else {
+          await this.playSurah(pendingRequest.surah);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Calculate the global ayah number based on surah and ayah
+   * This helps with direct URL access to some audio CDNs
+   */
+  private calculateGlobalAyahNumber(surahNumber: number, ayahNumber: number): number {
+    // This mapping is based on the cumulative sum of ayahs in each surah
+    // We'll use a simplified approach for common surahs
+    const surahStartAyahs = [
+      0, 1, 8, 294, 494, 670, 790, 955, 1161, 1236, 1365, 1474, 1597,
+      1708, 1751, 1803, 1902, 2030, 2141, 2251, 2349, 2484, 2596, 2674,
+      2792, 2856, 2933, 3160, 3253, 3341, 3410, 3470, 3504, 3534, 3607,
+      3661, 3706, 3789, 3971, 4059, 4134, 4221, 4273, 4326, 4415, 4474,
+      4511, 4546, 4584, 4613, 4631, 4675, 4736, 4785, 4835, 4894, 4990,
+      5043, 5105, 5151, 5164, 5178, 5189, 5200, 5218, 5228, 5235, 5246,
+      5258, 5272, 5280, 5284, 5294, 5302, 5317, 5325, 5331, 5342, 5349,
+      5361, 5370, 5380, 5385, 5394, 5400, 5407, 5418, 5429, 5439, 5452,
+      5464, 5476, 5495, 5551, 5592, 5623, 5673, 5713, 5759, 5801, 5830,
+      5849, 5885, 5910, 5932, 5949, 5968, 5994, 6024, 6044, 6059, 6080,
+      6091, 6099, 6107, 6126, 6131, 6139, 6147, 6158, 6169, 6177, 6180,
+      6189, 6194, 6198, 6205, 6208, 6214, 6217, 6222, 6226, 6231
+    ];
+    
+    // Find the closest surah start
+    const closestSurahStart = surahStartAyahs[surahNumber - 1] || 0;
+    
+    // Add the ayah number to get the global position
+    return closestSurahStart + ayahNumber;
+  }
+  
+  /**
+   * Play an entire surah
+   * @param surahNumber Surah number (1-114)
+   */
+  async playSurah(surahNumber: number): Promise<void> {
+    if (!this.audioElement) return;
+    
+    // If already loading audio, store this request as pending
+    if (this.isLoading) {
+      this.pendingPlayRequest = {
+        type: 'surah',
+        surah: surahNumber
+      };
+      return;
+    }
+    
+    try {
+      this.isLoading = true;
+      if (this.onLoadingCallback) this.onLoadingCallback(true);
+      
+      // Stop any currently playing audio
+      this.audioElement.pause();
+      
+      // Set current surah
+      this.currentSurah = surahNumber;
+      this.currentAyah = null;
+      
+      // Wait a short time to ensure pause has completed
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Check if we got a new request while pausing
+      if (this.pendingPlayRequest && 
+          (this.pendingPlayRequest.type !== 'surah' || 
+           this.pendingPlayRequest.surah !== surahNumber)) {
+        // If there's a different pending request, abort this one
+        this.isLoading = false;
+        if (this.onLoadingCallback) this.onLoadingCallback(false);
+        
+        // Execute the pending request
+        const pendingRequest = this.pendingPlayRequest;
+        this.pendingPlayRequest = null;
+        
+        if (pendingRequest.type === 'ayah' && pendingRequest.ayah !== undefined) {
+          await this.playAyah(pendingRequest.surah, pendingRequest.ayah);
+        } else {
+          await this.playSurah(pendingRequest.surah);
+        }
+        return;
+      }
+      
+      // Clear any pending request for this surah
+      if (this.pendingPlayRequest?.type === 'surah' && 
+          this.pendingPlayRequest.surah === surahNumber) {
+        this.pendingPlayRequest = null;
+      }
+      
+      // Get audio URL (now async)
+      let audioUrl = await getSurahAudioUrl(surahNumber, this.audioEdition);
+      
+      // Set source but wait for metadata before playing
+      this.audioElement.src = audioUrl;
+      
+      // Wait for audio metadata to load before playing
+      await new Promise((resolve, reject) => {
+        if (!this.audioElement) {
+          reject(new Error('Audio element not available'));
+          return;
+        }
+        
+        const handleCanPlay = () => {
+          this.audioElement?.removeEventListener('canplay', handleCanPlay);
+          resolve(null);
+        };
+        
+        const handleError = (e: Event) => {
+          this.audioElement?.removeEventListener('error', handleError);
+          const errorMessage = this.getDetailedErrorMessage(e);
+          reject(new Error(`Failed to load audio: ${errorMessage}`));
+        };
+        
+        this.audioElement.addEventListener('canplay', handleCanPlay);
+        this.audioElement.addEventListener('error', handleError);
+        
+        // Start loading the audio
+        this.audioElement.load();
+      });
+      
+      try {
+        await this.audioElement.play();
+      } catch (playError) {
+        // If playback fails, try direct fallbacks
+        console.warn('Falling back to direct CDN URL for surah audio');
+        
+        // Extract reciter code
+        const reciterCode = this.audioEdition.split('.')[1]; // e.g., 'alafasy' from 'ar.alafasy'
+        
+        // Try multiple CDN patterns
+        const fallbackUrls = [
+          // Format 1: CDN with reciter folder
+          `https://cdn.islamic.network/quran/audio-surah/128/${reciterCode}/${surahNumber}.mp3`,
+          // Format 2: CDN with reciter in URL
+          `https://cdn.islamic.network/quran/audio-surah/128/ar.${reciterCode}/${surahNumber}.mp3`,
+          // Format 3: Alternative URL pattern
+          `https://download.quranicaudio.com/quran/${reciterCode}/${surahNumber.toString().padStart(3, '0')}.mp3`,
+          // Format 4: Another alternative
+          `https://verse.mp3quran.net/arabic/${reciterCode}/${surahNumber.toString().padStart(3, '0')}.mp3`
+        ];
+        
+        // Try each fallback URL
+        for (const url of fallbackUrls) {
+          try {
+            this.audioElement.src = url;
+            await this.audioElement.load();
+            await this.audioElement.play();
+            console.log(`Successfully loaded audio from ${url}`);
+            break;
+          } catch (fallbackError) {
+            console.warn(`Failed to play from ${url}`);
+            // Continue to the next fallback
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error playing surah audio:', error);
+      // Reset playing state on error
+      if (this.onPauseCallback) this.onPauseCallback();
+      throw error;
+    } finally {
+      this.isLoading = false;
+      if (this.onLoadingCallback) this.onLoadingCallback(false);
+      
+      // If we have another pending request that's different, execute it
+      if (this.pendingPlayRequest) {
+        const pendingRequest = this.pendingPlayRequest;
+        this.pendingPlayRequest = null;
+        
+        if (pendingRequest.type === 'ayah' && pendingRequest.ayah !== undefined) {
+          await this.playAyah(pendingRequest.surah, pendingRequest.ayah);
+        } else {
+          await this.playSurah(pendingRequest.surah);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Queue multiple ayahs to play in sequence
+   * @param ayahs Array of surah and ayah numbers
+   */
+  async queueAyahs(ayahs: { surah: number; ayah: number }[]): Promise<void> {
+    this.ayahQueue = [...ayahs];
+    
+    if (this.ayahQueue.length > 0 && !this.isPlaying) {
+      const firstAyah = this.ayahQueue.shift();
+      if (firstAyah) {
+        await this.playAyah(firstAyah.surah, firstAyah.ayah);
+      }
+    }
+  }
+  
+  /**
+   * Toggle play/pause
+   */
+  async togglePlayPause(): Promise<void> {
+    if (!this.audioElement) return;
+    
+    // If we're still loading, don't do anything
+    if (this.isLoading) return;
+    
+    try {
+      if (this.isPlaying) {
+        this.audioElement.pause();
+      } else {
+        // Try to resume playback from current position
+        await this.audioElement.play();
+      }
+    } catch (error) {
+      console.error('Error toggling play/pause:', error);
+      
+      // If there was an error playing, try to reset the player
+      if (this.currentAyah) {
+        await this.playAyah(this.currentAyah.surah, this.currentAyah.ayah);
+      } else if (this.currentSurah) {
+        await this.playSurah(this.currentSurah);
+      }
+    }
+  }
+  
+  /**
+   * Stop playback and clean up resources
+   */
+  stop(): void {
+    if (!this.audioElement) return;
+    
+    try {
+      // Cancel any pending requests
+      this.pendingPlayRequest = null;
+      
+      // Stop audio playback
+      this.audioElement.pause();
+      this.audioElement.currentTime = 0;
+      
+      // Clear queue and reset states
+      this.ayahQueue = [];
+      this.isPlaying = false;
+      this.isLoading = false;
+      
+      // Notify listeners of loading state change
+      if (this.onLoadingCallback) this.onLoadingCallback(false);
+      
+      // If we had a pause callback, call it
+      if (this.onPauseCallback) this.onPauseCallback();
+    } catch (error) {
+      console.error('Error in stop method:', error);
+    }
+  }
+  
+  /**
+   * Handle audio ended event - play next in queue if available
+   */
+  private handleAudioEnded = async (): Promise<void> => {
+    if (this.onEndCallback) this.onEndCallback();
+    
+    // Play next ayah in queue if any
+    if (this.ayahQueue.length > 0) {
+      const nextAyah = this.ayahQueue.shift();
+      if (nextAyah) {
+        await this.playAyah(nextAyah.surah, nextAyah.ayah);
+      }
+    }
+  };
+  
+  /**
+   * Set callback for play event
+   */
+  onPlay(callback: (() => void) | null): void {
+    this.onPlayCallback = callback;
+  }
+  
+  /**
+   * Set callback for pause event
+   */
+  onPause(callback: (() => void) | null): void {
+    this.onPauseCallback = callback;
+  }
+  
+  /**
+   * Set callback for end of audio event
+   */
+  onEnd(callback: (() => void) | null): void {
+    this.onEndCallback = callback;
+  }
+  
+  /**
+   * Set callback for loading state changes
+   */
+  onLoading(callback: ((isLoading: boolean) => void) | null): void {
+    this.onLoadingCallback = callback;
+  }
+  
+  /**
+   * Check if audio is currently playing
+   */
+  isAudioPlaying(): boolean {
+    return this.isPlaying;
+  }
+  
+  /**
+   * Get current playback time
+   */
+  getCurrentTime(): number {
+    return this.audioElement?.currentTime || 0;
+  }
+  
+  /**
+   * Get current ayah being played
+   */
+  getCurrentAyah(): { surah: number; ayah: number } | null {
+    return this.currentAyah;
+  }
+  
+  /**
+   * Get current surah being played
+   */
+  getCurrentSurah(): number | null {
+    return this.currentSurah;
+  }
+  
+  /**
+   * Set volume (0-1)
+   */
+  setVolume(volume: number): void {
+    if (this.audioElement) {
+      this.audioElement.volume = Math.min(Math.max(volume, 0), 1);
+    }
+  }
+  
+  /**
+   * Clean up resources
+   */
+  dispose(): void {
+    if (this.audioElement) {
+      this.audioElement.removeEventListener('ended', this.handleAudioEnded);
+      this.audioElement.pause();
+      this.audioElement = null;
+    }
+    
+    // Clear callbacks
+    this.onPlayCallback = null;
+    this.onPauseCallback = null;
+    this.onEndCallback = null;
+  }
+  
+  /**
+   * Play next ayah if available
+   * @returns true if next ayah exists and playback started, false otherwise
+   */
+  playNextAyah(): boolean {
+    if (this.currentAyah) {
+      const nextAyah = this.currentAyah.ayah + 1;
+      // Assume maximum surah length is 286 (Al-Baqarah)
+      if (nextAyah <= 286) {
+        this.playAyah(this.currentAyah.surah, nextAyah);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * Play previous ayah if available
+   * @returns true if previous ayah exists and playback started, false otherwise
+   */
+  playPreviousAyah(): boolean {
+    if (this.currentAyah && this.currentAyah.ayah > 1) {
+      this.playAyah(this.currentAyah.surah, this.currentAyah.ayah - 1);
+      return true;
+    }
+    return false;
+  }
+}
+
+// Create singleton instance
+let quranAudioPlayerInstance: QuranAudioPlayer | null = null;
+
+/**
+ * Get the singleton instance of QuranAudioPlayer
+ */
+export function getQuranAudioPlayer(): QuranAudioPlayer {
+  if (!quranAudioPlayerInstance) {
+    quranAudioPlayerInstance = new QuranAudioPlayer();
+  }
+  return quranAudioPlayerInstance;
+}
+
+export default getQuranAudioPlayer;

@@ -1,0 +1,588 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { fetchJuz, fetchJuzWithTranslation, EDITIONS } from '../../../utils/quranApi';
+import { playAlFatihaAyah, stopAudio } from '../../../utils/simpleAudioPlayer';
+import getSurahAudioPlayer from '../../../utils/enhancedSurahAudio';
+import { isProblematicVerse, playProblematicVerse } from '../../../utils/problematicVerseHandler';
+import './JuzViewer.css';
+
+interface JuzViewerProps {
+  juzNumber: number;
+}
+
+export default function JuzViewer({ juzNumber }: JuzViewerProps) {
+  const [juz, setJuz] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Verse audio playback state
+  const [playingVerse, setPlayingVerse] = useState<string | null>(null);
+  const [loadingVerse, setLoadingVerse] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState<number>(0);
+  
+  // Use ref for stable audio player reference
+  const verseAudioPlayerRef = useRef(getSurahAudioPlayer());
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // State for auto-play functionality
+  const [autoPlaySurah, setAutoPlaySurah] = useState<number | null>(null);
+  const [autoPlayQueue, setAutoPlayQueue] = useState<string[]>([]);
+  const [currentAutoPlayIndex, setCurrentAutoPlayIndex] = useState<number>(0);
+  
+  // Set up audio player event listeners
+  useEffect(() => {
+    const audioPlayer = verseAudioPlayerRef.current;
+    
+    // Register event listeners
+    audioPlayer.onPlay(() => {
+      // Clear loading state
+      setLoadingVerse(null);
+    });
+    
+    audioPlayer.onPause(() => {
+      // Clear playing state
+      setPlayingVerse(null);
+    });
+    
+    audioPlayer.onEnd(() => {
+      // Clear playing state
+      setPlayingVerse(null);
+    });
+    
+    audioPlayer.onError(() => {
+      // Clear states on error
+      setLoadingVerse(null);
+      setPlayingVerse(null);
+    });
+    
+    return () => {
+      // Clean up event listeners and stop any playing audio
+      audioPlayer.onPlay(null);
+      audioPlayer.onPause(null);
+      audioPlayer.onEnd(null);
+      audioPlayer.onError(null);
+      audioPlayer.stop();
+      
+      // Also clean up any direct audio elements
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = '';
+      }
+      
+      // Clean up any active audio
+      stopAudio(activeAudioRef.current);
+      activeAudioRef.current = null;
+    };
+  }, []);
+  
+  useEffect(() => {
+    const loadJuz = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch juz with translation
+        const juzData = await fetchJuzWithTranslation(juzNumber, EDITIONS.ENGLISH);
+        setJuz(juzData);
+      } catch (err) {
+        setError(`Failed to load Juz ${juzNumber}. Please try again.`);
+        console.error(`Error loading Juz ${juzNumber}:`, err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadJuz();
+  }, [juzNumber]); 
+  
+  // Start auto-playing a complete surah
+  const startSurahPlayback = (surahNumber: number) => {
+    // Clear any previous error messages
+    setErrorMessage(null);
+    
+    // If already auto-playing this surah, stop it
+    if (autoPlaySurah === surahNumber) {
+      stopAutoPlay();
+      return;
+    }
+    
+    // Stop any current auto-play
+    stopAutoPlay();
+    
+    // Get all verses from this surah in the juz
+    const surahData = ayahsBySurah[surahNumber];
+    if (!surahData || !surahData.ayahs.length) {
+      setErrorMessage(`Could not find verses for Surah ${surahNumber} in this Juz`);
+      return;
+    }
+    
+    // Create a queue of verse keys
+    const verseQueue = surahData.ayahs.map(ayah => 
+      `${ayah.surah.number}:${ayah.numberInSurah}`
+    );
+    
+    // Set up auto-play
+    setAutoPlaySurah(surahNumber);
+    setAutoPlayQueue(verseQueue);
+    setCurrentAutoPlayIndex(0);
+    
+    // Start playing the first verse
+    playVerse(verseQueue[0], true);
+  };
+  
+  // Stop auto-play
+  const stopAutoPlay = () => {
+    // Stop any current playback
+    if (playingVerse) {
+      const [surahNumber, ayahNumber] = playingVerse.split(':').map(Number);
+      const audioPlayer = verseAudioPlayerRef.current;
+      
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = '';
+        audioElementRef.current = null;
+      } else {
+        audioPlayer.stop();
+      }
+      setPlayingVerse(null);
+    }
+    
+    // Reset auto-play state
+    setAutoPlaySurah(null);
+    setAutoPlayQueue([]);
+    setCurrentAutoPlayIndex(0);
+  };
+  
+  // Handle auto-play next verse
+  useEffect(() => {
+    // If we have an auto-play queue and nothing is currently playing/loading
+    if (
+      autoPlayQueue.length > 0 && 
+      currentAutoPlayIndex > 0 &&  // At least played the first one
+      !playingVerse && 
+      !loadingVerse && 
+      currentAutoPlayIndex < autoPlayQueue.length
+    ) {
+      // Small delay before playing next verse
+      const timer = setTimeout(() => {
+        playVerse(autoPlayQueue[currentAutoPlayIndex], true);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [playingVerse, loadingVerse, autoPlayQueue, currentAutoPlayIndex]);
+
+    // Helper function to play problematic verses
+  const playProblematicVerseWithUi = async (verseKey: string, isAutoPlay = false): Promise<boolean> => {
+    try {
+      console.log(`Using specialized handler for problematic verse ${verseKey}`);
+      
+      // Use our specialized handler
+      const audio = await playProblematicVerse(verseKey);
+      
+      // Set up event listeners
+      audio.onended = () => {
+        setPlayingVerse(null);
+        audioElementRef.current = null;
+        
+        if (isAutoPlay) {
+          setCurrentAutoPlayIndex(prev => prev + 1);
+        }
+      };
+      
+      audio.onpause = () => {
+        setPlayingVerse(null);
+      };
+      
+      // If we get here, playback was successful
+      audioElementRef.current = audio;
+      setPlayingVerse(verseKey);
+      setLoadingVerse(null);
+      setErrorMessage(null);
+      
+      return true; // Success
+    } catch (error) {
+      console.error(`Failed to play problematic verse ${verseKey}:`, error);
+      return false; // Failed
+    }
+  };
+  
+  // Handle playing a specific verse
+  const playVerse = async (verseKey: string, isAutoPlay = false) => {
+    // Clear any previous error messages
+    setErrorMessage(null);
+    
+    // Parse verse key (format: "1:1" for Surah 1, Ayah 1)
+    const [surahNumber, ayahNumber] = verseKey.split(':').map(Number);
+    
+    try {
+      const audioPlayer = verseAudioPlayerRef.current;
+      
+      // If this verse is already playing, stop it
+      if (playingVerse === verseKey) {
+        if (audioElementRef.current) {
+          audioElementRef.current.pause();
+          audioElementRef.current.src = '';
+          audioElementRef.current = null;
+        } else {
+          audioPlayer.stop();
+        }
+        setPlayingVerse(null);
+        // If auto-play is active, stop it too
+        if (autoPlaySurah !== null) {
+          stopAutoPlay();
+        }
+        return;
+      }
+      
+      // If any other verse is playing, stop it first
+      if (playingVerse !== null) {
+        if (audioElementRef.current) {
+          audioElementRef.current.pause();
+          audioElementRef.current.src = '';
+          audioElementRef.current = null;
+        } else {
+          audioPlayer.stop();
+        }
+        setPlayingVerse(null);
+      }
+      
+      // Set loading state
+      setLoadingVerse(verseKey);
+      
+      // Special handling for Al-Fatiha
+      if (surahNumber === 1) {
+        try {
+          // Try to play using the simple player
+          const audioElement = await playAlFatihaAyah(ayahNumber);
+          
+          // Store the audio element reference
+          audioElementRef.current = audioElement;
+          
+          // Set up event listeners
+          audioElement.onended = () => {
+            setPlayingVerse(null);
+            audioElementRef.current = null;
+            
+            // If auto-play is active, increment the index for the next verse
+            if (autoPlaySurah !== null) {
+              setCurrentAutoPlayIndex(prev => prev + 1);
+            }
+          };
+          
+          audioElement.onpause = () => {
+            setPlayingVerse(null);
+          };
+          
+          audioElement.onerror = () => {
+            console.error('Error playing Al-Fatiha verse', ayahNumber);
+            setPlayingVerse(null);
+            setLoadingVerse(null);
+            setErrorMessage(`Could not play verse ${surahNumber}:${ayahNumber}. Please try again.`);
+            audioElementRef.current = null;
+          };
+          
+          // Update state
+          setPlayingVerse(verseKey);
+          setLoadingVerse(null);
+        } catch (error) {
+          console.error(`Error playing Al-Fatiha verse ${ayahNumber}:`, error);
+          setErrorMessage(`Could not play verse ${surahNumber}:${ayahNumber}. Please try again.`);
+          setLoadingVerse(null);
+        }
+      } else {
+        // Handle problematic verses with our specialized handler
+        if (isProblematicVerse(verseKey)) {
+          // Use our helper function for problematic verses
+          const success = await playProblematicVerseWithUi(verseKey, isAutoPlay);
+          if (success) {
+            return; // Exit early if successful
+          }
+          // Otherwise continue with standard approach
+        }
+        
+        try {
+          // Standard verse playback
+          console.log(`Attempting to play ${verseKey} via standard method`);
+          await audioPlayer.playAyah(surahNumber, ayahNumber);
+          
+          // Update playing state
+          console.log(`Successfully played ${verseKey} via standard method`);
+          setPlayingVerse(verseKey);
+          setLoadingVerse(null);
+          
+          // If auto-play is active, listen for end event
+          if (isAutoPlay) {
+            audioPlayer.onEnd(() => {
+              setPlayingVerse(null);
+              // Move to next verse in auto-play queue
+              setCurrentAutoPlayIndex(prev => prev + 1);
+            });
+          }
+        } catch (error) {
+          console.error(`Error playing verse ${verseKey}:`, error);
+          
+          // Try problematic verses again with our specialized handler
+          if (isProblematicVerse(verseKey)) {
+            setErrorMessage(`Trying alternative sources for verse ${verseKey}...`);
+            const success = await playProblematicVerseWithUi(verseKey, isAutoPlay);
+            if (success) {
+              return; // Exit if successful
+            }
+          }
+          }
+          
+          // Try the alternative direct API approach for problematic verses
+          try {
+            setErrorMessage(`Trying alternative source for verse ${verseKey}...`);
+            
+            // Use the direct API to get the audio URL
+            const fallbackUrl = `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/audio/ar.alafasy`;
+            const response = await fetch(fallbackUrl);
+            const data = await response.json();
+            
+            if (data.code === 200 && data.data && data.data.audio) {
+              // Create a new audio element
+              const audioElement = new Audio(data.data.audio);
+              
+              // Set up event listeners
+              audioElement.onended = () => {
+                setPlayingVerse(null);
+                audioElementRef.current = null;
+                
+                // If auto-play is active, increment the index for the next verse
+                if (autoPlaySurah !== null) {
+                  setCurrentAutoPlayIndex(prev => prev + 1);
+                }
+              };
+              
+              audioElement.onpause = () => {
+                setPlayingVerse(null);
+              };
+              
+              audioElement.onerror = () => {
+                setPlayingVerse(null);
+                setLoadingVerse(null);
+                setErrorMessage(`Could not play verse ${verseKey}. Please try again.`);
+                audioElementRef.current = null;
+              };
+              
+              // Play the audio
+              await audioElement.play();
+              
+              // Store the audio element reference
+              audioElementRef.current = audioElement;
+              
+              // Update state
+              setPlayingVerse(verseKey);
+              setLoadingVerse(null);
+              setErrorMessage(null);
+              
+              return;  // Successfully played using alternative approach
+            }
+          } catch (fallbackError) {
+            console.error(`Fallback also failed for verse ${verseKey}:`, fallbackError);
+          }
+          
+          // Handle retry logic if direct API approach also failed
+          if (retryCount < 2) {
+            setRetryCount(prevCount => prevCount + 1);
+            setErrorMessage(`Trying another source for verse ${verseKey}... (Attempt ${retryCount + 1}/3)`);
+            
+            // Try again after a short delay
+            setTimeout(() => playVerse(verseKey), 1500);
+          } else {
+            // Reset retry count and show final error
+            setRetryCount(0);
+            
+            // If this was auto-play, continue to next verse
+            if (isAutoPlay && autoPlaySurah !== null) {
+              setErrorMessage(`Skipping verse ${verseKey} (unavailable)`);
+              setTimeout(() => {
+                setCurrentAutoPlayIndex(prev => prev + 1);
+              }, 2000);
+            } else {
+              setErrorMessage(`Could not play verse ${verseKey}. Please try another verse.`);
+            }
+            
+            setLoadingVerse(null);
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Unexpected error playing verse ${verseKey}:`, error);
+      setErrorMessage(`Could not play verse ${verseKey}. Please try again later.`);
+      setLoadingVerse(null);
+    }
+  };
+  
+  if (loading) {
+    return (
+      <div className="juz-loading">
+        <div className="spinner"></div>
+        <p>Loading Juz {juzNumber}...</p>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="juz-error">
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
+  
+  if (!juz) {
+    return (
+      <div className="juz-error">
+        <p>Juz not found</p>
+        <button onClick={() => window.history.back()}>Go Back</button>
+      </div>
+    );
+  }
+  
+  // Group ayahs by surah
+  const ayahsBySurah = {};
+  juz.ayahs.forEach(ayah => {
+    const surahNumber = ayah.surah.number;
+    if (!ayahsBySurah[surahNumber]) {
+      ayahsBySurah[surahNumber] = {
+        surahName: ayah.surah.name,
+        englishName: ayah.surah.englishName,
+        ayahs: []
+      };
+    }
+    ayahsBySurah[surahNumber].ayahs.push(ayah);
+  });
+  
+  return (
+    <div className="juz-viewer">
+      {/* Back button */}
+      <div className="back-to-juz">
+        <a href="/quran" className="back-btn">
+          <span className="back-arrow">←</span> Back to Quran
+        </a>
+      </div>
+      
+      {/* Juz Header */}
+      <div className="juz-header">
+        <div className="juz-title">
+          <h1>Juz {juzNumber}</h1>
+          <p>Part {juzNumber} of the Holy Quran</p>
+        </div>
+        
+        <div className="juz-info">
+          <div className="info-item">
+            <span className="info-label">Total Surahs:</span>
+            <span className="info-value">{Object.keys(ayahsBySurah).length}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Total Verses:</span>
+            <span className="info-value">{juz.ayahs.length}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Error notification */}
+      {errorMessage && (
+        <div className="audio-error-notification">
+          <button className="close-error" onClick={() => setErrorMessage(null)}>×</button>
+          <div className="error-content">
+            <span className="error-icon">!</span>
+            <span>{errorMessage}</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Surah sections */}
+      {Object.entries(ayahsBySurah).map(([surahNumber, surahData]: [string, any]) => (
+        <div key={surahNumber} className="surah-section">
+          <div className="surah-section-header">
+            <h2 className="arabic-name">{surahData.surahName}</h2>
+            <h3 className="english-name">{surahData.englishName}</h3>
+            <div className="surah-actions">
+              <button 
+                className={`play-surah-btn ${autoPlaySurah === parseInt(surahNumber) ? 'playing' : ''}`}
+                onClick={() => startSurahPlayback(parseInt(surahNumber))}
+                aria-label={autoPlaySurah === parseInt(surahNumber) ? 'Stop playing' : 'Play entire surah'}
+              >
+                {autoPlaySurah === parseInt(surahNumber) ? 'Stop' : 'Play Entire Surah'}
+              </button>
+              <a 
+                href={`/surah/${surahNumber}`} 
+                className="view-surah-btn"
+                aria-label={`View complete Surah ${surahData.englishName}`}
+              >
+                View Complete Surah
+              </a>
+            </div>
+          </div>
+          
+          {/* Add Bismillah except for Surah 1 (already has it) and Surah 9 (doesn't have it) */}
+          {parseInt(surahNumber) !== 1 && parseInt(surahNumber) !== 9 && (
+            <div className="bismillah" dir="rtl">
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+          )}
+          
+          <div className="ayah-list">
+            {surahData.ayahs.map((ayah: any) => {
+              const verseKey = `${ayah.surah.number}:${ayah.numberInSurah}`;
+              return (
+                <div key={verseKey} className="ayah-item">
+                  <div className="ayah-number">
+                    <span>{ayah.numberInSurah}</span>
+                    <button
+                      className={`verse-audio-btn ${playingVerse === verseKey ? 'stop' : ''} ${loadingVerse === verseKey ? 'loading' : ''}`}
+                      onClick={() => playVerse(verseKey)}
+                      disabled={loadingVerse !== null && loadingVerse !== verseKey}
+                      aria-label={playingVerse === verseKey ? `Stop verse ${verseKey}` : `Play verse ${verseKey}`}
+                    >
+                      {loadingVerse === verseKey ? '' : 
+                       playingVerse === verseKey ? '■' : '▶'}
+                    </button>
+                  </div>
+                  <div className="ayah-content">
+                    <p className="ayah-text" dir="rtl">{ayah.text}</p>
+                    <p className="ayah-translation">
+                      {ayah.translation}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      
+      <div className="juz-navigation">
+        {juzNumber > 1 && (
+          <a 
+            href={`/juz/${juzNumber - 1}`} 
+            className="btn-primary"
+          >
+            ← Previous Juz
+          </a>
+        )}
+        
+        <a href="/quran" className="btn-primary">
+          Back to Quran
+        </a>
+        
+        {juzNumber < 30 && (
+          <a 
+            href={`/juz/${juzNumber + 1}`} 
+            className="btn-primary"
+          >
+            Next Juz →
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}

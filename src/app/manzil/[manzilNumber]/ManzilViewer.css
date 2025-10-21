@@ -1,0 +1,492 @@
+/* Ayah List Styles - copied from SurahViewer.css for identical look */
+.ayah-list {
+  margin-bottom: 2.5rem;
+}
+
+.ayah-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.ayah-item:hover {
+  background-color: rgba(248, 250, 252, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.ayah-item.playing {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.05), rgba(13, 148, 136, 0.05));
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.1);
+  border-left: 3px solid #059669;
+}
+
+.ayah-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.ayah-number span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #059669, #0d9488);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.2);
+}
+
+.ayah-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ayah-text {
+  font-family: 'Scheherazade New', serif;
+  font-size: 1.75rem;
+  line-height: 2.2;
+  margin-bottom: 1rem;
+  color: #1e293b;
+  text-align: right;
+}
+
+.ayah-translation {
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 1rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(5, 150, 105, 0.2);
+  margin-left: 0.25rem;
+}
+/* ManzilViewer.css - Styled to match SurahViewer.css for visual consistency */
+.manzil-viewer {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  background-image:
+    radial-gradient(circle at top right, rgba(5, 150, 105, 0.03) 0%, transparent 70%),
+    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+}
+
+.manzil-viewer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #059669, #0d9488, #3b82f6);
+}
+/* Loading and Error States (copied from SurahViewer.css) */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 3rem;
+  text-align: center;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(5, 150, 105, 0.1);
+  border-left: 4px solid #059669;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.error-container {
+  color: #ef4444;
+}
+
+.error-container p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.error-container button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.error-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+/* Navigation and Button Styles (copied from SurahViewer.css) */
+.manzil-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  font-size: 1rem;
+}
+
+.prev-button {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+}
+
+.home-button {
+  background: linear-gradient(135deg, #059669, #0d9488);
+  color: white;
+}
+
+.next-button {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.home-button:hover {
+  box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Responsive adjustments (copied from SurahViewer.css) */
+@media (max-width: 768px) {
+  .manzil-viewer {
+    padding: 1.5rem;
+  }
+}
+/* ManzilViewer.css - For displaying a single Manzil */
+
+.manzil-viewer {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0.5rem 1rem 2.5rem;
+  background: #f8fafc;
+  border-radius: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.manzil-viewer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #059669, #0d9488, #3b82f6);
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #059669;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #ef4444;
+  margin: 2rem 0;
+  background-color: #fef2f2;
+  border-radius: 0.75rem;
+  border: 1px solid #fee2e2;
+}
+
+.retry-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.retry-button:hover {
+  background-color: #dc2626;
+}
+
+/* Back navigation */
+.back-navigation {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+  color: #0d9488;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #99f6e4;
+}
+
+.back-btn:hover {
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.manzil-content {
+  margin-top: 2rem;
+}
+
+.last-page-flag {
+  text-align: center;
+  color: #475569;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+}
+
+.manzil-navigation {
+  margin-top: 3rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 2rem;
+}
+
+.navigation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.navigation-header h3 {
+  font-size: 1.25rem;
+  color: #334155;
+  margin: 0;
+  font-weight: 600;
+}
+
+.last-page-indicator {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.manzil-nav-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f1f5f9;
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.manzil-indicator {
+  font-weight: 500;
+  color: #334155;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 0.5rem;
+}
+
+.page-button {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.page-button:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.page-number {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.page-number.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.page-number:hover:not(.active) {
+  background-color: #e5e7eb;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+}
+
+.last-page-notice {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.audio-error-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #f87171;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1000;
+  max-width: 90%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.audio-error-toast.visible {
+  opacity: 1;
+}
+
+.audio-error-toast.hiding {
+  opacity: 0;
+}
+
+.audio-error-toast p {
+  margin: 0;
+  flex-grow: 1;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b91c1c;
+  font-weight: bold;
+  font-size: 1.25rem;
+  padding: 0;
+}

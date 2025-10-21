@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verse Audio Player</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: transparent;
+            font-family: Arial, sans-serif;
+        }
+        
+        .audio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .play-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #059669;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .play-button:hover {
+            background-color: #047857;
+        }
+        
+        .play-button:focus {
+            outline: none;
+        }
+        
+        .loading {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(5, 150, 105, 0.3);
+            border-radius: 50%;
+            border-top-color: #059669;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status {
+            font-size: 12px;
+            color: #059669;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* SVG icons */
+        .play-icon, .pause-icon {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        
+        .pause-icon {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="audio-container">
+        <button class="play-button" id="playPauseBtn" aria-label="Play audio">
+            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+        <div class="loading" id="loading"></div>
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const loading = document.getElementById('loading');
+        const status = document.getElementById('status');
+        const playIcon = document.querySelector('.play-icon');
+        const pauseIcon = document.querySelector('.pause-icon');
+        
+        let audio = null;
+        let isPlaying = false;
+        
+        // Get surah and verse from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const surah = urlParams.get('surah');
+        const verse = urlParams.get('verse');
+        
+        // Array of possible audio URLs
+        const getAudioUrls = (surah, verse) => {
+            const paddedSurah = surah.toString().padStart(3, '0');
+            const paddedVerse = verse.toString().padStart(3, '0');
+            
+            return [
+                // EveryAyah CDN
+                `https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_64kbps/${paddedSurah}${paddedVerse}.mp3`,
+                
+                // Alafasy from mp3quran.net
+                `https://server8.mp3quran.net/afs/${surah}/${verse}.mp3`,
+                
+                // Alternate CDN with different format
+                `https://verses.quran.com/Alafasy/${paddedSurah}${paddedVerse}.mp3`,
+                
+                // Islamic.network CDN
+                `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${calculateAbsoluteNumber(surah, verse)}.mp3`,
+                
+                // Another mp3quran CDN
+                `https://server10.mp3quran.net/jbrl/${surah}${paddedVerse}.mp3`,
+                
+                // Direct mp3quran format
+                `https://server7.mp3quran.net/shur/${paddedSurah}/${paddedVerse}.mp3`,
+                
+                // Backup server
+                `https://audio1.qurancentral.com/mishary-rashid-alafasy/mishary-rashid-alafasy-${paddedSurah}-${paddedVerse}.mp3`,
+                
+                // Another backup format
+                `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${calculateAbsoluteNumber(surah, verse)}`
+            ];
+        };
+        
+        // Calculate absolute verse number
+        function calculateAbsoluteNumber(surah, verse) {
+            // Simple implementation - this isn't accurate but helps generate URLs
+            // We'd need a full mapping for true accuracy
+            const startingVerses = [
+                0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364,
+                1473, 1596, 1707, 1750, 1802, 1901, 2029, 2140, 2250, 2348,
+                2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409,
+                3469, 3503, 3533, 3606, 3660, 3705, 3788, 3970, 4058, 4133,
+                4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612, 4630,
+                4675, 4735, 4784, 4846, 4901, 4979, 5075, 5104, 5126, 5150,
+                5163, 5177, 5188, 5199, 5217, 5229, 5241, 5271, 5323, 5375,
+                5419, 5447, 5475, 5495, 5551, 5591, 5622, 5672, 5712, 5758,
+                5800, 5829, 5848, 5884, 5909, 5931, 5948, 5967, 5993, 6023,
+                6043, 6058, 6079, 6090, 6098, 6106, 6125, 6130, 6138, 6146,
+                6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213,
+                6216, 6221, 6225, 6230, 6236
+            ];
+            
+            // Find the base starting point for this surah
+            const baseVerse = startingVerses[parseInt(surah) - 1] || 0;
+            
+            // Add the verse number to get absolute
+            return baseVerse + parseInt(verse);
+        }
+        
+        // Function to play audio
+        function playAudio() {
+            if (audio && isPlaying) {
+                // Pause if already playing
+                audio.pause();
+                audio = null;
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                status.style.display = 'none';
+                loading.style.display = 'none';
+                return;
+            }
+            
+            // Show loading state
+            loading.style.display = 'block';
+            playPauseBtn.disabled = true;
+            
+            // Get array of fallback URLs
+            const urls = getAudioUrls(surah, verse);
+            
+            // Try to play each URL in sequence
+            tryPlayFromUrls(urls, 0);
+        }
+        
+        // Function to try playing from a list of URLs
+        function tryPlayFromUrls(urls, index) {
+            if (index >= urls.length) {
+                // All URLs failed
+                loading.style.display = 'none';
+                status.textContent = 'Failed to play audio';
+                status.style.display = 'block';
+                playPauseBtn.disabled = false;
+                return;
+            }
+            
+            // Create new audio element
+            audio = new Audio(urls[index]);
+            
+            // Set up event listeners
+            audio.oncanplaythrough = function() {
+                loading.style.display = 'none';
+                playPauseBtn.disabled = false;
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                
+                // Start playing
+                audio.play()
+                    .then(() => {
+                        isPlaying = true;
+                    })
+                    .catch(err => {
+                        console.error('Playback failed:', err);
+                        // Try next URL
+                        tryPlayFromUrls(urls, index + 1);
+                    });
+            };
+            
+            audio.onended = function() {
+                // Reset when done playing
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                audio = null;
+            };
+            
+            audio.onerror = function() {
+                // Try next URL on error
+                console.log(`URL failed: ${urls[index]}`);
+                tryPlayFromUrls(urls, index + 1);
+            };
+            
+            // Load the audio
+            audio.load();
+            
+            // Set a timeout in case oncanplaythrough doesn't fire
+            setTimeout(function() {
+                if (!isPlaying && audio) {
+                    console.log(`Timeout for URL: ${urls[index]}`);
+                    tryPlayFromUrls(urls, index + 1);
+                }
+            }, 5000);
+        }
+        
+        // Add click event to button
+        playPauseBtn.addEventListener('click', playAudio);
+        
+        // Notify parent frame when loaded
+        window.onload = function() {
+            if (window.parent) {
+                window.parent.postMessage('player-loaded', '*');
+            }
+        };
+    </script>
+</body>
+</html>

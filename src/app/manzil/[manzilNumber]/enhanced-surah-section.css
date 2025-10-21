@@ -1,0 +1,123 @@
+.surah-section {
+  margin-bottom: 2.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.surah-header {
+  background: linear-gradient(90deg, #059669, #0ea57a);
+  color: white;
+  padding: 1.5rem;
+}
+
+.surah-header.light-header {
+  background: linear-gradient(90deg, #e6f7f2, #d1f0e8);
+  color: #065f46;
+  padding: 1.5rem;
+}
+
+.surah-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.surah-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.light-header .surah-number {
+  background-color: rgba(5, 150, 105, 0.2);
+  color: #065f46;
+}
+
+.surah-arabic-name {
+  font-family: 'Scheherazade New', 'Traditional Arabic', serif;
+  font-size: 2rem;
+  margin-left: 0.5rem;
+}
+
+.surah-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.surah-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.surah-audio-controls button {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.surah-audio-controls button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.auto-play-btn svg, 
+.stop-play-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.stop-play-btn {
+  background-color: #dc2626 !important;
+  border-color: #b91c1c !important;
+}
+
+.stop-play-btn:hover {
+  background-color: #b91c1c !important;
+}
+
+.translation-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.translation-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.translation-toggle input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.verses-container {
+  padding: 1.25rem;
+}

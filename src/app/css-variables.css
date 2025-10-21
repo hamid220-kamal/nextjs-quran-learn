@@ -1,0 +1,42 @@
+:root {
+  /* Colors */
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --gray: #e0e0e0;
+  --medium-gray: #757575;
+  --dark-gray: #424242;
+  --black: #212121;
+  --primary-blue: #1a73e8;
+  --primary-blue-dark: #0d47a1;
+  --primary-blue-light: #64b5f6;
+  --primary-green: #4caf50;
+  --error: #d32f2f;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #1a73e8, #0d47a1);
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Transitions */
+  --transition-base: all 0.2s ease-in-out;
+  --transition-slow: all 0.3s ease-in-out;
+}
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');

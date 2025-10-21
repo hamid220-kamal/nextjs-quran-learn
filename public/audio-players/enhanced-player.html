@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Audio Player</title>
+    <style>
+        :root {
+            --primary-color: #059669;
+            --primary-hover: #047857;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --background: transparent;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--background);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
+        }
+        
+        .audio-container {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+        
+        .play-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .play-button:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+        
+        .play-button:active {
+            transform: scale(0.98);
+        }
+        
+        .play-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.4);
+        }
+        
+        .loading {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 36px;
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: center;
+            stroke: var(--primary-color);
+            stroke-width: 2;
+            fill: transparent;
+        }
+        
+        /* SVG icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-light);
+            transition: all 0.2s ease;
+        }
+        
+        .play-icon, .pause-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+        
+        .play-icon {
+            display: block;
+        }
+        
+        .pause-icon {
+            display: none;
+        }
+        
+        .status {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            color: var(--primary-color);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .status.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="audio-container">
+        <button class="play-button" id="playPauseBtn" aria-label="Play audio">
+            <svg class="icon play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="icon pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+        <div class="loading" id="loading"></div>
+        <svg class="progress-ring" width="40" height="40">
+            <circle class="progress-ring__circle" id="progressRing" 
+                stroke-dasharray="100 100" stroke-dashoffset="100"
+                cx="20" cy="20" r="18">
+            </circle>
+        </svg>
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const loading = document.getElementById('loading');
+        const status = document.getElementById('status');
+        const progressRing = document.getElementById('progressRing');
+        const playIcon = document.querySelector('.play-icon');
+        const pauseIcon = document.querySelector('.pause-icon');
+        
+        let audio = null;
+        let isPlaying = false;
+        
+        // Set up the progress ring
+        const radius = progressRing.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressRing.style.strokeDashoffset = circumference;
+        
+        // Function to set progress
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100 * circumference);
+            progressRing.style.strokeDashoffset = offset;
+        }
+        
+        // Get surah and verse from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const surah = urlParams.get('surah');
+        const verse = urlParams.get('verse');
+        
+        // Array of possible audio URLs - prioritizing alquran.cloud API
+        const getAudioUrls = (surah, verse) => {
+            const paddedSurah = surah.toString().padStart(3, '0');
+            const paddedVerse = verse.toString().padStart(3, '0');
+            const absoluteNumber = calculateAbsoluteNumber(surah, verse);
+            
+            return [
+                // Primary source: Islamic.network CDN (alquran.cloud API)
+                `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${absoluteNumber}.mp3`,
+                
+                // Direct alquran.cloud API
+                `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${absoluteNumber}`,
+                
+                // Alternate CDN with different format
+                `https://verses.quran.com/Alafasy/${paddedSurah}${paddedVerse}.mp3`,
+                
+                // Alafasy from mp3quran.net
+                `https://server8.mp3quran.net/afs/${surah}/${verse}.mp3`,
+                
+                // EveryAyah CDN
+                `https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_64kbps/${paddedSurah}${paddedVerse}.mp3`,
+                
+                // Backup server
+                `https://audio1.qurancentral.com/mishary-rashid-alafasy/mishary-rashid-alafasy-${paddedSurah}-${paddedVerse}.mp3`,
+                
+                // Another mp3quran CDN
+                `https://server10.mp3quran.net/jbrl/${surah}${paddedVerse}.mp3`,
+                
+                // Direct mp3quran format
+                `https://server7.mp3quran.net/shur/${paddedSurah}/${paddedVerse}.mp3`
+            ];
+        };
+        
+        // Calculate absolute verse number
+        function calculateAbsoluteNumber(surah, verse) {
+            // Simple implementation for URL generation
+            const startingVerses = [
+                0, 7, 293, 493, 669, 789, 954, 1160, 1235, 1364,
+                1473, 1596, 1707, 1750, 1802, 1901, 2029, 2140, 2250, 2348,
+                2483, 2595, 2673, 2791, 2855, 2932, 3159, 3252, 3340, 3409,
+                3469, 3503, 3533, 3606, 3660, 3705, 3788, 3970, 4058, 4133,
+                4218, 4272, 4325, 4414, 4473, 4510, 4545, 4583, 4612, 4630,
+                4675, 4735, 4784, 4846, 4901, 4979, 5075, 5104, 5126, 5150,
+                5163, 5177, 5188, 5199, 5217, 5229, 5241, 5271, 5323, 5375,
+                5419, 5447, 5475, 5495, 5551, 5591, 5622, 5672, 5712, 5758,
+                5800, 5829, 5848, 5884, 5909, 5931, 5948, 5967, 5993, 6023,
+                6043, 6058, 6079, 6090, 6098, 6106, 6125, 6130, 6138, 6146,
+                6157, 6168, 6176, 6179, 6188, 6193, 6197, 6204, 6207, 6213,
+                6216, 6221, 6225, 6230, 6236
+            ];
+            
+            // Find the base starting point for this surah
+            const baseVerse = startingVerses[parseInt(surah) - 1] || 0;
+            
+            // Add the verse number to get absolute
+            return baseVerse + parseInt(verse);
+        }
+        
+        // Function to play audio
+        function playAudio() {
+            console.log(`[AudioPlayer] playAudio function called for surah ${surah} verse ${verse}`);
+            
+            if (audio && isPlaying) {
+                // Pause if already playing
+                console.log(`[AudioPlayer] Pausing current playback`);
+                audio.pause();
+                audio = null;
+                isPlaying = false;
+                
+                // Update UI
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                progressRing.style.strokeDashoffset = circumference; // Reset progress
+                
+                // Notify parent
+                if (window.parent) {
+                    const pausedMessage = {
+                        type: 'player-paused',
+                        playerDetails: {
+                            surahNumber: parseInt(surah),
+                            verseNumber: parseInt(verse)
+                        }
+                    };
+                    console.log(`[AudioPlayer] Sending paused notification:`, pausedMessage);
+                    window.parent.postMessage(pausedMessage, '*');
+                }
+                
+                return;
+            }
+            
+            // Show loading state
+            console.log(`[AudioPlayer] Starting new playback`);
+            loading.style.display = 'block';
+            playPauseBtn.disabled = true;
+            status.textContent = 'Loading audio...';
+            status.classList.add('visible');
+            
+            // Get array of fallback URLs
+            const urls = getAudioUrls(surah, verse);
+            console.log(`[AudioPlayer] Generated ${urls.length} potential audio URLs`);
+            
+            // Try to play each URL in sequence
+            tryPlayFromUrls(urls, 0);
+            
+            // Hide status after a delay
+            setTimeout(() => {
+                status.classList.remove('visible');
+            }, 2000);
+        }
+        
+        // Function to try playing from a list of URLs
+        function tryPlayFromUrls(urls, index) {
+            console.log(`[AudioPlayer] Trying URL ${index + 1}/${urls.length}: ${urls[index]}`);
+            
+            if (index >= urls.length) {
+                // All URLs failed
+                console.error(`[AudioPlayer] All URLs failed to play`);
+                loading.style.display = 'none';
+                status.textContent = 'Failed to play';
+                status.classList.add('visible');
+                playPauseBtn.disabled = false;
+                
+                // Notify parent of the failure
+                if (window.parent) {
+                    const errorMessage = {
+                        type: 'player-error',
+                        playerDetails: {
+                            surahNumber: parseInt(surah),
+                            verseNumber: parseInt(verse)
+                        }
+                    };
+                    console.log(`[AudioPlayer] Sending error to parent:`, errorMessage);
+                    window.parent.postMessage(errorMessage, '*');
+                }
+                
+                // Hide status after a delay
+                setTimeout(() => {
+                    status.classList.remove('visible');
+                }, 3000);
+                
+                return;
+            }
+            
+            // Create new audio element
+            console.log(`[AudioPlayer] Creating audio element for ${urls[index]}`);
+            audio = new Audio(urls[index]);
+            
+            // Set up event listeners
+            audio.oncanplaythrough = function() {
+                console.log(`[AudioPlayer] Audio can play through, starting playback`);
+                loading.style.display = 'none';
+                playPauseBtn.disabled = false;
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                
+                // Start playing
+                audio.play()
+                    .then(() => {
+                        isPlaying = true;
+                        console.log(`[AudioPlayer] Playback started successfully`);
+                        
+                        // Notify parent
+                        if (window.parent) {
+                            const playingMessage = {
+                                type: 'player-playing',
+                                playerDetails: {
+                                    surahNumber: parseInt(surah),
+                                    verseNumber: parseInt(verse)
+                                }
+                            };
+                            console.log(`[AudioPlayer] Sending playing notification:`, playingMessage);
+                            window.parent.postMessage(playingMessage, '*');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('[AudioPlayer] Playback failed:', err);
+                        // Try next URL
+                        tryPlayFromUrls(urls, index + 1);
+                    });
+            };
+            
+            // Update progress ring during playback
+            audio.ontimeupdate = function() {
+                if (audio.duration > 0) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    setProgress(percent);
+                    
+                    // Log progress at 25%, 50%, 75% intervals
+                    const roundedPercent = Math.round(percent);
+                    if ([25, 50, 75].includes(roundedPercent)) {
+                        console.log(`[AudioPlayer] Playback at ${roundedPercent}%`);
+                    }
+                }
+            };
+            
+            audio.onended = function() {
+                // Reset when done playing
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                progressRing.style.strokeDashoffset = circumference; // Reset progress
+                
+                console.log(`[AudioPlayer] Playback ended for surah ${surah} verse ${verse}`);
+                
+                // Notify parent that playback ended (this is critical for auto-play functionality)
+                // Send multiple messages to ensure it's received
+                if (window.parent) {
+                    const endedMessage = {
+                        type: 'player-ended',
+                        playerDetails: {
+                            surahNumber: parseInt(surah),
+                            verseNumber: parseInt(verse)
+                        }
+                    };
+                    
+                    // First message
+                    console.log(`[AudioPlayer] Sending ended message:`, endedMessage);
+                    window.parent.postMessage(endedMessage, '*');
+                    
+                    // Send additional messages after delays as backup
+                    setTimeout(() => {
+                        console.log(`[AudioPlayer] Sending backup ended message (1)`);
+                        window.parent.postMessage(endedMessage, '*');
+                    }, 300);
+                    
+                    setTimeout(() => {
+                        console.log(`[AudioPlayer] Sending backup ended message (2)`);
+                        window.parent.postMessage(endedMessage, '*');
+                    }, 600);
+                }
+                
+                // Clear the audio object to free resources
+                audio = null;
+            };
+            
+            audio.onerror = function() {
+                // Try next URL on error
+                console.error(`[AudioPlayer] URL failed: ${urls[index]}`);
+                
+                // Display error state briefly
+                status.textContent = 'Loading failed, trying next source...';
+                status.classList.add('visible');
+                setTimeout(() => status.classList.remove('visible'), 1500);
+                
+                if (index >= urls.length - 1) {
+                    // This was the last URL, send an error message to the parent
+                    if (window.parent) {
+                        const errorMessage = {
+                            type: 'player-error',
+                            playerDetails: {
+                                surahNumber: parseInt(surah),
+                                verseNumber: parseInt(verse)
+                            }
+                        };
+                        console.log(`[AudioPlayer] All sources failed, sending error:`, errorMessage);
+                        window.parent.postMessage(errorMessage, '*');
+                    }
+                }
+                
+                // Try the next URL
+                tryPlayFromUrls(urls, index + 1);
+            };
+            
+            // Load the audio
+            audio.load();
+            
+            // Set a timeout in case oncanplaythrough doesn't fire
+            setTimeout(function() {
+                if (!isPlaying && audio) {
+                    console.log(`Timeout for URL: ${urls[index]}`);
+                    tryPlayFromUrls(urls, index + 1);
+                }
+            }, 4000);
+        }
+        
+        // Add click event to button
+        playPauseBtn.addEventListener('click', playAudio);
+        
+        // Listen for messages from parent frame
+        window.addEventListener('message', function(event) {
+            console.log(`[AudioPlayer] Received message from parent:`, event.data);
+            
+            if (event.data === 'start-playback') {
+                console.log(`[AudioPlayer] Received direct play command`);
+                playAudio();
+            } else if (event.data === 'stop-playback') {
+                console.log(`[AudioPlayer] Received stop command`);
+                if (audio && isPlaying) {
+                    audio.pause();
+                    audio = null;
+                    isPlaying = false;
+                    playIcon.style.display = 'block';
+                    pauseIcon.style.display = 'none';
+                    progressRing.style.strokeDashoffset = circumference;
+                }
+            }
+        });
+
+        // Notify parent frame when loaded
+        window.onload = function() {
+            if (window.parent) {
+                const message = {
+                    type: 'player-loaded',
+                    playerDetails: {
+                        surahNumber: parseInt(surah),
+                        verseNumber: parseInt(verse)
+                    }
+                };
+                console.log(`[AudioPlayer] Sending loaded message to parent:`, message);
+                window.parent.postMessage(message, '*');
+                
+                // Debug: After 1 second, try to auto-trigger playback for testing
+                // This helps confirm that the audio system works
+                setTimeout(() => {
+                    if (window.location.search.includes('autotest=true')) {
+                        console.log(`[AudioPlayer] Auto-testing playback`);
+                        playAudio();
+                    }
+                }, 1000);
+            }
+        };
+    </script>
+</body>
+</html>

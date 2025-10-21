@@ -1,0 +1,103 @@
+/* 
+ * performance-optimized.css
+ * Performance optimizations for the Quran page
+ */
+
+/* Use content-visibility to improve initial load performance */
+.quran-surah-container {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+
+/* Optimize card rendering with CSS containment */
+.quran-surah-card {
+  contain: layout style paint;
+  transform: translateZ(0); /* Promote to separate layer */
+  will-change: transform;
+}
+
+/* Optimize ayah rendering */
+.ayah-card {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+  will-change: transform, opacity;
+}
+
+/* Only animate what's necessary */
+.ayah-card-active {
+  will-change: background-color;
+}
+
+/* Improve grid layout performance */
+.quran-nav-grid {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Optimize animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Reduce repaints for fixed elements */
+.quran-header {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Optimize rendering of Arabic text */
+.ayah-arabic {
+  contain: layout style;
+  /* Optimize font rendering for RTL text */
+  text-rendering: optimizeSpeed;
+}
+
+/* Virtualize long lists for better performance */
+.ayahs-container {
+  contain: layout style;
+}
+
+/* Reduce layout shifts with height reserves */
+.ayah-content {
+  min-height: 120px; /* Reserve space to prevent layout shifts */
+}
+
+/* Improve rendering of fixed position elements */
+.page-unresponsive-overlay {
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+/* Optimize navigation performance */
+.quran-navigation-tabs {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Use passive event listeners for scroll handling */
+/* This is a CSS comment for reference; actual implementation requires JS */
+.scroll-container {
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+}
+
+/* Set explicit width/height to avoid layout shifts */
+.nav-card-content svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Force GPU rendering for critical animations */
+.quran-welcome {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize loading animations to minimize repaints */
+.loading-spinner {
+  will-change: transform;
+  backface-visibility: hidden;
+}

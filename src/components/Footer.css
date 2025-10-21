@@ -1,0 +1,109 @@
+/* Footer.css */
+
+/* Main footer container */
+.footer {
+  background: linear-gradient(135deg, #1a2a6c, #2a5298); /* match navbar */
+  color: #f0fdf4; /* soft off-white text */
+  padding: 60px 20px 30px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Footer grid */
+.footer-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .footer-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Brand section */
+.footer-brand h2 {
+  font-size: 2rem;
+  color: #f6e05e; /* soft golden */
+  margin-bottom: 10px;
+}
+
+.footer-brand p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.footer-social a {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #234e70; /* darker blue accent */
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: #f0fdf4;
+}
+
+.footer-social a:hover {
+  background: #68d391; /* gentle green accent */
+  color: #1a2a6c; /* navbar blue on hover */
+  transform: scale(1.1);
+}
+
+/* Navigation sections */
+.footer-nav-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #d6bcfa; /* soft lavender heading */
+}
+
+.footer-nav-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-nav-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-nav-section ul li a {
+  text-decoration: none;
+  color: #f0fdf4;
+  transition: color 0.3s ease;
+}
+
+.footer-nav-section ul li a:hover {
+  color: #f6e05e; /* golden hover */
+}
+
+/* Footer bottom */
+.footer-bottom {
+  margin-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 15px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #e6fffa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+  }
+}

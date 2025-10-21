@@ -1,0 +1,21 @@
+.retry-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.retry-button:hover {
+  background-color: #2563eb;
+}
+
+.retry-button:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}

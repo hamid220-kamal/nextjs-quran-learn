@@ -1,0 +1,27 @@
+/* Translation toggle styles */
+.surah-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.translation-toggle {
+  color: white;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+.translation-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.translation-toggle input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://quraniclearn.com/sitemap.xml
+
+# Disallow indexing of account pages
+Disallow: /login
+Disallow: /signup

@@ -1,0 +1,43 @@
+/* Audio button styles */
+.ayah-audio-button {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+  font-size: 0.8rem;
+}
+
+.ayah-audio-button:hover {
+  background-color: var(--primary-blue-dark);
+}
+
+.ayah-audio-button.playing {
+  background-color: var(--warning-color);
+}
+
+.ayah-audio-button.loading {
+  background-color: var(--gray);
+  cursor: wait;
+  animation: spin 1.2s linear infinite;
+}
+
+.ayah-audio-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

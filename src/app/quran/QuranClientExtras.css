@@ -1,0 +1,95 @@
+/* Additional styles for the QuranClient with TabQuranNavigator */
+
+.quran-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.search-container {
+  flex: 1;
+  min-width: 250px;
+}
+
+.view-toggle-btn {
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.view-toggle-btn:hover {
+  background-color: var(--primary-blue-dark);
+  box-shadow: var(--shadow-md);
+}
+
+/* Navigation Card Selector */
+.nav-card-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-lg) 0;
+  justify-content: center;
+}
+
+.nav-card-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background-color: var(--off-white);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-base);
+  min-width: 100px;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-card-option:hover, .nav-card-option.hovered {
+  background-color: var(--light-gray);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-card-option.active {
+  border-color: var(--primary-blue);
+  background-color: rgba(26, 115, 232, 0.05);
+}
+
+.option-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-xs);
+  color: var(--primary-blue);
+}
+
+.option-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 768px) {
+  .quran-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .view-toggle-btn {
+    margin-top: var(--spacing-md);
+  }
+  
+  .nav-card-option {
+    flex: 1;
+    min-width: 80px;
+  }
+}

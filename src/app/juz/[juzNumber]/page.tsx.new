@@ -1,0 +1,42 @@
+import { Metadata } from 'next';
+import JuzViewer from './JuzViewer';
+import Navbar from '../../../components/Navbar/Navbar';
+import { fetchJuz } from '../../../utils/quranApi';
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: { juzNumber: string } 
+}): Promise<Metadata> {
+  const juzNumber = parseInt(params.juzNumber);
+  
+  try {
+    return {
+      title: `Juz ${juzNumber} - Quran`,
+      description: `Read Juz ${juzNumber} of the Holy Quran with translations.`,
+      keywords: `quran, juz ${juzNumber}, quran part ${juzNumber}, hizb, quran section, ayah, verse`,
+    };
+  } catch (error) {
+    return {
+      title: 'Juz - Quran',
+      description: 'Read the Holy Quran with translations.',
+    };
+  }
+}
+
+export default function JuzPage({ 
+  params 
+}: { 
+  params: { juzNumber: string } 
+}) {
+  const juzNumber = parseInt(params.juzNumber);
+  
+  return (
+    <div className="juz-page-container">
+      <Navbar />
+      <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <JuzViewer juzNumber={juzNumber} />
+      </main>
+    </div>
+  );
+}

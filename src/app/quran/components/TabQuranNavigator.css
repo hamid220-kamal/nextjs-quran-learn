@@ -1,0 +1,479 @@
+/* TabQuranNavigator.css - Styled for modern UI/UX */
+.quran-navigator {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin: var(--spacing-lg) 0;
+}
+
+/* Tab Navigation */
+.navigator-tabs {
+  display: flex;
+  background-color: var(--light-gray);
+  border-bottom: 1px solid var(--gray);
+  position: relative;
+  overflow-x: auto;
+  scrollbar-width: none; /* For Firefox */
+}
+
+.navigator-tabs::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari and Opera */
+}
+
+.tab-btn {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: var(--transition-base);
+}
+
+.tab-btn:hover {
+  color: var(--primary-blue);
+}
+
+.tab-btn.active {
+  color: var(--primary-blue);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-blue);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+/* Content Area */
+.navigator-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+/* Loading State */
+.navigator-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  color: var(--medium-gray);
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(26, 115, 232, 0.2);
+  border-top-color: var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.navigator-error {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--error);
+}
+
+.navigator-error button {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* Navigator Items */
+.navigator-items {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Surah List */
+.surah-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.surah-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 
+    "number name-ar ."
+    "number name-en meta";
+  align-items: center;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--off-white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.surah-item:hover {
+  background-color: var(--light-gray);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.item-number {
+  grid-area: number;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--primary-blue);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  margin-right: var(--spacing-md);
+}
+
+.item-name-ar {
+  grid-area: name-ar;
+  font-family: 'Scheherazade New', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.item-name-en {
+  grid-area: name-en;
+  font-size: 1rem;
+  color: var(--dark-gray);
+}
+
+.item-meta {
+  grid-area: meta;
+  font-size: 0.85rem;
+  color: var(--medium-gray);
+  text-align: right;
+}
+
+/* Juz, Manzil and Hizb Lists */
+.juz-list,
+.manzil-list,
+.hizb-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.juz-item,
+.manzil-item,
+.hizb-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--off-white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.juz-item:hover,
+.manzil-item:hover,
+.hizb-item:hover {
+  background-color: var(--light-gray);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Page Grid */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.page-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  background-color: var(--off-white);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.page-item:hover {
+  background-color: var(--light-gray);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.page-number {
+  font-weight: 500;
+}
+
+/* Ruku Information */
+.ruku-info {
+  padding: var(--spacing-lg);
+  background-color: var(--off-white);
+  border-radius: var(--radius-md);
+}
+
+.ruku-explanation {
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+/* Item Detail Panel */
+.item-detail-panel {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--off-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--primary-blue);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.item-detail-panel h3 {
+  margin-top: 0;
+  color: var(--primary-blue);
+  font-weight: 600;
+  border-bottom: 1px solid var(--gray);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-content {
+  line-height: 1.6;
+}
+
+.detail-content p {
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-content strong {
+  color: var(--dark-gray);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .navigator-tabs {
+    justify-content: flex-start;
+  }
+  
+  .tab-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+  
+  .surah-item {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+      "number name-ar"
+      "number name-en"
+      ". meta";
+    gap: 2px;
+  }
+  
+  .item-meta {
+    text-align: left;
+  }
+  
+  .page-grid {
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  }
+  
+  .page-item {
+    height: 50px;
+  }
+}/* Pagination Styles for TabQuranNavigator */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+}
+
+.pagination-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 128, 0, 0.3);
+}
+
+.pagination-btn:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.page-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.current-page {
+  background: #f0f8f0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: green;
+  min-width: 40px;
+  text-align: center;
+}
+
+.total-pages {
+  background: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #555;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Page Grid Styles for TabQuranNavigator */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.page-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e8f5e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-card:hover {
+  transform: translateY(-3px);
+  border-color: green;
+  box-shadow: 0 6px 20px rgba(0, 128, 0, 0.15);
+}
+
+.page-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: green;
+  margin-bottom: 8px;
+}
+
+.page-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Cards Container for TabQuranNavigator */
+.navigator-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Responsive Design for TabQuranNavigator */
+@media (max-width: 768px) {
+  .pagination-controls {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+  
+  .pagination-btn {
+    min-width: 120px;
+  }
+  
+  .page-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  
+  .page-card {
+    padding: 15px 10px;
+  }
+  
+  .page-number {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+  
+  .page-card {
+    padding: 12px 8px;
+  }
+  
+  .page-number {
+    font-size: 18px;
+  }
+  
+  .pagination-controls {
+    padding: 12px;
+  }
+  
+  .pagination-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}

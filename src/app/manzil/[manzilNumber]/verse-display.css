@@ -1,0 +1,190 @@
+/* Pagination and verse display styles */
+
+.juz-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination-button {
+  background-color: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #0f766e;
+}
+
+.pagination-button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-weight: 500;
+  color: #334155;
+}
+
+.verses-container {
+  padding: 1rem;
+}
+
+.verse {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.25rem 0;
+}
+
+.verse:last-child {
+  border-bottom: none;
+}
+
+.verse.playing {
+  background-color: rgba(5, 150, 105, 0.05);
+}
+
+.verse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.verse-number {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #0d9488;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.verse-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.verse-text {
+  margin-bottom: 1rem;
+}
+
+.verse-text.arabic {
+  font-family: 'Scheherazade New', 'Traditional Arabic', serif;
+  font-size: 1.75rem;
+  line-height: 2.5;
+  text-align: right;
+  direction: rtl;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.verse-translations {
+  margin-top: 0.75rem;
+}
+
+.verse-translation {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.translation-text {
+  font-size: 1rem;
+}
+
+.verse-audio-btn {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verse-audio-btn:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.verse-audio-btn.playing {
+  background-color: #ef4444;
+}
+
+.verse-audio-btn.playing:hover {
+  background-color: #dc2626;
+}
+
+.verse-audio-btn.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.verse-audio-btn:disabled {
+  background-color: #94a3b8;
+  cursor: wait;
+}
+
+.loading-spinner-small {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.audio-error-message {
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  color: #b91c1c;
+  border-radius: 0.25rem;
+}
+
+.audio-error-message button {
+  background-color: #b91c1c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.audio-error-message button:hover {
+  background-color: #991b1b;
+}

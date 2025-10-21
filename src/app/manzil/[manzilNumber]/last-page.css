@@ -1,0 +1,10 @@
+.last-page-notice {
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  color: #4b5563;
+  font-size: 0.9rem;
+  border: 1px solid #e5e7eb;
+}

@@ -1,0 +1,34 @@
+/* Juz title styles */
+.juz-title {
+  text-align: center;
+  margin: 1rem 0 2rem;
+  position: relative;
+  font-size: 2.25rem;
+  color: #0f172a;
+}
+
+.juz-title::after {
+  content: "";
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #059669, #0d9488, #3b82f6);
+  border-radius: 1px;
+}
+
+/* Add this to improve responsiveness of the app */
+@media (max-width: 768px) {
+  .juz-viewer {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 1rem;
+  }
+  
+  .juz-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+}

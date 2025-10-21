@@ -1,0 +1,30 @@
+.surah-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.play-all-btn {
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.play-all-btn:hover {
+  background-color: #374151;
+}
+
+.play-all-btn.playing {
+  background-color: #ef4444;
+}
+
+.play-all-btn.playing:hover {
+  background-color: #dc2626;
+}

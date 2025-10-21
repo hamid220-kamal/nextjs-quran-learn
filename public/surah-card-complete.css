@@ -1,0 +1,236 @@
+/**
+ * Clean comprehensive CSS for Quran Surah Cards
+ * This handles the proper layout of all card content:
+ * - Arabic name of surah
+ * - English translation name of surah
+ * - Total verses count
+ * - Makkiyah or Madinah revelation type
+ * - Read button
+ */
+
+/* Base card styling with 10px increased height */
+.surah-card {
+  position: relative;
+  height: calc(100% + 10px); /* Increase height by 10px as requested */
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.surah-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Card content organization */
+.surah-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.surah-number {
+  background-color: #f8f9fa;
+  color: #495057;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.surah-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Arabic name styling */
+.surah-arabic-name {
+  font-family: 'Traditional Arabic', 'Scheherazade New', serif;
+  font-size: 24px;
+  margin-bottom: 5px;
+  color: #333;
+  direction: rtl;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* English name styling */
+.surah-english-name {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Meta information container */
+.surah-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+  padding: 8px 0;
+  background: linear-gradient(to right, rgba(240, 240, 240, 0.5), rgba(255, 255, 255, 0.5));
+  border-radius: 4px;
+}
+
+/* Verses count and revelation type */
+.surah-verses-count {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* Revelation type styling */
+.surah-revelation {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.makkiyah {
+  background-color: rgba(255, 182, 193, 0.2);
+  color: #8b0029;
+}
+
+.madinah {
+  background-color: rgba(173, 216, 230, 0.2);
+  color: #004077;
+}
+
+/* Read button styling */
+.read-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.read-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.read-button:hover {
+  background-color: #218838;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .surah-arabic-name {
+    font-size: 20px;
+  }
+  
+  .surah-english-name {
+    font-size: 16px;
+  }
+  
+  .surah-meta {
+    padding: 5px 0;
+  }
+  
+  .surah-verses-count,
+  .surah-revelation {
+    font-size: 12px;
+  }
+}
+
+/* Special class handling for existing markup */
+.quran-surah-card {
+  position: relative;
+  height: calc(100% + 10px);
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 320px;
+  max-width: 100%;
+}
+
+.quran-surah-number {
+  background-color: #f8f9fa;
+  color: #495057;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.quran-surah-arabic {
+  font-family: 'Traditional Arabic', 'Scheherazade New', serif;
+  font-size: 24px;
+  margin-bottom: 5px;
+  color: #333;
+  direction: rtl;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.quran-surah-english {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.quran-surah-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+  padding: 8px 0;
+  background: linear-gradient(to right, rgba(240, 240, 240, 0.5), rgba(255, 255, 255, 0.5));
+  border-radius: 4px;
+}
+
+.quran-surah-count {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.quran-surah-revelation {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}

@@ -1,0 +1,340 @@
+/* Tafsir Page Styles */
+
+.tafsir-page {
+  padding-top: 70px;
+  background-color: #fcfcfc;
+}
+
+/* Hero Section */
+.tafsir-hero {
+  display: flex;
+  align-items: center;
+  padding: 80px 50px;
+  background: linear-gradient(135deg, #fff8e1, #fffde7);
+  overflow: hidden;
+}
+
+.hero-content {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.tafsir-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #3c3c3c;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.tafsir-hero h1 span {
+  color: #8d6e63;
+}
+
+.tafsir-hero .lead {
+  font-size: 1.25rem;
+  color: #5d4037;
+  margin-bottom: 30px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  max-height: 450px;
+}
+
+.search-container {
+  position: relative;
+  max-width: 500px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 15px 20px;
+  padding-right: 50px;
+  border-radius: 50px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: #8d6e63;
+  box-shadow: 0 4px 15px rgba(141, 110, 99, 0.15);
+}
+
+.search-container button {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  height: calc(100% - 10px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  background-color: #8d6e63;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-container button:hover {
+  background-color: #6d4c41;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Scholars Section */
+.tafsir-scholars {
+  padding: 80px 0;
+}
+
+.tafsir-scholars h2,
+.tafsir-features h2,
+.popular-tafsirs h2 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #5d4037;
+}
+
+.section-description {
+  text-align: center;
+  color: #6d4c41;
+  font-size: 1.1rem;
+  margin-bottom: 50px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scholar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.scholar-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.scholar-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.scholar-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.scholar-card h3 {
+  font-size: 1.3rem;
+  padding: 20px 20px 10px;
+  color: #5d4037;
+}
+
+.scholar-card p {
+  padding: 0 20px 20px;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.scholar-card .btn {
+  margin: 0 20px 20px;
+}
+
+.featured {
+  border: 2px solid #8d6e63;
+}
+
+.featured-badge {
+  position: absolute;
+  top: 15px;
+  right: 0;
+  background: #8d6e63;
+  color: white;
+  padding: 5px 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #8d6e63;
+  color: #8d6e63;
+}
+
+.btn-outline:hover {
+  background-color: #8d6e63;
+  color: white;
+}
+
+/* Features Section */
+.tafsir-features {
+  padding: 80px 0;
+  background-color: #f5f5f5;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #efe5dc;
+  color: #8d6e63;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.feature-icon i {
+  font-size: 1.8rem;
+}
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #5d4037;
+}
+
+.feature-card p {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Popular Topics Section */
+.popular-tafsirs {
+  padding: 80px 0;
+}
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.topic-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  text-decoration: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  background-color: #fffbf5;
+}
+
+.topic-card h3 {
+  color: #5d4037;
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+.topic-card p {
+  color: #8d6e63;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .tafsir-hero {
+    flex-direction: column;
+    padding: 60px 30px;
+    text-align: center;
+  }
+
+  .hero-content {
+    padding-right: 0;
+    margin-bottom: 40px;
+  }
+
+  .search-container {
+    margin: 0 auto;
+  }
+
+  .tafsir-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .tafsir-hero .lead {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .scholar-grid,
+  .features-grid,
+  .topics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tafsir-scholars h2,
+  .tafsir-features h2,
+  .popular-tafsirs h2 {
+    font-size: 2rem;
+  }
+}

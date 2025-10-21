@@ -1,0 +1,63 @@
+/* Consolidated Surah Card Styles */
+
+/* Base card styles */
+.surah-card {
+  position: relative !important;
+  padding-bottom: 40px !important; /* Ensure enough space at bottom */
+  height: calc(100% + 2px) !important; /* Increase height by 2px as requested */
+  overflow: visible !important; /* Allow meta content to be visible outside the card */
+}
+
+/* Meta information styles */
+.surah-meta {
+  position: absolute !important;
+  bottom: 45px !important; /* Position above the read button */
+  left: 0 !important;
+  width: 100% !important;
+  text-align: center !important;
+  padding: 5px 0 !important;
+  font-size: 12px !important;
+  color: #666 !important;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9)) !important;
+  z-index: 10 !important; /* Ensure it's above other elements */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+/* Read button styles */
+.read-button-container {
+  position: absolute !important;
+  bottom: 10px !important; /* Position at the bottom of card */
+  left: 0 !important;
+  width: 100% !important;
+  text-align: center !important;
+  z-index: 5 !important; /* Below meta info */
+}
+
+.read-button {
+  padding: 5px 15px !important;
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  transition: all 0.2s ease !important;
+}
+
+.read-button:hover {
+  background-color: #218838 !important;
+  transform: scale(1.05) !important;
+}
+
+/* Additional fixes to ensure meta info is visible */
+.surah-card * {
+  overflow: visible !important; /* Ensure nested elements don't clip content */
+}
+
+/* Fix for cards with varying content heights */
+.surah-card .card-content {
+  margin-bottom: 50px !important; /* Space for meta info and button */
+}

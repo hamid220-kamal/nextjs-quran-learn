@@ -1,0 +1,373 @@
+/* AudioQuran.css - migrated from AudioSection.css for Next.js audio-quran page */
+
+/* AudioQuran.css - migrated for Next.js audio-quran page */
+
+/* AudioSection.css - white theme, left number, centered title, controls right */
+
+
+.navbar-top {
+	box-shadow: 0 2px 12px rgba(15,23,42,0.07);
+	position: relative;
+	z-index: 100;
+}
+.audio-section {
+	min-height: 100vh;
+	background: #ffffff;
+	padding: 0 1rem 6rem;
+	font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* header */
+.audio-header { text-align: center; margin-bottom: 1.8rem; }
+.main-title {
+	font-size: 2.75rem; font-weight: 800;
+	background: linear-gradient(90deg,#2b6cb0,#16a34a);
+	-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.subtitle { color: #6b7280; margin-top: .25rem; }
+
+/* controls card */
+.controls-card {
+	max-width: 1100px; margin: 0 auto 22px; padding: 18px; border-radius: 12px;
+	background: #f8fafc; border: 1px solid #e6eef6; box-shadow: 0 6px 20px rgba(15,23,42,0.03);
+}
+.controls-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media(min-width:768px){ .controls-grid{ grid-template-columns:1fr 1fr; gap: 22px; } }
+
+.control-label { font-weight: 600; color: #374151; margin-bottom: 8px; display:block; }
+.reciter-select, .search-input {
+	width:100%; padding: 12px 14px; border-radius: 10px; border: 2px solid #e5e7eb; background: white;
+}
+.select-arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #6b7280; }
+
+/* chapters */
+.chapters-container { max-width: 1100px; margin: 0 auto; padding-top: 6px; }
+
+/* surah row layout */
+.surah-card {
+	display: grid;
+	grid-template-columns: 60px 1fr 260px;
+	gap: 12px;
+	align-items: center;
+	padding: 14px;
+	border-radius: 12px;
+	border: 1px solid #e8f0f3;
+	background: #fff;
+	margin-bottom: 12px;
+	box-shadow: 0 6px 20px rgba(15,23,42,0.02);
+	transition: transform .12s, box-shadow .12s;
+}
+.surah-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(15,23,42,0.06); }
+.surah-card.active { border-color: #cfeef5; box-shadow: 0 14px 40px rgba(15,23,42,0.06); }
+
+.left-number {
+	width: 52px; height: 52px; border-radius: 10px; display:flex; align-items:center; justify-content:center;
+	background: linear-gradient(135deg,#2b6cb0,#16a34a); color:#fff; font-weight:800;
+	font-size:1rem;
+}
+
+.center-title { text-align:center; }
+.surah-name { font-size:1.05rem; font-weight:700; color:#0f172a; margin-bottom:6px; }
+.surah-translation { color:#6b7280; font-size:.95rem; margin:0; }
+
+.right-controls { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+
+/* mini now playing badge */
+.mini-nowplaying {
+	display:flex; align-items:center; gap:8px; margin-right:10px;
+	padding:6px 10px; border-radius:999px; background: linear-gradient(90deg,#e6f7ff,#eafff4); color:#0f172a; font-weight:600;
+}
+.mini-icon { font-size:16px; }
+.mini-times { display:flex; gap:6px; align-items:center; font-size:0.9rem; color:#0f172a; }
+
+/* action buttons */
+.action-buttons { display:flex; gap:8px; align-items:center; }
+.control-btn {
+	border:none; width:44px; height:44px; border-radius:10px; background:#f3f4f6; cursor:pointer; font-size:16px;
+	display:flex; align-items:center; justify-content:center; transition:transform .08s;
+}
+.control-btn:hover { transform:translateY(-2px); }
+.control-btn.stop { background:#fee2e2; color:#991b1b; }
+.control-btn.small { width:36px; height:36px; font-size:14px; }
+
+/* now playing sticky bar */
+.now-playing-bar { position: fixed; left:0; right:0; bottom:0; z-index:999; background: linear-gradient(90deg,#2b6cb0,#16a34a); color:#fff; padding:10px 14px; box-shadow:0 -8px 30px rgba(15,23,42,0.12); }
+.now-playing-content { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.track-info { display:flex; gap:12px; align-items:center; }
+.track-icon { font-size:20px; }
+.track-title { font-weight:700; }
+.track-times { opacity:0.95; font-size:0.95rem; }
+
+/* small stop button style */
+.stop-button { background: rgba(255,255,255,0.12); border:none; color:#fff; padding:8px 10px; border-radius:8px; cursor:pointer; }
+
+/* progress */
+.progress-row { margin-top:8px; }
+.progress-track { height:6px; background:rgba(255,255,255,0.16); border-radius:999px; overflow:hidden; }
+.progress-fill { height:100%; background:rgba(255,255,255,0.9); width:0%; transition:width .2s linear; }
+
+/* small error */
+.error-message { max-width:1100px; margin: 8px auto 12px; padding:10px; border-radius:8px; background:#fff7f7; border:1px solid #f5c6cb; color:#991b1b; }
+
+/* responsive */
+@media(max-width:900px) {
+	.surah-card { grid-template-columns: 48px 1fr 160px; }
+	.right-controls { gap:6px; }
+}
+@media(max-width:640px) {
+	.controls-grid { grid-template-columns: 1fr; }
+	.surah-card { grid-template-columns: 44px 1fr 140px; padding:10px; }
+	.main-title { font-size:1.8rem; }
+}
+
+/* reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+	* { transition: none !important; animation: none !important; }
+}
+.pagination-controls,
+.pagination-controls-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.pagination-btn {
+  background: #2b6cb0;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.pagination-btn:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-weight: 600;
+  color: #374151;
+}
+/* Spotify-style Sticky Bottom Player */
+.sticky-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #1a2a6c, #2a5298);
+  color: white;
+  padding: 12px 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sticky-player-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 20px;
+}
+
+.now-playing-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.now-playing-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.now-playing-details {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.ayah-info {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.progress-section {
+  flex: 2;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.time-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  justify-content: center;
+}
+
+.elapsed-time {
+  font-weight: 600;
+}
+
+.duration-time {
+  opacity: 0.8;
+}
+
+.remaining-time {
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: height 0.2s ease;
+}
+
+.progress-bar-container:hover {
+  height: 6px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-bar-container:hover .progress-bar::after {
+  opacity: 1;
+}
+
+.sticky-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.sticky-control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.sticky-control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.sticky-control-btn.play-pause {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 14px;
+  font-size: 1.3rem;
+}
+
+.sticky-control-btn.play-pause:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sticky-player-content {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .now-playing-info {
+    min-width: auto;
+  }
+
+  .progress-section {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .sticky-player-controls {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .time-display {
+    font-size: 0.75rem;
+  }
+
+  .now-playing-details {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sticky-player {
+    padding: 10px 15px;
+  }
+
+  .sticky-control-btn {
+    padding: 6px 10px;
+    font-size: 1rem;
+  }
+
+  .sticky-control-btn.play-pause {
+    padding: 8px 12px;
+    font-size: 1.1rem;
+  }
+
+  .time-display {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+/* Ensure main content doesn't get hidden behind sticky player */
+.audio-section {
+  padding-bottom: 80px;
+}
+
+@media (max-width: 768px) {
+  .audio-section {
+    padding-bottom: 120px;
+  }
+}

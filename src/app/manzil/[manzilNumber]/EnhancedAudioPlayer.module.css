@@ -1,0 +1,14 @@
+.playerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.playerFrame {
+  border: none;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+}

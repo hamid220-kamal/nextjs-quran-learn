@@ -1,0 +1,142 @@
+.ruku-ayah {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.5rem;
+  padding: 1.5rem 1.25rem;
+  background: #fff;
+  border-radius: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border: none;
+  transition: box-shadow 0.2s, background 0.2s;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ruku-ayah:last-child {
+  margin-bottom: 0;
+}
+.ruku-ayah.active {
+  background-color: #f0f9ff;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.10);
+}
+.ruku-left-column {
+  width: 80px;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+.ruku-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  background-color: #0ea57a;
+  color: white;
+  font-weight: 600;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.ruku-audio-btn {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.ruku-audio-btn svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.ruku-audio-btn:hover {
+  transform: scale(1.1);
+  background-color: #047857;
+}
+.ruku-audio-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ruku-audio-btn.playing {
+  background-color: #ef4444;
+}
+.ruku-audio-btn.playing:hover {
+  background-color: #dc2626;
+}
+.ruku-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  gap: 2rem;
+}
+.ruku-arabic {
+  font-family: 'Scheherazade New', 'Traditional Arabic', serif;
+  font-size: 1.5rem;
+  line-height: 2.2;
+  text-align: right;
+  /* ...existing styles... */
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: #1e293b;
+  margin-bottom: 0;
+  margin-top: 0;
+  flex: 1;
+  padding-right: 1rem;
+}
+.ruku-translation {
+  color: #475569;
+  line-height: 1.7;
+  text-align: left;
+  font-size: 1rem;
+  flex: 1;
+  border-top: none;
+  padding-top: 0;
+  padding-left: 1rem;
+}
+@media (max-width: 900px) {
+  .ruku-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ruku-arabic, .ruku-translation {
+    padding: 0;
+  }
+}
+@media (max-width: 768px) {
+  .ruku-ayah {
+    flex-direction: column;
+    padding: 1rem 0.5rem;
+  }
+  .ruku-left-column {
+    width: 60px;
+    min-width: 60px;
+  }
+  .ruku-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ruku-arabic {
+    font-size: 1.1rem;
+    line-height: 2.1;
+  }
+  .ruku-translation {
+    font-size: 0.95rem;
+  }
+}

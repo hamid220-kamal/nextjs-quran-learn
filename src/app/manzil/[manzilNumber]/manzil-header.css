@@ -1,0 +1,160 @@
+.manzil-header {
+  text-align: center;
+  background-color: #f0f9ff;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.manzil-title-container {
+  margin-bottom: 1.5rem;
+}
+
+.manzil-arabic-title {
+  font-family: 'Scheherazade New', 'Traditional Arabic', serif;
+  font-size: 2.5rem;
+  color: #0e9f6e;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.manzil-english-title {
+  font-size: 2rem;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.manzil-subtitle {
+  font-size: 1.25rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.manzil-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.manzil-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.auto-play-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #0ea57a;
+  color: white;
+}
+
+.auto-play-button:hover {
+  background-color: #0c8c66;
+}
+
+.auto-play-button.playing {
+  background-color: #ef4444;
+}
+
+.auto-play-button.playing:hover {
+  background-color: #dc2626;
+}
+
+.back-to-quran-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.back-to-quran-button:hover {
+  background-color: #2563eb;
+}
+
+.back-to-quran-button::before {
+  content: "←";
+  margin-right: 0.5rem;
+}
+
+.manzil-info {
+  font-size: 1rem;
+  color: #4b5563;
+  margin-top: 1.5rem;
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.manzil-description {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.manzil-english-description {
+  font-style: italic;
+  margin-bottom: 0.5rem;
+  color: #64748b;
+}
+
+@media (max-width: 640px) {
+  .manzil-stats {
+    gap: 1.5rem;
+  }
+  
+  .manzil-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .auto-play-button,
+  .back-to-quran-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

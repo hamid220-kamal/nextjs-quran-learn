@@ -1,0 +1,357 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { fetchJuz, EDITIONS } from '../../../utils/quranApi';
+import './JuzViewer.css';
+
+interface JuzViewerProps {
+  juzNumber: number;
+}
+
+export default function JuzViewer({ juzNumber }: JuzViewerProps) {
+  const [juz, setJuz] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Audio playback state
+  const [playingVerse, setPlayingVerse] = useState<string | null>(null);
+  const [loadingVerse, setLoadingVerse] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [autoPlaySurah, setAutoPlaySurah] = useState<number | null>(null);
+  const [currentAudioQueue, setCurrentAudioQueue] = useState<string[]>([]);
+  
+  // Audio refs
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const router = useRouter();
+
+  // Group verses by surah
+  const groupedBySurah = juz ? Object.values(
+    juz.ayahs.reduce((groups: any, ayah: any) => {
+      const surahNumber = ayah.surah.number;
+      
+      if (!groups[surahNumber]) {
+        groups[surahNumber] = {
+          surah: ayah.surah,
+          verses: []
+        };
+      }
+      
+      groups[surahNumber].verses.push(ayah);
+      return groups;
+    }, {})
+  ).sort((a: any, b: any) => a.surah.number - b.surah.number) : [];
+
+  // Load juz data
+  useEffect(() => {
+    const loadJuzData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch juz data with Arabic text and English translation
+        const juzResponse = await fetchJuz(juzNumber, [
+          EDITIONS.arabic,
+          EDITIONS.english
+        ]);
+        
+        setJuz(juzResponse);
+      } catch (err) {
+        setError('Failed to load Juz data. Please try again later.');
+        console.error('Error loading Juz data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadJuzData();
+  }, [juzNumber]);
+
+  // Audio playback
+  const playVerse = async (verseKey: string) => {
+    try {
+      if (playingVerse) {
+        stopPlaying();
+      }
+      
+      setLoadingVerse(verseKey);
+      const audioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verseKey.replace(':', '_')}.mp3`;
+      
+      if (audioElementRef.current) {
+        audioElementRef.current.src = audioUrl;
+        audioElementRef.current.oncanplay = () => {
+          setLoadingVerse(null);
+          setPlayingVerse(verseKey);
+          audioElementRef.current?.play();
+        };
+        
+        audioElementRef.current.onerror = () => {
+          setLoadingVerse(null);
+          setErrorMessage(`Unable to play audio for verse ${verseKey}. Please try again later.`);
+        };
+        
+        audioElementRef.current.onended = () => {
+          setPlayingVerse(null);
+          
+          // Handle auto-play queue
+          if (currentAudioQueue.length > 0) {
+            const nextVerseKey = currentAudioQueue[0];
+            const newQueue = currentAudioQueue.slice(1);
+            setCurrentAudioQueue(newQueue);
+            playVerse(nextVerseKey);
+          }
+        };
+      }
+    } catch (error) {
+      setLoadingVerse(null);
+      setErrorMessage('An error occurred while playing the audio. Please try again.');
+      console.error('Error playing verse audio:', error);
+    }
+  };
+
+  const stopPlaying = () => {
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.currentTime = 0;
+    }
+    
+    setPlayingVerse(null);
+    setAutoPlaySurah(null);
+    setCurrentAudioQueue([]);
+  };
+
+  const startAutoPlay = (surahNumber: number) => {
+    const surahGroup = groupedBySurah.find((group: any) => group.surah.number === surahNumber);
+    
+    if (surahGroup) {
+      const verseKeys = surahGroup.verses.map(
+        (verse: any) => `${verse.surah.number}:${verse.numberInSurah}`
+      );
+      
+      setAutoPlaySurah(surahNumber);
+      setCurrentAudioQueue(verseKeys.slice(1)); // Remove first verse as it will be played immediately
+      playVerse(verseKeys[0]); // Play first verse
+    }
+  };
+
+  // For previous and next juz navigation
+  const navigateToJuz = (juzNum: number) => {
+    if (juzNum >= 1 && juzNum <= 30) {
+      router.push(`/juz/${juzNum}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="juz-viewer loading">
+        <div className="loader"></div>
+        <p>Loading Juz {juzNumber}...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="juz-viewer error">
+        <h2>Error</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()} className="retry-btn">
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="juz-viewer">
+      {/* Back navigation */}
+      <div className="back-navigation">
+        <Link href="/juz" className="back-btn">
+          <span className="back-arrow">←</span> All Juz
+        </Link>
+      </div>
+      
+      {/* Juz Header with elegant styling */}
+      <div className="juz-header">
+        <div className="juz-title">
+          <h1>Juz {juzNumber}</h1>
+          <p>Part {juzNumber} of the Holy Quran</p>
+        </div>
+        
+        <div className="juz-info">
+          <div className="info-item">
+            <span className="info-label">Surah Count</span>
+            <span className="info-value">{groupedBySurah.length}</span>
+          </div>
+          
+          <div className="info-item">
+            <span className="info-label">Verse Count</span>
+            <span className="info-value">
+              {juz?.ayahs.length || 0}
+            </span>
+          </div>
+          
+          <div className="info-item">
+            <span className="info-label">Pages</span>
+            <span className="info-value">
+              {juz?.ayahs.length > 0 ? 
+                `${juz.ayahs[0].page} - ${juz.ayahs[juz.ayahs.length - 1].page}` : 
+                'N/A'}
+            </span>
+          </div>
+        </div>
+        
+        <div className="juz-actions">
+          <button 
+            className="action-btn prev-juz-btn"
+            onClick={() => navigateToJuz(juzNumber - 1)}
+            disabled={juzNumber <= 1}
+          >
+            Previous Juz
+          </button>
+          
+          <button 
+            className="action-btn next-juz-btn"
+            onClick={() => navigateToJuz(juzNumber + 1)}
+            disabled={juzNumber >= 30}
+          >
+            Next Juz
+          </button>
+        </div>
+      </div>
+      
+      {/* Surah sections within the Juz */}
+      <div className="surah-sections">
+        {groupedBySurah.map((group: any) => (
+          <div key={`surah-${group.surah.number}`} className="surah-section">
+            <div className="surah-section-header">
+              <div className="surah-name">
+                <h2 className="arabic-name">{group.surah.name}</h2>
+                <h3 className="english-name">{group.surah.englishName}</h3>
+                <p className="name-translation">{group.surah.englishNameTranslation}</p>
+              </div>
+              
+              <div className="surah-info">
+                <div className="info-item">
+                  <span className="info-label">Surah Number</span>
+                  <span className="info-value">{group.surah.number}</span>
+                </div>
+                
+                <div className="info-item">
+                  <span className="info-label">Revealed In</span>
+                  <span className="info-value">{group.surah.revelationType}</span>
+                </div>
+                
+                <div className="info-item">
+                  <span className="info-label">Verses in Juz</span>
+                  <span className="info-value">{group.verses.length}</span>
+                </div>
+              </div>
+              
+              <div className="surah-actions">
+                <Link href={`/surah/${group.surah.number}`} className="view-surah-btn">
+                  View Full Surah
+                </Link>
+                
+                {autoPlaySurah === group.surah.number ? (
+                  <button className="stop-play-btn" onClick={stopPlaying}>
+                    Stop Playing
+                  </button>
+                ) : (
+                  <button
+                    className="play-surah-btn"
+                    onClick={() => startAutoPlay(group.surah.number)}
+                  >
+                    Play Surah
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            {/* Verses with elegant styling */}
+            <div className="verses-container">
+              {group.verses.map((verse: any) => (
+                <div
+                  key={`verse-${verse.number}`}
+                  className={`verse-item ${
+                    playingVerse === `${verse.surah.number}:${verse.numberInSurah}` ? 'playing' : ''
+                  }`}
+                >
+                  <div className="verse-header">
+                    <span className="verse-number">
+                      {verse.numberInSurah}
+                    </span>
+                    <div className="verse-controls">
+                      {playingVerse === `${verse.surah.number}:${verse.numberInSurah}` ? (
+                        <button
+                          className="verse-audio-btn stop"
+                          onClick={stopPlaying}
+                          disabled={loadingVerse === `${verse.surah.number}:${verse.numberInSurah}`}
+                        >
+                          Stop
+                        </button>
+                      ) : (
+                        <button
+                          className="verse-audio-btn play"
+                          onClick={() => playVerse(`${verse.surah.number}:${verse.numberInSurah}`)}
+                          disabled={loadingVerse === `${verse.surah.number}:${verse.numberInSurah}`}
+                        >
+                          {loadingVerse === `${verse.surah.number}:${verse.numberInSurah}` ? (
+                            <span className="loading-spinner-small"></span>
+                          ) : (
+                            'Play'
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="verse-text arabic">{verse.text}</div>
+                  
+                  {verse.translations && verse.translations.length > 0 && (
+                    <div className="verse-translation">
+                      {verse.translations[0].text}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Pagination at the bottom */}
+      <div className="juz-navigation">
+        <button 
+          className="nav-btn prev-juz"
+          onClick={() => navigateToJuz(juzNumber - 1)}
+          disabled={juzNumber <= 1}
+        >
+          ← Previous Juz
+        </button>
+        
+        <span className="juz-indicator">Juz {juzNumber} of 30</span>
+        
+        <button 
+          className="nav-btn next-juz"
+          onClick={() => navigateToJuz(juzNumber + 1)}
+          disabled={juzNumber >= 30}
+        >
+          Next Juz →
+        </button>
+      </div>
+      
+      {/* Error message */}
+      {errorMessage && (
+        <div className="audio-error-message">
+          <p>{errorMessage}</p>
+          <button onClick={() => setErrorMessage(null)}>Dismiss</button>
+        </div>
+      )}
+      
+      {/* Audio element for playback */}
+      <audio ref={audioElementRef} style={{ display: 'none' }} />
+    </div>
+  );
+}

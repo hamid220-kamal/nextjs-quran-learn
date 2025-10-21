@@ -103,7 +103,7 @@ export default function QuranicLearnHome() {
   ];
 
   return (
-    <div className="quran-app">
+    <div className="quran-app no-overflow">
       {/* Navbar Component */}
       <Navbar />
 
@@ -115,7 +115,7 @@ export default function QuranicLearnHome() {
           <div className="floating-element floating-3"></div>
         </div>
 
-        <div className="hero-content">
+  <div className="hero-content container">
           <div className={`bismillah ${isVisible ? 'animate-in' : ''}`}>
             <div className="bismillah-box">
               <span className="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
@@ -136,7 +136,7 @@ export default function QuranicLearnHome() {
             </p>
           </div>
 
-          <div className={`hero-buttons ${isVisible ? 'animate-in delay-700' : ''}`}>
+          <div className={`hero-buttons ${isVisible ? 'animate-in delay-700' : ''} btn-group`}>
             <button className="btn-primary large">
               <span>📖 Start Learning</span>
             </button>
@@ -161,7 +161,7 @@ export default function QuranicLearnHome() {
       {/* Rest of your sections remain the same... */}
       {/* Daily Verse Section */}
       <section className="daily-verse">
-        <div className="section-content">
+        <div className="section-content container">
           <div style={{ textAlign: "center" }}>
             <h2 className="section-title">Daily Verse</h2>
             <p className="section-subtitle">Reflect upon the wisdom of the Quran</p>
@@ -198,7 +198,7 @@ export default function QuranicLearnHome() {
 
       {/* Features Section */}
       <section className="features">
-        <div className="section-content">
+        <div className="section-content container">
           <div className="section-header">
             <h2 className="section-title">Why Choose QuranicLearn?</h2>
             <p className="section-subtitle">
@@ -223,7 +223,7 @@ export default function QuranicLearnHome() {
 
       {/* Testimonials Section */}
       <section className="testimonials">
-        <div className="section-content">
+        <div className="section-content container">
           <div className="section-header">
             <h2 className="section-title">What Our Learners Say</h2>
             <p className="section-subtitle">Join thousands who have transformed their Quranic journey</p>
@@ -267,7 +267,7 @@ export default function QuranicLearnHome() {
 
       {/* Final CTA Section */}
       <section className="final-cta">
-        <div className="section-content">
+        <div className="section-content container">
           <h2 className="cta-title">Begin Your Sacred Journey</h2>
           <p className="cta-subtitle">
             Take the first step towards a deeper connection with the Holy Quran. 

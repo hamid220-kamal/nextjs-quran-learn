@@ -66,8 +66,21 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+    <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isMenuOpen ? 'menu-open' : ''}`}>
       <div className="navbar-container">
+        {/* Mobile Menu Toggle */}
+        <button 
+          className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-nav"
+        >
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+        </button>
+
         {/* Logo */}
         <div className="navbar-logo">
           <Link href="/" onClick={closeMenu}>
@@ -86,7 +99,25 @@ export default function Navbar() {
         </div>
         
         {/* Navigation Menu */}
-        <div className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
+        <div id="mobile-nav" className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
+          {/* Mobile menu header with logo and close button */}
+          <div className="menu-header">
+            <div className="menu-logo">
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/2787/2787958.png"
+                alt="Quran Learning Logo"
+                className="logo menu-logo-image"
+                width={34}
+                height={34}
+              />
+              <div className="logo-text">
+                <span className="logo-main">QuranicLearn</span>
+                <span className="logo-urdu">قرآنی سیکھیں</span>
+              </div>
+            </div>
+            <button className="menu-close" onClick={closeMenu} aria-label="Close menu">✕</button>
+          </div>
+
           <Link 
             href="/" 
             className={`nav-link ${isActive('/') ? 'active' : ''}`}
@@ -126,9 +157,10 @@ export default function Navbar() {
               onClick={toggleFeatures}
               aria-expanded={isFeaturesOpen}
             >
-              <i className="fas fa-chevron-down"></i> More Features
+              <i className="fas fa-th-large"></i>
+              More Features
+              <i className={`fas ${isFeaturesOpen ? 'fa-caret-up' : 'fa-caret-down'}`} style={{ marginLeft: 'auto' }} aria-hidden />
             </button>
-            
             <div className={`dropdown-menu ${isFeaturesOpen ? 'active' : ''}`}>
               <Link href="/hifz" className="dropdown-item" onClick={closeMenu}>
                 <i className="fas fa-book-open"></i> HIFZ
@@ -145,7 +177,7 @@ export default function Navbar() {
               <Link href="/community" className="dropdown-item" onClick={closeMenu}>
                 <i className="fas fa-users"></i> COMMUNITY
               </Link>
-              
+
               {/* Nested Audio Dropdown */}
               <div className="nav-dropdown nested" ref={audioRef}>
                 <button 
@@ -153,7 +185,9 @@ export default function Navbar() {
                   onClick={toggleAudio}
                   aria-expanded={isAudioOpen}
                 >
-                  <i className="fas fa-music"></i> Audio ▸
+                  <i className="fas fa-music"></i>
+                  Audio
+                  <i className={`fas ${isAudioOpen ? 'fa-caret-up' : 'fa-caret-right'}`} style={{ marginLeft: 'auto' }} aria-hidden />
                 </button>
                 <div className={`dropdown-menu nested ${isAudioOpen ? 'active' : ''}`}>
                   <Link href="/audio-quran" className="dropdown-item" onClick={closeMenu}>
@@ -166,10 +200,20 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+
+          {/* Auth Buttons - Mobile (Inside Menu) */}
+          <div className="navbar-auth-mobile-menu">
+            <Link href="/login" className="btn btn-login" onClick={closeMenu}>
+              <i className="fas fa-sign-in-alt"></i> Login
+            </Link>
+            <Link href="/signup" className="btn btn-signup" onClick={closeMenu}>
+              <i className="fas fa-user-plus"></i> Sign Up
+            </Link>
+          </div>
         </div>
         
         {/* Auth Buttons - Desktop */}
-        <div className="navbar-auth">
+        <div className="navbar-auth-desktop">
           <Link href="/login" className="btn btn-login">
             <i className="fas fa-sign-in-alt"></i> Login
           </Link>
@@ -177,24 +221,6 @@ export default function Navbar() {
             <i className="fas fa-user-plus"></i> Sign Up
           </Link>
         </div>
-
-        {/* Auth Buttons - Mobile */}
-        <div className="navbar-auth-mobile">
-          <Link href="/login" className="btn btn-login">Login</Link>
-          <Link href="/signup" className="btn btn-signup">Sign Up</Link>
-        </div>
-        
-        {/* Mobile Menu Toggle */}
-        <button 
-          className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-          aria-expanded={isMenuOpen}
-        >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </button>
       </div>
     </nav>
   );

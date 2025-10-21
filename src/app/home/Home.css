@@ -12,6 +12,8 @@ body {
   line-height: 1.6;
   color: #1f2937;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .arabic-text {
@@ -108,38 +110,40 @@ body {
 .hero-bg {
   position: absolute;
   inset: 0;
+  pointer-events: none; /* floating shapes should not block interactions */
 }
 
 .floating-element {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.2;
+  opacity: 0.18;
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .floating-1 {
-  top: 5rem;
-  left: 2.5rem;
-  width: 5rem;
-  height: 5rem;
+  top: 4rem;
+  left: 1.5rem;
+  width: 4rem;
+  height: 4rem;
   background: #10b981;
   animation-delay: 0s;
 }
 
 .floating-2 {
-  top: 10rem;
-  right: 5rem;
-  width: 4rem;
-  height: 4rem;
+  top: 8rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
   background: #3b82f6;
   animation-delay: 1s;
 }
 
 .floating-3 {
-  bottom: 10rem;
-  left: 5rem;
-  width: 6rem;
-  height: 6rem;
+  bottom: 8rem;
+  left: 2rem;
+  width: 5rem;
+  height: 5rem;
   background: #0d9488;
   animation-delay: 2s;
 }
@@ -151,6 +155,7 @@ body {
 
 .hero-content {
   max-width: 1200px;
+  width: 100%;
   text-align: center;
   position: relative;
   z-index: 10;
@@ -170,13 +175,13 @@ body {
 .bismillah-box {
   display: inline-flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
   border: 1px solid #10b981;
   border-radius: 2rem;
-  padding: 1rem 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
 .bismillah-box .arabic-text {
@@ -197,10 +202,10 @@ body {
 }
 
 .hero-title h1 {
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(2rem, 7.5vw, 5rem);
   font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
+  line-height: 1.05;
+  margin-bottom: 1rem;
 }
 
 .title-line {
@@ -229,11 +234,11 @@ body {
 }
 
 .hero-subtitle p {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #4b5563;
-  max-width: 800px;
-  margin: 0 auto 3rem;
-  line-height: 1.7;
+  max-width: 780px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
 }
 
 .hero-buttons {
@@ -244,7 +249,7 @@ body {
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
-  margin-bottom: 4rem;
+  margin-bottom: 2.5rem;
 }
 
 .hero-buttons.animate-in {
@@ -252,13 +257,24 @@ body {
   transform: translateY(0);
 }
 
+/* Button group utility to manage stacking on small screens */
+.btn-group {
+  display: inline-flex;
+  gap: 1rem;
+}
+.btn-group .btn-primary,
+.btn-group .btn-secondary,
+.btn-group .btn-outline {
+  min-width: 160px; /* accessible tap target */
+}
+
 .stats-grid {
   opacity: 0;
   transform: translateY(30px);
   transition: all 1s ease;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -337,8 +353,8 @@ body {
 .verse-card {
   background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
   border-radius: 1.5rem;
-  padding: 3rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 2.25rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
   border: 1px solid #10b981;
   position: relative;
   max-width: 800px;
@@ -351,19 +367,20 @@ body {
 
 .arabic-verse {
   font-family: 'Amiri', serif;
-  font-size: 2rem;
+  font-size: clamp(1.35rem, 3.5vw, 2.2rem);
   color: #1f2937;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   line-height: 1.8;
   direction: rtl;
 }
 
 .verse-translation {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #374151;
   font-style: italic;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   line-height: 1.6;
+  max-width: 100%;
 }
 
 .verse-reference {
@@ -402,18 +419,18 @@ body {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
 }
 
 .feature-card {
   background: white;
   border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
   text-align: center;
   border: 1px solid #f3f4f6;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
 }
@@ -469,9 +486,9 @@ body {
 
 .testimonial-card {
   background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  border-radius: 1.5rem;
-  padding: 3rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
   text-align: center;
   border: 1px solid #3b82f6;
 }
@@ -526,17 +543,17 @@ body {
 }
 
 .cta-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .cta-subtitle {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.95;
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -565,13 +582,13 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .hero-title h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
   
   .hero-subtitle p {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
   
   .hero-buttons {
@@ -589,15 +606,15 @@ body {
   }
   
   .section-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
   
   .arabic-verse {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .verse-translation {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
   
   .features-grid {
@@ -605,15 +622,15 @@ body {
   }
   
   .feature-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
   
   .testimonial-card {
-    padding: 2rem;
+    padding: 1.25rem;
   }
   
   .cta-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
   
   .cta-buttons {
@@ -629,30 +646,60 @@ body {
 
 @media (max-width: 480px) {
   .hero {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .btn-group .btn-primary,
+  .btn-group .btn-secondary,
+  .btn-group .btn-outline {
+    width: 100%;
+    min-width: 0;
   }
   
   .section-content {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
   
   .verse-card,
   .testimonial-card {
-    padding: 1.5rem;
+    padding: 1rem;
   }
   
   .stats-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
   .bismillah-box {
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1rem;
   }
   
   .bismillah-box .arabic-text {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
+  .floating-element { display: none; }
+}
+
+/* Utility container class used by layout */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Prevent horizontal overflow for long text or large elements */
+.no-overflow {
+  overflow-x: hidden;
 }
 
 /* Animation Classes */

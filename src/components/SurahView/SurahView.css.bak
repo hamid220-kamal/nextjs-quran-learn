@@ -1,0 +1,370 @@
+.surah-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.surah-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.back-button {
+  background: #ff3b5c;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #ff2d4d;
+}
+
+.bookmark-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.bookmark-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bookmark-icon {
+  font-size: 1.2rem;
+}
+
+.surah-view-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1rem 0;
+  height: 100vh;
+  position: relative;
+}
+
+.quran-icon-circle {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+  backdrop-filter: blur(10px);
+}
+
+.quran-icon {
+  font-size: 2.5rem;
+}
+
+.surah-title {
+  margin: 1rem 0 3rem;
+  min-height: 7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.typing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.main-text {
+  position: relative;
+  display: inline-block;
+}
+
+.main-text::after {
+  content: '';
+  width: 3px;
+  height: 80%;
+  background: white;
+  position: absolute;
+  right: -15px;
+  top: 10%;
+  animation: blink 1s infinite;
+}
+
+.arabic-text {
+  font-family: 'Traditional Arabic', Arial, sans-serif;
+  direction: rtl;
+  font-size: 5rem;
+  font-weight: bold;
+}
+
+.english-text {
+  font-family: 'Arial', sans-serif;
+  font-size: 4.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.meaning-text {
+  font-family: 'Arial', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.meaning-hint {
+  font-size: 1rem;
+  opacity: 0.7;
+  font-style: italic;
+  animation: fadeInOut 2s infinite;
+}
+
+.actions-layout {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+.main-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.feature-button {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  padding: 1.2rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.feature-button:hover {
+  background: rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+}
+
+.action-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.intro-button {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  color: white;
+  padding: 1.2rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.intro-button:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.intro-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.content-area {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.surah-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.action-button {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  padding: 1.2rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  width: 140px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover {
+  background: rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-icon {
+  font-size: 1.75rem;
+}
+
+.action-text {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.play-audio-button {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  width: 280px;
+  padding: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.play-audio-button:hover {
+  background: rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.audio-icon {
+  font-size: 1.3rem;
+}
+
+.bottom-section {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.introduction-button {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  width: 100%;
+  max-width: 280px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.introduction-button:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.chevron-icon {
+  font-size: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.introduction-button span:nth-child(2) {
+  flex: 1;
+  text-align: left;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.info-circle {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}

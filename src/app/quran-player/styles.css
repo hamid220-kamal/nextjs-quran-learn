@@ -29,24 +29,73 @@
   padding: 2rem;
 }
 
-.surahs-container {
-  width: 100%;
+.surah-section {
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
 }
 
-.player-section {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.surah-section:last-child {
+  border-bottom: none;
 }
 
-.no-selection {
-  text-align: center;
-  color: #666;
-  font-size: 1.1rem;
-  padding: 2rem;
+.slider-container {
+  position: relative;
+  padding: 0 50px;
+  margin: 1rem 0;
 }
+
+.surahs-slider {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  -ms-overflow-style: none;  /* Hide scrollbar IE and Edge */
+  scrollbar-width: none;  /* Hide scrollbar Firefox */
+}
+
+.surahs-slider::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome, Safari, Opera */
+}
+
+.slider-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: #004D40;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.slider-button:hover {
+  background: #00796B;
+}
+
+.slider-button.prev {
+  left: 0;
+}
+
+.slider-button.next {
+  right: 0;
+}
+
+.surah-card {
+  flex: 0 0 300px;
+  height: 200px;
+}
+
+
 
 .surah-section-title {
   font-size: 1.5rem;
@@ -69,11 +118,13 @@
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  background-size: cover;
-  background-position: center;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
   color: white;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
 }
 
 .surah-card:hover {

@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import QuranPlayer from '@/components/QuranPlayer';
+import SurahView from '@/components/SurahView/SurahView';
 import './styles.css';
-
-// Import global styles if needed
-import '@/app/globals.css';
 
 interface Surah {
   number: number;
@@ -19,10 +16,8 @@ interface Surah {
 export default function QuranPlayerPage() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
-  const [playlist, setPlaylist] = useState<any[]>([]);
   const [isLoadingSurahs, setIsLoadingSurahs] = useState(true);
 
-  // Fetch Surahs
   useEffect(() => {
     fetch('https://api.alquran.cloud/v1/surah')
       .then(response => response.json())
@@ -38,22 +33,61 @@ export default function QuranPlayerPage() {
 
   const handleSurahSelect = (surah: Surah) => {
     setSelectedSurah(surah);
-    updatePlaylist(surah);
   };
 
-  const updatePlaylist = (surah: Surah) => {
-    // Using a default reciter - Mishary Rashid Alafasy
-    const audioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${surah.number}.mp3`;
-    setPlaylist([
-      {
-        url: audioUrl,
-        title: `${surah.englishName} (${surah.name})`,
-        surah: surah.number,
-        ayah: 1,
-        duration: null, // Duration will be set when audio loads
-      }
-    ]);
+  const getBackgroundImage = (surahNumber: number) => {
+    // Using a set of 14 images that repeat for all Surahs
+    const imageNumber = ((surahNumber - 1) % 14) + 1; // This will cycle from 1 to 14
+    return `/images/surah-backgrounds/${imageNumber}.jpg`;
   };
+
+  const renderSurahSection = (start: number, end: number, sliderId: string) => (
+    <div className="surah-section">
+      <h3 className="surah-section-title">Quran Surahs {start + 1} - {end}</h3>
+      <div className="slider-container">
+        <button 
+          className="slider-button prev"
+          onClick={() => {
+            const slider = document.getElementById(sliderId);
+            if (slider) slider.scrollLeft -= 300;
+          }}
+          aria-label="Previous Surahs"
+        >
+          ❮
+        </button>
+        <div className="surahs-slider" id={sliderId}>
+          {surahs.slice(start, end).map((surah) => (
+            <div
+              key={surah.number}
+              className={`surah-card ${selectedSurah?.number === surah.number ? 'selected' : ''}`}
+              onClick={() => handleSurahSelect(surah)}
+              style={{
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${getBackgroundImage(surah.number)})`
+              }}
+            >
+              <div className="surah-card-content">
+                <div className="surah-number-badge">{surah.number}</div>
+                <h3 className="surah-name-arabic">{surah.name}</h3>
+                <h4 className="surah-name-english">{surah.englishName}</h4>
+                <p className="surah-translation">{surah.englishNameTranslation}</p>
+                <span className="surah-ayahs">{surah.numberOfAyahs} Verses</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button 
+          className="slider-button next"
+          onClick={() => {
+            const slider = document.getElementById(sliderId);
+            if (slider) slider.scrollLeft += 300;
+          }}
+          aria-label="Next Surahs"
+        >
+          ❯
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="quran-player-page">
@@ -68,66 +102,24 @@ export default function QuranPlayerPage() {
             <div className="loading">Loading surahs...</div>
           ) : (
             <>
-              <h3 className="surah-section-title">Quran Surahs 1 - 19</h3>
-              <div className="surahs-grid">
-                {surahs.slice(0, 19).map(surah => (
-                  <div
-                    key={surah.number}
-                    className={`surah-card ${selectedSurah?.number === surah.number ? 'selected' : ''}`}
-                    onClick={() => handleSurahSelect(surah)}
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/images/surah-backgrounds/${surah.number}.jpg)`
-                    }}
-                  >
-                    <div className="surah-card-content">
-                      <div className="surah-number-badge">{surah.number}</div>
-                      <h3 className="surah-name-arabic">{surah.name}</h3>
-                      <h4 className="surah-name-english">{surah.englishName}</h4>
-                      <p className="surah-translation">{surah.englishNameTranslation}</p>
-                      <span className="surah-ayahs">{surah.numberOfAyahs} Verses</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <h3 className="surah-section-title">Quran Surahs 20 - 38</h3>
-              <div className="surahs-grid">
-                {surahs.slice(19, 38).map(surah => (
-                  <div
-                    key={surah.number}
-                    className={`surah-card ${selectedSurah?.number === surah.number ? 'selected' : ''}`}
-                    onClick={() => handleSurahSelect(surah)}
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/images/surah-backgrounds/${surah.number}.jpg)`
-                    }}
-                  >
-                    <div className="surah-card-content">
-                      <div className="surah-number-badge">{surah.number}</div>
-                      <h3 className="surah-name-arabic">{surah.name}</h3>
-                      <h4 className="surah-name-english">{surah.englishName}</h4>
-                      <p className="surah-translation">{surah.englishNameTranslation}</p>
-                      <span className="surah-ayahs">{surah.numberOfAyahs} Verses</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {renderSurahSection(0, 19, 'slider-1')}
+              {renderSurahSection(19, 38, 'slider-2')}
+              {renderSurahSection(38, 57, 'slider-3')}
+              {renderSurahSection(57, 76, 'slider-4')}
+              {renderSurahSection(76, 95, 'slider-5')}
+              {renderSurahSection(95, 114, 'slider-6')}
             </>
           )}
         </div>
-
-        <div className="player-section">
-          {playlist.length > 0 ? (
-            <QuranPlayer 
-              playlist={playlist}
-              className="quran-player-main"
-            />
-          ) : (
-            <div className="no-selection">
-              Please select a Surah to play
-            </div>
-          )}
-        </div>
       </div>
+
+      {selectedSurah && (
+        <SurahView
+          surah={selectedSurah}
+          onBack={() => setSelectedSurah(null)}
+          backgroundImage={getBackgroundImage(selectedSurah.number)}
+        />
+      )}
     </div>
   );
 }

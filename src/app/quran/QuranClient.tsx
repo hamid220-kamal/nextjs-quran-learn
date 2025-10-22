@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Surah } from '../../../types/quran';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AnimatedBackground from './components/AnimatedBackground';
 import SurahCard from './components/SurahCard';
 import SearchBar from './components/SearchBar';
@@ -12,6 +14,7 @@ import './components/TabQuranNavigator.css';
 import './QuranClientExtras.css';
 
 export default function QuranClient() {
+  const router = useRouter();
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [filteredSurahs, setFilteredSurahs] = useState<Surah[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -73,37 +76,36 @@ export default function QuranClient() {
   
   // Handle read button click
   const handleRead = useCallback((surahNumber: number) => {
-    // For Next.js navigation we would use router.push here
-    window.open(`/surah/${surahNumber}`, '_self');
-  }, []);
+    router.push(`/surah/${surahNumber}`);
+  }, [router]);
   
   // Handle play button click
   const handlePlay = useCallback((surahNumber: number) => {
     // Logic to play surah audio would go here
     console.log(`Playing Surah ${surahNumber}`);
-    // In a complete implementation, you would trigger audio playback here
-  }, []);
+    router.push(`/quran-player?surah=${surahNumber}`);
+  }, [router]);
   
   // Navigation handlers
   const handleSelectSurah = useCallback((surahNumber: number) => {
-    window.open(`/surah/${surahNumber}`, '_self');
-  }, []);
+    router.push(`/surah/${surahNumber}`);
+  }, [router]);
   
   const handleSelectJuz = useCallback((juzNumber: number) => {
-    window.open(`/juz/${juzNumber}`, '_self');
-  }, []);
+    router.push(`/juz/${juzNumber}`);
+  }, [router]);
   
   const handleSelectManzil = useCallback((manzilNumber: number) => {
-    window.open(`/manzil/${manzilNumber}`, '_self');
-  }, []);
+    router.push(`/manzil/${manzilNumber}`);
+  }, [router]);
   
   const handleSelectHizb = useCallback((hizbNumber: number) => {
-    window.open(`/hizb/${hizbNumber}`, '_self');
-  }, []);
+    router.push(`/hizb/${hizbNumber}`);
+  }, [router]);
   
   const handleSelectPage = useCallback((pageNumber: number) => {
-    window.open(`/page/${pageNumber}`, '_self');
-  }, []);
+    router.push(`/page/${pageNumber}`);
+  }, [router]);
   
   // Toggle between card view and tab navigator view
   const toggleView = useCallback(() => {

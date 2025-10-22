@@ -303,7 +303,7 @@ export default function QuranBrowser({ initialData }: QuranBrowserProps) {
       <AnimatedBackground />
       
       {/* Quran Header */}
-      <header className="quran-header">
+      <header className="quran-header" style={{ paddingTop: '80px', paddingBottom: '30px', paddingLeft: '20px', paddingRight: '20px', marginTop: '20px' }}>
         <h1 className="urdu-heading">پیغامِ قرآن</h1>
         <p className="urdu-subtitle">خوش آمدید! آئیے، ہدایت کے اس سفر کا آغاز کریں۔</p>
         <p className="english-subtitle">(Welcome! Let's begin this journey of divine guidance.)</p>

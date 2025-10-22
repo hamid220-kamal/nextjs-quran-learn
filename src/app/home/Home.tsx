@@ -115,8 +115,8 @@ export default function QuranicLearnHome() {
           <div className="floating-element floating-3"></div>
         </div>
 
-  <div className="hero-content container">
-          <div className={`bismillah ${isVisible ? 'animate-in' : ''}`}>
+  <div className="hero-content container" style={{ paddingTop: '100px', paddingBottom: '40px', paddingLeft: '20px', paddingRight: '20px' }}>
+          <div className={`bismillah ${isVisible ? 'animate-in' : ''}`} style={{ marginBottom: '30px' }}>
             <div className="bismillah-box">
               <span className="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
             </div>

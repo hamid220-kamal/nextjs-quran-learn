@@ -279,6 +279,14 @@ export default function AudioQuranPage() {
           className="audio-header"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          style={{ 
+            paddingTop: '100px',
+            paddingBottom: '30px',
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            marginTop: '20px',
+            textAlign: 'center'
+          }}
         >
           <h1 className="main-title">Quran Audio</h1>
           <p className="subtitle">

@@ -94,8 +94,18 @@ export default function QuranPlayerPage() {
   return (
     <>
       <Navbar />
-      <div className="quran-player-page">
-        <div className="page-header">
+      <div className="quran-player-page" style={{ paddingTop: '80px' }}>
+        <div className="page-header" style={{ 
+          padding: '40px 20px',
+          marginTop: '20px', 
+          textAlign: 'center',
+          backgroundColor: '#00573F',
+          color: 'white',
+          borderRadius: '8px',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+        }}>
           <h1 className="page-title">Quran Player</h1>
           <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
         </div>

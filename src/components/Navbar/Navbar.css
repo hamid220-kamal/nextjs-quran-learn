@@ -2,9 +2,12 @@
 .navbar {
   background: linear-gradient(135deg, #1a2a6c, #2a5298);
   padding: 0.6rem 0; /* reduced height */
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 1000;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9999;
   transition: all 0.3s ease;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
@@ -21,6 +24,12 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
+}
+
+/* Add padding to account for fixed navbar */
+main {
+  padding-top: 4rem; /* Adjust this value based on your navbar height */
+  min-height: calc(100vh - 4rem);
 }
 
 /* Logo Styles */
@@ -245,6 +254,24 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
+}
+
+/* Z-index layers */
+.navbar {
+  z-index: 9999;
+}
+
+.navbar-menu {
+  z-index: 10000;
+}
+
+.dropdown-menu {
+  z-index: 10001;
+}
+
+.content-layer {
+  position: relative;
+  z-index: 1;
 }
 
 /* Mobile Menu Toggle */

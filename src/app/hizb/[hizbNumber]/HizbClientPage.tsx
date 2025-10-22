@@ -140,14 +140,15 @@ export default function HizbClientPage({ hizbId, ayahs, error }: { hizbId: numbe
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Head>
         <title>Learn Quran — Hizb {hizbId}</title>
         <meta name="description" content={`Read and listen to Hizb ${hizbId} with translation.`} />
       </Head>
-      <div className="max-w-4xl mx-auto p-4">
-        <Navbar />
-        <div className="flex items-center justify-between mb-4">
+      <Navbar />
+      <main className="flex-1 pt-16"> {/* Add padding-top to prevent navbar overlap */}
+        <div className="max-w-4xl mx-auto p-4">
+          <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold">Hizb {hizbId}</h1>
             <p className="text-sm text-gray-600">Arabic text, translation and verse-by-verse audio</p>

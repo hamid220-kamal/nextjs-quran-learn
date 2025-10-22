@@ -52,20 +52,46 @@ export default function SurahIntroduction({ surahData, isOpen, onClose }: SurahI
             <p>Revelation type: {surahData.revelationType}</p>
           </div>
 
-          {surahData.introduction.map((paragraph, index) => (
-            <p key={index} className="intro-paragraph">
-              {paragraph}
-            </p>
-          ))}
+          <div className="meta-info">
+            <div className="meta-item">
+              <span className="meta-label">Number of verses:</span>
+              <span className="meta-value">{surahData.meta.verses}</span>
+            </div>
+            <div className="meta-item">
+              <span className="meta-label">Revelation type:</span>
+              <span className="meta-value">{surahData.meta.type}</span>
+            </div>
+          </div>
 
-          {surahData.virtues && surahData.virtues.length > 0 && (
-            <div className="virtues-section">
-              <h4>Virtues of this Surah:</h4>
-              {surahData.virtues.map((virtue, index) => (
-                <p key={`virtue-${index}`}>{virtue}</p>
+          <div className="intro-sections">
+            <div className="intro-section">
+              <h3>Overview</h3>
+              <p>{surahData.overview}</p>
+            </div>
+
+            <div className="intro-section">
+              <h3>{surahData.historicalContext.title}</h3>
+              {surahData.historicalContext.content.map((text, index) => (
+                <p key={index}>{text}</p>
               ))}
             </div>
-          )}
+
+            <div className="intro-section">
+              <h3>{surahData.significance.title}</h3>
+              {surahData.significance.content.map((text, index) => (
+                <p key={index}>{text}</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="virtues-section">
+            <h3>Virtues of this Surah:</h3>
+            <ul>
+              {surahData.virtues.map((virtue, index) => (
+                <li key={index}>{virtue}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

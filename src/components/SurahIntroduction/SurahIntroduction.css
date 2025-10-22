@@ -74,6 +74,48 @@
   font-size: 16px;
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.intro-sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin: 20px 0;
+}
+
+.intro-section {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.intro-section h3 {
+  margin: 0 0 15px 0;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.intro-section p {
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .intro-sections {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .intro-sections {
+    grid-template-columns: 1fr;
+  }
 }
 
 .surah-meta {
@@ -112,34 +154,49 @@
 }
 
 .virtues-section {
-  margin-top: 35px;
-  padding-top: 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 10px;
 }
 
-.virtues-section h4 {
-  margin-bottom: 20px;
-  font-size: 24px;
+.virtues-section h3 {
+  margin: 0 0 20px 0;
   color: #fff;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
-.virtues-section p {
-  margin-bottom: 20px;
+.virtues-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.virtues-section li {
   color: rgba(255, 255, 255, 0.9);
   padding-left: 25px;
   position: relative;
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
-.virtues-section p::before {
+.virtues-section li::before {
   content: "•";
   position: absolute;
   left: 0;
   color: rgba(255, 255, 255, 0.6);
   font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .virtues-section ul {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Custom Scrollbar */

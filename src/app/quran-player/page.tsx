@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import SurahView from '@/components/SurahView/SurahView';
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar/Navbar';
 import './styles.css';
 
 interface Surah {
@@ -90,36 +92,40 @@ export default function QuranPlayerPage() {
   );
 
   return (
-    <div className="quran-player-page">
-      <div className="page-header">
-        <h1 className="page-title">Quran Player</h1>
-        <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
-      </div>
-
-      <div className="main-content">
-        <div className="surahs-container">
-          {isLoadingSurahs ? (
-            <div className="loading">Loading surahs...</div>
-          ) : (
-            <>
-              {renderSurahSection(0, 19, 'slider-1')}
-              {renderSurahSection(19, 38, 'slider-2')}
-              {renderSurahSection(38, 57, 'slider-3')}
-              {renderSurahSection(57, 76, 'slider-4')}
-              {renderSurahSection(76, 95, 'slider-5')}
-              {renderSurahSection(95, 114, 'slider-6')}
-            </>
-          )}
+    <>
+      <Navbar />
+      <div className="quran-player-page">
+        <div className="page-header">
+          <h1 className="page-title">Quran Player</h1>
+          <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
         </div>
-      </div>
 
-      {selectedSurah && (
-        <SurahView
-          surah={selectedSurah}
-          onBack={() => setSelectedSurah(null)}
-          backgroundImage={getBackgroundImage(selectedSurah.number)}
-        />
-      )}
-    </div>
+        <div className="main-content">
+          <div className="surahs-container">
+            {isLoadingSurahs ? (
+              <div className="loading">Loading surahs...</div>
+            ) : (
+              <>
+                {renderSurahSection(0, 19, 'slider-1')}
+                {renderSurahSection(19, 38, 'slider-2')}
+                {renderSurahSection(38, 57, 'slider-3')}
+                {renderSurahSection(57, 76, 'slider-4')}
+                {renderSurahSection(76, 95, 'slider-5')}
+                {renderSurahSection(95, 114, 'slider-6')}
+              </>
+            )}
+          </div>
+        </div>
+
+        {selectedSurah && (
+          <SurahView
+            surah={selectedSurah}
+            onBack={() => setSelectedSurah(null)}
+            backgroundImage={getBackgroundImage(selectedSurah.number)}
+          />
+        )}
+      </div>
+      <Footer />
+    </>
   );
 }

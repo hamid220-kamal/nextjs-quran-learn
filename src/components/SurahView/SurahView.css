@@ -1,4 +1,9 @@
 .surah-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   min-height: 100vh;
   padding: 2rem;
   background-size: cover;
@@ -6,6 +11,8 @@
   color: white;
   display: flex;
   flex-direction: column;
+  z-index: 1000;
+  overflow-y: auto;
 }
 
 .surah-view-header {

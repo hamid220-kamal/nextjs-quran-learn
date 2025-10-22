@@ -47,19 +47,14 @@ export default function SurahIntroduction({ surahData, isOpen, onClose }: SurahI
         </div>
         
         <div className="intro-content">
-          <div className="surah-meta">
-            <p>Number of verses: {surahData.numberOfAyahs}</p>
-            <p>Revelation type: {surahData.revelationType}</p>
-          </div>
-
           <div className="meta-info">
             <div className="meta-item">
               <span className="meta-label">Number of verses:</span>
-              <span className="meta-value">{surahData.meta.verses}</span>
+              <span className="meta-value">{surahData.numberOfAyahs}</span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Revelation type:</span>
-              <span className="meta-value">{surahData.meta.type}</span>
+              <span className="meta-value">{surahData.revelationType}</span>
             </div>
           </div>
 

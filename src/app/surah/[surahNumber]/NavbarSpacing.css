@@ -1,0 +1,10 @@
+.surah-viewer-container {
+  margin-top: 80px; /* Add space below navbar */
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .surah-viewer-container {
+    margin-top: 64px; /* Slightly less margin on mobile */
+  }
+}

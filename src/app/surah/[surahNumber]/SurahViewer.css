@@ -54,7 +54,7 @@
 
 .surah-viewer {
   max-width: 1000px;
-  margin: 2rem auto;
+  margin: 0 auto 2rem;
   padding: 2.5rem;
   background: white;
   border-radius: 1.5rem;
@@ -532,6 +532,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .surah-viewer {
+    margin-top: 64px; /* Reduced top margin for mobile */
     padding: var(--spacing-md);
   }
   

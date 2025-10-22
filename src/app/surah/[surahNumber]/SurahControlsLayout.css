@@ -1,0 +1,111 @@
+.surah-page-container {
+  /* Add space below navbar */
+  margin-top: 80px; /* Increased margin to ensure visibility */
+  padding-top: 0;
+  min-height: calc(100vh - 80px);
+  position: relative;
+  z-index: 1;
+  background: white;
+}
+
+/* Controls container that appears below navbar */
+.surah-controls {
+  position: fixed;
+  top: 65px; /* Position just below navbar */
+  left: 0;
+  right: 0;
+  z-index: 9998; /* Just below navbar z-index */
+  background: white;
+  padding: 1rem 2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  max-width: 100%;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Back to Surah button */
+.back-to-surah {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-to-surah:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+/* Bookmark button */
+.bookmark-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bookmark-button:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+/* Bookmarked state */
+.bookmark-button.bookmarked {
+  background: #ebf5ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+/* Main content area */
+.surah-content {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .surah-page-container {
+    margin-top: 65px; /* Match the top position of controls */
+  }
+  
+  .surah-controls {
+    top: 55px; /* Adjust for smaller mobile navbar */
+    padding: 0.75rem;
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .back-to-surah,
+  .bookmark-button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}

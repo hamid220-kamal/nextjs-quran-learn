@@ -1,0 +1,55 @@
+.player-controls-container {
+  margin-top: 80px; /* Add spacing below navbar */
+  padding: 1rem;
+  position: relative;
+  z-index: 100;
+}
+
+.player-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.back-to-surah,
+.bookmark-control {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.back-to-surah:hover,
+.bookmark-control:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+/* Ensure controls are always visible */
+.player-controls-sticky {
+  position: sticky;
+  top: 80px; /* Match the margin-top */
+  background: white;
+  z-index: 1000;
+  padding: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .player-controls-container {
+    margin-top: 64px; /* Slightly less margin on mobile */
+  }
+  
+  .player-controls-sticky {
+    top: 64px;
+  }
+}

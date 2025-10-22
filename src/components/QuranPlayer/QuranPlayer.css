@@ -1,0 +1,143 @@
+.quran-player {
+  margin-top: 80px; /* Space below navbar */
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.qp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.qp-track-info {
+  flex: 1;
+}
+
+.qp-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.qp-sub {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.qp-times {
+  font-size: 0.9rem;
+  color: #666;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.qp-progress {
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  margin: 1rem 0;
+}
+
+.qp-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #4a90e2;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.qp-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.qp-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.qp-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.qp-btn.play {
+  font-size: 2rem;
+}
+
+/* Navigation controls */
+.navigation-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.back-to-surah,
+.bookmark-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-to-surah:hover,
+.bookmark-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quran-player {
+    margin-top: 64px;
+    padding: 0.75rem;
+  }
+  
+  .qp-title {
+    font-size: 1rem;
+  }
+  
+  .qp-controls {
+    gap: 0.5rem;
+  }
+  
+  .qp-btn {
+    font-size: 1.25rem;
+  }
+  
+  .qp-btn.play {
+    font-size: 1.75rem;
+  }
+}

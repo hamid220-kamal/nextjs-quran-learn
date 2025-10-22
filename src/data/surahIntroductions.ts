@@ -1423,6 +1423,706 @@ const surahIntroductions: Record<number, SurahIntroduction> = {
       "Known for its emphasis on Allah's forgiveness and mercy."
     ],
     context: "This Surah provides hope through stories of secret believers in hostile environments."
+  },
+    41: {
+    number: 41,
+    name: "فصلت",
+    englishName: "Fussilat",
+    revelationType: "Makki",
+    numberOfAyahs: 54,
+    meta: {
+      number: 41,
+      verses: 54,
+      type: "Makki"
+    },
+    overview: "Surah Fussilat, also known as 'Ha-Meem As-Sajdah', emphasizes the detailed revelation of the Quran and contains a mandatory prostration verse.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'Explained in Detail' referring to the Quran's clear guidance.",
+        "Addresses the Meccans' rejection of the Quran and their demand for miracles."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Contains a mandatory prostration in verse 38.",
+        "Emphasizes that the Quran is a detailed explanation of all things.",
+        "Describes the gradual revelation of the Quran as a mercy to humanity."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Fussilat will get the reward of ten good deeds for every letter revealed in it' (Al-Durr al-Manthur).",
+      "Contains a mandatory prostration that demonstrates submission to Allah.",
+      "Known for its beautiful description of the Quran's guidance."
+    ],
+    context: "This Surah emphasizes the Quran as detailed guidance for humanity."
+  },
+  42: {
+    number: 42,
+    name: "الشورى",
+    englishName: "Ash-Shura",
+    revelationType: "Makki",
+    numberOfAyahs: 53,
+    meta: {
+      number: 42,
+      verses: 53,
+      type: "Makki"
+    },
+    overview: "Surah Ash-Shura emphasizes consultation in Muslim affairs and establishes principles of divine guidance and decision-making.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the late Meccan period.",
+        "Named 'The Consultation' after the principle established in verse 38.",
+        "Addresses the unity of divine message through different prophets."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Establishes the principle of consultation (shura) in Muslim affairs.",
+        "Emphasizes that all prophets brought the same essential message.",
+        "Contains the beautiful names of Allah in the opening verses."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Ash-Shura will be among those angels who glorify Allah until the Day of Judgment' (Al-Durr al-Manthur).",
+      "Establishes the important Islamic principle of consultation.",
+      "Known for its emphasis on unity among believers."
+    ],
+    context: "This Surah establishes consultation as a fundamental Islamic principle."
+  },
+  43: {
+    number: 43,
+    name: "الزخرف",
+    englishName: "Az-Zukhruf",
+    revelationType: "Makki",
+    numberOfAyahs: 89,
+    meta: {
+      number: 43,
+      verses: 89,
+      type: "Makki"
+    },
+    overview: "Surah Az-Zukhruf refutes the disbelievers' attachment to worldly ornaments and emphasizes the superiority of the Hereafter's eternal blessings.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'The Ornaments of Gold' referring to worldly attractions.",
+        "Addresses the Quraysh's pride in their wealth and status."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Contrasts temporary worldly ornaments with eternal blessings of Paradise.",
+        "Refutes the pagans' claim that angels are Allah's daughters.",
+        "Contains the story of Abraham and his father's people."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Az-Zukhruf will be told on Day of Judgment: O servants of Allah, there is no fear upon you today' (Al-Durr al-Manthur).",
+      "Contains powerful arguments against materialism and pride.",
+      "Known for its emphasis on the superiority of the Hereafter."
+    ],
+    context: "This Surah warns against attachment to worldly ornaments and status."
+  },
+  44: {
+    number: 44,
+    name: "الدخان",
+    englishName: "Ad-Dukhan",
+    revelationType: "Makki",
+    numberOfAyahs: 59,
+    meta: {
+      number: 44,
+      verses: 59,
+      type: "Makki"
+    },
+    overview: "Surah Ad-Dukhan describes the smoke that will appear before the Day of Judgment and emphasizes the Quran's revelation during the blessed night.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'The Smoke' referring to one of the signs of the Day of Judgment.",
+        "Addresses the disbelievers' denial of resurrection and accountability."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Describes the smoke that will envelop people before the Hour.",
+        "Emphasizes that the Quran was revealed in a blessed night.",
+        "Contains the story of Pharaoh and his people's destruction."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Ad-Dukhan at night, seventy thousand angels will ask forgiveness for him until morning' (Tirmidhi).",
+      "Known for its description of the blessed night of revelation.",
+      "Contains warnings about the consequences of rejecting truth."
+    ],
+    context: "This Surah warns of coming punishment and emphasizes the Quran's blessed revelation."
+  },
+  45: {
+    number: 45,
+    name: "الجاثية",
+    englishName: "Al-Jathiyah",
+    revelationType: "Makki",
+    numberOfAyahs: 37,
+    meta: {
+      number: 45,
+      verses: 37,
+      type: "Makki"
+    },
+    overview: "Surah Al-Jathiyah emphasizes the signs of Allah in creation and describes the kneeling position of people on the Day of Judgment.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the late Meccan period.",
+        "Named 'The Kneeling' referring to the position of people on Judgment Day.",
+        "Addresses those who reject Allah's signs in the universe."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Describes how every nation will be kneeling on the Day of Judgment.",
+        "Emphasizes the clear signs of Allah in creation and revelation.",
+        "Warns against following desires without knowledge."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Al-Jathiyah, Allah will conceal his faults and give him security from the punishment of the grave' (Al-Durr al-Manthur).",
+      "Contains powerful descriptions of the Day of Judgment.",
+      "Known for its emphasis on reflecting on Allah's signs."
+    ],
+    context: "This Surah emphasizes accountability through signs in creation and revelation."
+  },
+  46: {
+    number: 46,
+    name: "الأحقاف",
+    englishName: "Al-Ahqaf",
+    revelationType: "Makki",
+    numberOfAyahs: 35,
+    meta: {
+      number: 46,
+      verses: 35,
+      type: "Makki"
+    },
+    overview: "Surah Al-Ahqaf tells the story of the people of 'Ad who lived in the sand dunes and emphasizes the importance of treating parents kindly.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the late Meccan period.",
+        "Named 'The Sand Dunes' where the people of 'Ad lived.",
+        "The last of the 'Ha-Meem' series of surahs."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Contains the story of the people of 'Ad and Prophet Hud.",
+        "Emphasizes kind treatment of parents, especially in old age.",
+        "Mentions the jinn who heard the Quran and believed."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Al-Ahqaf, Allah will give him the reward of ten good deeds for every sand dune in this world' (Al-Durr al-Manthur).",
+      "Contains important teachings about parental rights.",
+      "Known for the story of jinn who accepted the Quran."
+    ],
+    context: "This Surah warns through historical examples and emphasizes family values."
+  },
+  47: {
+    number: 47,
+    name: "محمد",
+    englishName: "Muhammad",
+    revelationType: "Madani",
+    numberOfAyahs: 38,
+    meta: {
+      number: 47,
+      verses: 38,
+      type: "Madani"
+    },
+    overview: "Surah Muhammad, also known as Al-Qital (The Fighting), establishes the principles of warfare in Islam and contrasts believers with hypocrites.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed after the Battle of Badr when fighting was prescribed.",
+        "Named after Prophet Muhammad ﷺ, the only surah named after him.",
+        "Addresses the conduct of Muslims in warfare and relations with enemies."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Establishes rules of engagement and treatment of prisoners in war.",
+        "Contrasts the state of believers with that of hypocrites.",
+        "Emphasizes that truth will ultimately prevail over falsehood."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Muhammad, it is as if he was with me when we fought at Badr and Hunayn' (Al-Durr al-Manthur).",
+      "Contains important principles of Islamic warfare.",
+      "Known for its clear distinction between believers and hypocrites."
+    ],
+    context: "This Surah established the Islamic legal framework for defensive warfare."
+  },
+  48: {
+    number: 48,
+    name: "الفتح",
+    englishName: "Al-Fath",
+    revelationType: "Madani",
+    numberOfAyahs: 29,
+    meta: {
+      number: 48,
+      verses: 29,
+      type: "Madani"
+    },
+    overview: "Surah Al-Fath was revealed after the Treaty of Hudaybiyyah, prophesying future victories and describing the qualities of true believers.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed upon return from Hudaybiyyah (6 AH).",
+        "Named 'The Victory' though no military victory had occurred yet.",
+        "Prophesied the conquest of Mecca and other future victories."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Describes the Treaty of Hudaybiyyah as a clear victory.",
+        "Contains the prophecy of Mecca's conquest and other victories.",
+        "Describes the qualities of the sincere companions."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Tonight there has been revealed to me a surah which is dearer to me than that on which the sun shines' referring to Surah Al-Fath (Bukhari).",
+      "Considered a glad tiding of future victories for Muslims.",
+      "Known for its description of the sincere companions' qualities."
+    ],
+    context: "This Surah turned apparent setback into prophesied victory."
+  },
+  49: {
+    number: 49,
+    name: "الحجرات",
+    englishName: "Al-Hujurat",
+    revelationType: "Madani",
+    numberOfAyahs: 18,
+    meta: {
+      number: 49,
+      verses: 18,
+      type: "Madani"
+    },
+    overview: "Surah Al-Hujurat establishes etiquette for dealing with the Prophet, community relations, and defines true faith beyond mere claims.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed when some Bedouins called the Prophet loudly from outside his rooms.",
+        "Named 'The Rooms' referring to the wives' chambers around the mosque.",
+        "Addresses proper social conduct in the Muslim community."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Establishes proper etiquette with the Prophet and in social relations.",
+        "Defines true faith as involving heart belief, not just verbal claims.",
+        "Forbids mockery, suspicion, and backbiting among Muslims."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Teach your children three things: the love of their Prophet, the love of his family, and the recitation of Quran, for the bearers of the Quran will be in the shade of Allah' (Al-Durr al-Manthur).",
+      "Contains comprehensive social ethics for Muslim society.",
+      "Known for defining the concept of true faith and brotherhood."
+    ],
+    context: "This Surah established Islamic social etiquette and community ethics."
+  },
+  50: {
+    number: 50,
+    name: "ق",
+    englishName: "Qaf",
+    revelationType: "Makki",
+    numberOfAyahs: 45,
+    meta: {
+      number: 50,
+      verses: 45,
+      type: "Makki"
+    },
+    overview: "Surah Qaf begins with the mysterious letter Qaf and emphatically affirms the reality of resurrection through logical arguments.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named after the Arabic letter Qaf that begins the surah.",
+        "The Prophet frequently recited this surah in Friday and Eid prayers."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Emphatically affirms the reality of resurrection and creation.",
+        "Describes the state of dying person and recording angels.",
+        "Emphasizes that Allah's power to create includes power to resurrect."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Qaf, Allah will make easy for him the agonies of death' (Tirmidhi).",
+      "The Prophet frequently recited it in public gatherings.",
+      "Known for its powerful arguments for resurrection."
+    ],
+    context: "This Surah strongly affirms resurrection against Meccan denial."
+  },
+  51: {
+    number: 51,
+    name: "الذاريات",
+    englishName: "Adh-Dhariyat",
+    revelationType: "Makki",
+    numberOfAyahs: 60,
+    meta: {
+      number: 51,
+      verses: 60,
+      type: "Makki"
+    },
+    overview: "Surah Adh-Dhariyat begins with oaths by winds and emphasizes the certainty of Allah's promise and the stories of previous prophets.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'The Scattering Winds' that begin the surah.",
+        "Addresses the disbelievers' denial of resurrection and prophets."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Begins with oaths by natural phenomena carrying profound meanings.",
+        "Contains stories of Abraham, Moses, Noah, and the people of 'Ad and Thamud.",
+        "Emphasizes that Allah's promise is certainly true."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Adh-Dhariyat, Allah will give him ten good deeds for every wind that blows' (Al-Durr al-Manthur).",
+      "Contains the beautiful description of true believers' characteristics.",
+      "Known for its powerful oaths and emphatic affirmations."
+    ],
+    context: "This Surah affirms divine promises through natural phenomena and history."
+  },
+  52: {
+    number: 52,
+    name: "الطور",
+    englishName: "At-Tur",
+    revelationType: "Makki",
+    numberOfAyahs: 49,
+    meta: {
+      number: 52,
+      verses: 49,
+      type: "Makki"
+    },
+    overview: "Surah At-Tur begins with oaths by Mount Tur and describes the scenes of Paradise and Hell, affirming the reality of the Hereafter.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'The Mount' where Allah spoke to Moses.",
+        "Addresses the disbelievers' mockery of the Prophet and the Quran."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Begins with oaths by significant creations of Allah.",
+        "Describes the blessings of Paradise and punishments of Hell.",
+        "Affirms that the Quran is truly from the Lord of the worlds."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah At-Tur, it will be a light for him on the Day of Judgment' (Al-Durr al-Manthur).",
+      "Contains beautiful descriptions of Paradise's blessings.",
+      "Known for its powerful response to the disbelievers' mockery."
+    ],
+    context: "This Surah responds to mockery with descriptions of ultimate realities."
+  },
+  53: {
+    number: 53,
+    name: "النجم",
+    englishName: "An-Najm",
+    revelationType: "Makki",
+    numberOfAyahs: 62,
+    meta: {
+      number: 53,
+      verses: 62,
+      type: "Makki"
+    },
+    overview: "Surah An-Najm describes the Prophet's ascension experience and establishes that the Quran is revelation, not the Prophet's own speech.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the early Meccan period.",
+        "Named 'The Star' referring to the oath at the beginning.",
+        "Contains the first verses that required prostration during recitation."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Describes the Prophet's experience of receiving revelation.",
+        "Contains the first mandatory prostration in the Quran.",
+        "Affirms that the Prophet does not speak from his own desire."
+      ]
+    },
+    virtues: [
+      "This was the first surah revealed entirely at once according to some reports.",
+      "The Prophet ﷺ and companions prostrated when it was first revealed.",
+      "Known for its beautiful description of divine revelation."
+    ],
+    context: "This Surah established the divine nature of revelation early in prophethood."
+  },
+  54: {
+    number: 54,
+    name: "القمر",
+    englishName: "Al-Qamar",
+    revelationType: "Makki",
+    numberOfAyahs: 55,
+    meta: {
+      number: 54,
+      verses: 55,
+      type: "Makki"
+    },
+    overview: "Surah Al-Qamar describes the splitting of the moon as a sign and recounts stories of previous nations destroyed for rejecting their messengers.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed when the moon was split as a miracle for the Quraysh.",
+        "Named 'The Moon' after the miraculous event.",
+        "Addresses the persistent rejection of the Meccan disbelievers."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Mentions the splitting of the moon as a witnessed miracle.",
+        "Contains stories of Noah, 'Ad, Thamud, Lot, and Pharaoh's people.",
+        "Emphasizes that the Quran is easy to understand and remember."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'My hour and the splitting of the moon have drawn near each other' referring to this surah's theme.",
+      "Contains the refrain: 'And We have certainly made the Quran easy for remembrance'.",
+      "Known for its emphasis on learning from historical lessons."
+    ],
+    context: "This Surah warns through historical examples of divine punishment."
+  },
+  55: {
+    number: 55,
+    name: "الرحمن",
+    englishName: "Ar-Rahman",
+    revelationType: "Madani",
+    numberOfAyahs: 78,
+    meta: {
+      number: 55,
+      verses: 78,
+      type: "Madani"
+    },
+    overview: "Surah Ar-Rahman repeatedly asks 'Which of the favors of your Lord would you deny?' while describing Allah's blessings in creation and Paradise.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed in Medina according to majority opinion.",
+        "Named 'The Most Merciful' - one of Allah's beautiful names.",
+        "Addresses both jinn and humans as responsible beings."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Repeats the refrain 'Which of the favors of your Lord would you deny?' 31 times.",
+        "Describes Allah's blessings in creation and rewards in Paradise.",
+        "Addresses both jinn and mankind as accountable creatures."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Everything has a bride, and the bride of the Quran is Surah Ar-Rahman' (Baihaqi).",
+      "Known for its beautiful rhythmic style and profound meaning.",
+      "The companions considered it the 'bride of the Quran' for its beauty."
+    ],
+    context: "This Surah emphasizes gratitude through enumeration of divine blessings."
+  },
+  56: {
+    number: 56,
+    name: "الواقعة",
+    englishName: "Al-Waqi'ah",
+    revelationType: "Makki",
+    numberOfAyahs: 96,
+    meta: {
+      number: 56,
+      verses: 96,
+      type: "Makki"
+    },
+    overview: "Surah Al-Waqi'ah describes the three groups of people on Judgment Day and emphasizes the reality of resurrection and Quran's truth.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed during the middle Meccan period.",
+        "Named 'The Inevitable Event' referring to the Day of Judgment.",
+        "Addresses the fundamental belief in resurrection and accountability."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Divides people into three groups: foremost, companions of right, companions of left.",
+        "Provides logical arguments for resurrection and creation.",
+        "Emphasizes the Quran's divine origin and preservation."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites Surah Al-Waqi'ah every night, poverty will never afflict him' (Al-Durr al-Manthur).",
+      "Known for its powerful description of Judgment Day scenes.",
+      "The companions recommended it for protection from poverty."
+    ],
+    context: "This Surah vividly describes the reality of the Hereafter."
+  },
+  57: {
+    number: 57,
+    name: "الحديد",
+    englishName: "Al-Hadid",
+    revelationType: "Madani",
+    numberOfAyahs: 29,
+    meta: {
+      number: 57,
+      verses: 29,
+      type: "Madani"
+    },
+    overview: "Surah Al-Hadid emphasizes spending in Allah's cause and describes the nature of this world compared to the Hereafter.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed in Medina during the period of establishing the Muslim state.",
+        "Named 'The Iron' which is mentioned as a blessing from Allah.",
+        "Encourages financial sacrifice for the cause of Islam."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Emphasizes spending wealth in Allah's cause for eternal reward.",
+        "Describes the temporary nature of worldly life.",
+        "Contains the verse about Allah sending messengers with clear proofs."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Surah Al-Hadid is the one that exposed the hypocrites' for its emphasis on spending (Al-Durr al-Manthur).",
+      "Contains the beautiful description of believers' hearts softening for Allah.",
+      "Known for its emphasis on charity and detachment from worldliness."
+    ],
+    context: "This Surah encouraged financial support for the growing Muslim community."
+  },
+  58: {
+    number: 58,
+    name: "المجادلة",
+    englishName: "Al-Mujadilah",
+    revelationType: "Madani",
+    numberOfAyahs: 22,
+    meta: {
+      number: 58,
+      verses: 22,
+      type: "Madani"
+    },
+    overview: "Surah Al-Mujadilah addresses the incident of a woman who pleaded her case to the Prophet and establishes laws regarding zihar (pre-Islamic divorce).",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed concerning Khaulah bint Tha'labah's case of zihar.",
+        "Named 'The Pleading Woman' after the woman who argued her case.",
+        "Abolished the pre-Islamic practice of zihar."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Abolished the Jahiliyyah practice of zihar (declaring wife as mother).",
+        "Establishes laws for expiation of zihar.",
+        "Contains teachings about secret counsels and charity before meetings."
+      ]
+    },
+    virtues: [
+      "The first surah to begin with 'Allah has heard' emphasizing divine response to pleas.",
+      "Establishes important family laws and women's rights.",
+      "Known for its emphasis on justice and fair treatment of women."
+    ],
+    context: "This Surah established women's rights in marriage and abolished harmful practices."
+  },
+  59: {
+    number: 59,
+    name: "الحشر",
+    englishName: "Al-Hashr",
+    revelationType: "Madani",
+    numberOfAyahs: 24,
+    meta: {
+      number: 59,
+      verses: 24,
+      type: "Madani"
+    },
+    overview: "Surah Al-Hashr describes the exile of Banu Nadir and establishes laws for distribution of war booty, ending with the beautiful names of Allah.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed after the exile of Jewish tribe Banu Nadir from Medina (4 AH).",
+        "Named 'The Exile' referring to the banishment of Banu Nadir.",
+        "Addresses the distribution of fai' (booty without fighting)."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Establishes laws for distribution of fai' (booty without battle).",
+        "Describes the characteristics of hypocrites and their plots.",
+        "Ends with the most beautiful names of Allah."
+      ]
+    },
+    virtues: [
+      "The Prophet ﷺ said: 'Whoever recites the last three verses of Surah Al-Hashr, Allah will send seventy thousand angels to send blessings upon him until evening' (Tirmidhi).",
+      "Contains the comprehensive description of Allah's attributes.",
+      "Known for its powerful ending with Allah's beautiful names."
+    ],
+    context: "This Surah addressed the aftermath of Banu Nadir's exile and established booty laws."
+  },
+  60: {
+    number: 60,
+    name: "الممتحنة",
+    englishName: "Al-Mumtahanah",
+    revelationType: "Madani",
+    numberOfAyahs: 13,
+    meta: {
+      number: 60,
+      verses: 13,
+      type: "Madani"
+    },
+    overview: "Surah Al-Mumtahanah establishes principles for relations with non-Muslim relatives and tests the faith of migrating women.",
+    historicalContext: {
+      title: "Historical Context",
+      content: [
+        "Revealed concerning Hatib ibn Abi Balta'ah who tried to inform Mecca.",
+        "Named 'The Examined Woman' after the test for migrating women.",
+        "Addresses relations with non-Muslim family members during war."
+      ]
+    },
+    significance: {
+      title: "Significance",
+      content: [
+        "Establishes that loyalty should be to Allah and Muslims, not disbelievers.",
+        "Allows maintaining good relations with non-Muslim relatives.",
+        "Sets conditions for accepting women migrants from Mecca."
+      ]
+    },
+    virtues: [
+      "Contains the example of Abraham and his people as ideal Muslim conduct.",
+      "Establishes balanced principles for relations with non-Muslims.",
+      "Known for its guidance on maintaining family ties across religious lines."
+    ],
+    context: "This Surah established principles for testing faith and cross-religious family relations."
   }
 };
 

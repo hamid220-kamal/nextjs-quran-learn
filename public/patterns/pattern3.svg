@@ -1,0 +1,8 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="arabesque3" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M15 0L30 15L15 30L0 15L15 0ZM15 6L6 15L15 24L24 15L15 6ZM15 10L10 15L15 20L20 15L15 10Z" fill="currentColor"/>
+    </pattern>
+  </defs>
+  <rect width="100" height="100" fill="url(#arabesque3)"/>
+</svg>

@@ -1,0 +1,268 @@
+.quran-player-layout {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.player-header {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 0 24px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.search-bar {
+  flex: 1;
+  max-width: 480px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.reciter-select {
+  min-width: 200px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: white;
+  color: #1e293b;
+}
+
+.active-player-section {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  margin: 0 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.surah-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .quran-player-layout {
+    padding: 16px;
+  }
+
+  .player-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 0 16px 16px;
+  }
+
+  .search-bar {
+    max-width: none;
+  }
+
+  .active-player-section {
+    margin: 0 16px;
+    padding: 24px;
+  }
+
+  .surah-title {
+    font-size: 24px;
+  }
+}
+
+/* Customize scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.surah-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.surah-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.surah-item:hover {
+  background-color: #f8fafc;
+}
+
+.surah-item.active {
+  background-color: #e2e8f0;
+}
+
+.surah-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border-radius: 6px;
+  margin-right: 12px;
+  font-weight: 600;
+}
+
+.surah-info {
+  flex: 1;
+}
+
+.surah-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.surah-meta {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.player-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 24px;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.reciter-select {
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Existing QuranPlayer styles */
+.quran-player {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 24px;
+}
+
+.qp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.qp-track-info {
+  flex: 1;
+}
+
+.qp-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.qp-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.qp-progress {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+.qp-progress-bar {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.1s;
+}
+
+.qp-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.qp-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.qp-btn:hover {
+  background: #e2e8f0;
+}
+
+.qp-btn.play {
+  background: #3b82f6;
+  color: white;
+}
+
+.qp-btn.play:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 768px) {
+  .quran-player-container {
+    grid-template-columns: 1fr;
+  }
+}

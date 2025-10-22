@@ -178,6 +178,10 @@ export default function Navbar() {
                 <i className="fas fa-users"></i> COMMUNITY
               </Link>
 
+              <Link href="/quran-player" className="dropdown-item" onClick={closeMenu}>
+                <i className="fas fa-play-circle"></i> Quran Player
+              </Link>
+
               {/* Nested Audio Dropdown */}
               <div className="nav-dropdown nested" ref={audioRef}>
                 <button 

@@ -145,11 +145,8 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
             className="intro-button"
             onClick={() => setShowIntroduction(true)}
           >
-            <div className="intro-content">
-              <span className="chevron-icon">›</span>
-              <span>INTRODUCTION</span>
-            </div>
-            <span className="info-circle">ℹ️</span>
+            <span className="intro-icon">ℹ️</span>
+            INTRODUCTION
           </button>
           
           {surahIntro && (

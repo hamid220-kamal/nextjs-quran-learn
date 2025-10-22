@@ -214,47 +214,41 @@
 }
 
 .intro-button {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  padding: 1.2rem 2rem;
+  padding: 1rem 1.5rem;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 400px;
+  justify-content: center;
+  width: fit-content;
   margin: 0 auto;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .intro-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.intro-content {
+.intro-button span {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 8px;
 }
 
-.chevron-icon {
-  font-size: 1.5rem;
-  transition: transform 0.3s ease;
-}
-
-.intro-button:hover .chevron-icon {
-  transform: translateX(5px);
-}
-
-.info-circle {
+.intro-icon {
   font-size: 1.2rem;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 @keyframes blink {

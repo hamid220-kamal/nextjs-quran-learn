@@ -1,0 +1,199 @@
+.introduction-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+}
+
+.introduction-modal {
+  background: rgba(0, 0, 0, 0.7);
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  border-radius: 15px;
+  padding: 40px;
+  color: white;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.intro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 35px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 25px;
+}
+
+.intro-title h2 {
+  font-size: 32px;
+  margin: 0;
+  margin-bottom: 12px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.intro-title h3 {
+  font-size: 22px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  margin-top: -10px;
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+.intro-content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.surah-meta {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 20px 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.surah-meta p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.surah-meta p::before {
+  content: "•";
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.intro-paragraph {
+  margin-bottom: 25px;
+  text-align: justify;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 17px;
+  line-height: 1.8;
+  letter-spacing: 0.3px;
+}
+
+.virtues-section {
+  margin-top: 35px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.virtues-section h4 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.virtues-section p {
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  padding-left: 25px;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.virtues-section p::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+}
+
+/* Custom Scrollbar */
+.introduction-modal::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.introduction-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.introduction-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.introduction-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .introduction-modal {
+    padding: 25px;
+  }
+
+  .intro-title h2 {
+    font-size: 24px;
+  }
+
+  .intro-title h3 {
+    font-size: 18px;
+  }
+
+  .intro-content {
+    font-size: 16px;
+  }
+
+  .surah-meta {
+    padding: 15px 20px;
+  }
+}

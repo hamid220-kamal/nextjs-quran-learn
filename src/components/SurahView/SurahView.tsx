@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { getSurahIntroduction } from '../../data/surahIntroductions';
+import SurahIntroduction from '../SurahIntroduction/SurahIntroduction';
 import './SurahView.css';
 
 interface SurahViewProps {
@@ -87,7 +89,9 @@ const TypeWriter = ({ arabicText, englishText, englishMeaning }: TypeWriterProps
   );
 };
 
-const SurahView = ({ surah, onBack, backgroundImage }: SurahViewProps) => {
+export default function SurahView({ surah, onBack, backgroundImage }: SurahViewProps) {
+  const [showIntroduction, setShowIntroduction] = useState(false);
+  const surahIntro = getSurahIntroduction(surah.number);
   return (
     <div 
       className="surah-view" 
@@ -137,17 +141,26 @@ const SurahView = ({ surah, onBack, backgroundImage }: SurahViewProps) => {
             </button>
           </div>
 
-          <button className="intro-button">
+          <button 
+            className="intro-button"
+            onClick={() => setShowIntroduction(true)}
+          >
             <div className="intro-content">
               <span className="chevron-icon">›</span>
               <span>INTRODUCTION</span>
             </div>
             <span className="info-circle">ℹ️</span>
           </button>
+          
+          {surahIntro && (
+            <SurahIntroduction
+              surahData={surahIntro}
+              isOpen={showIntroduction}
+              onClose={() => setShowIntroduction(false)}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
-
-export default SurahView;

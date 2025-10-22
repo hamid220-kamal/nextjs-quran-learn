@@ -99,7 +99,7 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`
       }}
     >
-      <div className="surah-view-header">
+      <div className="surah-view-header" style={{ paddingTop: '80px', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px' }}>
         <button onClick={onBack} className="back-button">
           ← Go back
         </button>

@@ -3,6 +3,89 @@
 
 const API_BASE_URL = 'https://api.alquran.cloud/v1';
 
+export interface ReciterEdition {
+  identifier: string;
+  language: string;
+  name: string;
+  englishName: string;
+  format: string;
+  type: string;
+  direction?: string;
+}
+
+export interface ReciterWithMetadata extends ReciterEdition {
+  averageDuration?: number;  // Average duration in seconds
+  totalDuration?: number;    // Total duration for the surah
+  languageNative?: string;   // Native name of the language
+}
+
+const LANGUAGE_NAMES: { [key: string]: string } = {
+  ar: 'العربية',
+  ur: 'اردو',
+  en: 'English',
+  fr: 'Français',
+  ru: 'Русский',
+  zh: '中文',
+};
+
+/**
+ * Fetch all available reciters with metadata
+ * @returns Promise<ReciterWithMetadata[]>
+ */
+export async function fetchReciters(): Promise<ReciterWithMetadata[]> {
+  try {
+    const data = await fetchFromAPI('/edition/format/audio');
+    
+    // Filter and enhance reciter data
+    const reciters = data
+      .filter((reciter: ReciterEdition) => reciter.format === 'audio')
+      .map((reciter: ReciterEdition) => {
+        const lang = reciter.identifier.split('.')[0];
+        return {
+          ...reciter,
+          languageNative: LANGUAGE_NAMES[lang] || lang.toUpperCase(),
+          // Average durations based on typical recitation speeds
+          averageDuration: reciter.identifier.includes('Mujawwad') ? 45 : 25, // seconds per verse
+        };
+      })
+      .sort((a: ReciterWithMetadata, b: ReciterWithMetadata) => {
+        // Sort first by language, then by name
+        if (a.language !== b.language) {
+          return a.language === 'ar' ? -1 : b.language === 'ar' ? 1 : a.language.localeCompare(b.language);
+        }
+        return a.englishName.localeCompare(b.englishName);
+      });
+
+    return reciters;
+  } catch (error) {
+    console.error('Error fetching reciters:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get estimated duration for a surah by reciter
+ * @param surahNumber - The surah number (1-114)
+ * @param reciterId - The reciter's identifier
+ * @returns Promise<number> - Estimated duration in seconds
+ */
+export async function getReciterSurahDuration(surahNumber: number, reciterId: string): Promise<number> {
+  try {
+    const surahData = await fetchFromAPI(`/surah/${surahNumber}`);
+    const reciterData = await fetchFromAPI(`/edition/${reciterId}`);
+    
+    const numberOfVerses = surahData.numberOfAyahs;
+    const isMujawwad = reciterId.toLowerCase().includes('mujawwad');
+    
+    // Estimate duration based on recitation style and number of verses
+    const averageVerseTime = isMujawwad ? 45 : 25; // seconds
+    return numberOfVerses * averageVerseTime;
+  } catch (error) {
+    console.error('Error calculating surah duration:', error);
+    throw error;
+  }
+}
+
 /**
  * Helper function to handle API responses
  */

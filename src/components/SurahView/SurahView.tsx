@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getSurahIntroduction } from '../../data/surahIntroductions';
 import SurahIntroduction from '../SurahIntroduction/SurahIntroduction';
+import AudioView from '../AudioPlayer/AudioView';
 import './SurahView.css';
 
 interface SurahViewProps {
@@ -91,6 +92,7 @@ const TypeWriter = ({ arabicText, englishText, englishMeaning }: TypeWriterProps
 
 export default function SurahView({ surah, onBack, backgroundImage }: SurahViewProps) {
   const [showIntroduction, setShowIntroduction] = useState(false);
+  const [showAudioView, setShowAudioView] = useState(false);
   const surahIntro = getSurahIntroduction(surah.number);
   return (
     <div 
@@ -135,10 +137,22 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
               <span className="action-text">Scroll & Read</span>
             </button>
 
-            <button className="feature-button audio-button">
+            <button 
+              className="feature-button audio-button"
+              onClick={() => setShowAudioView(true)}
+            >
               <span className="action-icon">🎵</span>
               <span className="action-text">Play with Audio</span>
             </button>
+
+            {showAudioView && (
+              <AudioView
+                surahNumber={surah.number}
+                surahName={surah.name}
+                backgroundImage={backgroundImage}
+                onClose={() => setShowAudioView(false)}
+              />
+            )}
           </div>
 
           <button 

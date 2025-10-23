@@ -1,0 +1,198 @@
+.audio-view-container {
+  font-family: var(--font-primary);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.main-content {
+  display: flex;
+  height: calc(100vh - 120px);
+  padding: 0;
+}
+
+.recitations-panel {
+  width: 320px;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 20px;
+  color: white;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.recitations-header {
+  margin-bottom: 20px;
+}
+
+.recitations-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.recitation-icon {
+  font-size: 1.2rem;
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.reciter-search {
+  width: 100%;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.reciter-search::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.reciters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reciter-card {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reciter-card:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.reciter-info {
+  flex: 1;
+}
+
+.reciter-name {
+  font-size: 0.9rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.reciter-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reciter-native-name {
+  margin-right: 8px;
+}
+
+.reciter-language {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.reciter-duration {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: monospace;
+  font-size: 0.75rem;
+}
+
+.reciter-number {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.8rem;
+}
+
+.number-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.number-value {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.verse-display {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+  padding: 40px;
+}
+
+/* Scrollbar Styling */
+.recitations-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.recitations-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.recitations-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.recitations-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Audio Controls */
+.audio-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.loading-state,
+.error-state {
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+.error-state {
+  color: #ff6b6b;
+}

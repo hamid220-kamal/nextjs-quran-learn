@@ -1,0 +1,148 @@
+/* Mobile-first responsive design */
+:root {
+  --navbar-height: 64px;
+  --navbar-height-mobile: 56px;
+  --container-padding: 1rem;
+  --container-padding-mobile: 0.75rem;
+}
+
+/* Base container styles */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* Typography responsiveness */
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+p {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+/* Responsive grid layouts */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+}
+
+/* Responsive card layouts */
+.card {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: 0.5rem;
+  height: 100%;
+}
+
+/* Responsive spacing */
+.section {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+
+/* Page header spacing */
+.page-header {
+  padding-top: calc(var(--navbar-height) + 1rem);
+  padding-bottom: 2rem;
+  text-align: center;
+}
+
+/* Responsive buttons */
+.button {
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+/* Responsive images */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Navbar responsive adjustments */
+.navbar {
+  height: var(--navbar-height);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --container-padding: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: var(--navbar-height-mobile);
+    --container-padding: var(--container-padding-mobile);
+  }
+
+  .navbar {
+    height: var(--navbar-height-mobile);
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+}
+
+/* Touch-friendly targets */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .nav-link,
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

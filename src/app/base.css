@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import responsive styles */
+@import './responsive.css';
+
+:root {
+  --font-arabic: 'Noto Naskh Arabic', serif;
+  --bg: #f7f7fb;
+  --card: #fff;
+  --accent: #0066cc;
+  --navbar-height: 64px;
+  --navbar-height-mobile: 56px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg);
+  color: #111;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100%;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+.nav-link:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Common utility classes */
+.font-arabic {
+  font-family: 'Scheherazade New', 'Amiri', serif;
+}
+
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Page layout structure */
+.page-container {
+  padding-top: var(--navbar-height);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+}
+
+/* Header spacing */
+.page-header {
+  padding-top: calc(var(--navbar-height) + 1rem);
+  padding-bottom: 2rem;
+  text-align: center;
+}
+
+/* Section spacing */
+.section {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: var(--navbar-height-mobile);
+  }
+  
+  .container {
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -7,7 +7,7 @@ import {
   getReciterSurahDuration,
   type ReciterWithMetadata,
   type VerseWithTranslation 
-} from '../../utils/quranApi';
+} from '../../utils/quranAPI';
 import './AudioView.css';
 
 interface AudioViewProps {
@@ -46,18 +46,21 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         setLoading(true);
         setError(null);
         
-        const fetchedReciters = await fetchReciters();
+        const response = await fetch('https://api.alquran.cloud/v1/edition/format/audio');
+        const data = await response.json();
         
+        if (!data.data || !Array.isArray(data.data)) {
+          throw new Error('Invalid response from API');
+        }
+
         // Process all audio reciters with additional metadata
-        const allReciters = fetchedReciters
-          .filter(reciter => reciter.format === 'audio')
-          .map(reciter => ({
-            ...reciter,
-            id: reciter.identifier,
-            duration: 0,
-            country: reciter.englishName.split('(')[1]?.replace(')', '') || '',
-            style: reciter.type === 'versebyverse' ? 'Verse by Verse' : 'Complete'
-          }));
+        const allReciters = data.data.map(reciter => ({
+          ...reciter,
+          id: reciter.identifier,
+          duration: 0,
+          country: reciter.englishName.split('(')[1]?.replace(')', '') || '',
+          style: reciter.type === 'versebyverse' ? 'Verse by Verse' : 'Complete'
+        }));
 
         // Extract unique languages
         const languages = [...new Set(allReciters.map(r => r.language))];
@@ -263,10 +266,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
           padding: '1rem'
         }}>
           <div className="recitations-header">
-            <h3>
-              <span className="recitation-icon">🎤</span> 
-              Recitations
-            </h3>
+            <h3>Recitations</h3>
             <div className="filters" style={{ marginBottom: '1rem' }}>
               <select 
                 value={selectedLanguage}
@@ -305,59 +305,59 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
                 }}
               />
             </div>
-          </div>
-          <div className="reciters-list">
-            {loading ? (
-              <div className="loading-state">Loading reciters...</div>
-            ) : error ? (
-              <div className="error-state">{error}</div>
-            ) : filteredReciters.map((reciter) => (
-              <div 
-                key={reciter.id} 
-                className={`reciter-card ${selectedReciter?.id === reciter.id ? 'selected' : ''}`}
-                onClick={() => handleReciterSelect(reciter)}
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  marginBottom: '0.5rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  background: selectedReciter?.id === reciter.id ? 'rgba(76, 175, 80, 0.1)' : 'transparent'
-                }}
-              >
-                <div className="reciter-info">
-                  <div className="reciter-name" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-                    {reciter.englishName}
-                  </div>
-                  <div className="reciter-details" style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                    <span className="reciter-native-name">{reciter.name}</span>
-                    {reciter.country && (
-                      <span className="reciter-country" style={{ marginLeft: '0.5rem' }}>
-                        ({reciter.country})
-                      </span>
-                    )}
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <span className="reciter-style">{reciter.style}</span>
-                      {reciter.duration && (
-                        <span className="reciter-duration" style={{ marginLeft: '0.5rem' }}>
-                          • {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
+            <div className="reciters-list">
+              {loading ? (
+                <div className="loading-state">Loading reciters...</div>
+              ) : error ? (
+                <div className="error-state">{error}</div>
+              ) : filteredReciters.map((reciter) => (
+                <div 
+                  key={reciter.id} 
+                  className={`reciter-card ${selectedReciter?.id === reciter.id ? 'selected' : ''}`}
+                  onClick={() => handleReciterSelect(reciter)}
+                  style={{
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '0.5rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    background: selectedReciter?.id === reciter.id ? 'rgba(76, 175, 80, 0.1)' : 'transparent'
+                  }}
+                >
+                  <div className="reciter-info">
+                    <div className="reciter-name" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                      {reciter.englishName}
+                    </div>
+                    <div className="reciter-details" style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                      <span className="reciter-native-name">{reciter.name}</span>
+                      {reciter.country && (
+                        <span className="reciter-country" style={{ marginLeft: '0.5rem' }}>
+                          ({reciter.country})
                         </span>
                       )}
+                      <div style={{ marginTop: '0.25rem' }}>
+                        <span className="reciter-style">{reciter.style}</span>
+                        {reciter.duration && (
+                          <span className="reciter-duration" style={{ marginLeft: '0.5rem' }}>
+                            • {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="reciter-language-badge" style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '4px',
+                    fontSize: '0.8rem',
+                    marginTop: '0.5rem'
+                  }}>
+                    {reciter.language.toUpperCase()}
+                  </div>
                 </div>
-                <div className="reciter-language-badge" style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
-                  fontSize: '0.8rem',
-                  marginTop: '0.5rem'
-                }}>
-                  {reciter.language.toUpperCase()}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

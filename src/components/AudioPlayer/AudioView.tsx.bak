@@ -7,7 +7,7 @@ import {
   getReciterSurahDuration,
   type ReciterWithMetadata,
   type VerseWithTranslation 
-} from '../../utils/quranApi';
+} from '../../utils/quranAPI';
 import './AudioView.css';
 
 interface AudioViewProps {
@@ -66,7 +66,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         // First set the reciters without durations
         setReciters(allReciters);
         
-        // Then update durations in batches
+        // Then update durations in batches to avoid overwhelming the API
         const batchSize = 5;
         for (let i = 0; i < allReciters.length; i += batchSize) {
           const batch = allReciters.slice(i, i + batchSize);
@@ -82,6 +82,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
             })
           );
           
+          // Update the reciters state with the new durations
           setReciters(prev => {
             const updated = [...prev];
             updatedBatch.forEach(updatedReciter => {
@@ -104,16 +105,19 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     loadReciters();
   }, [surahNumber]);
 
+  // Handle reciter selection
   const handleReciterSelect = async (reciter: ReciterDisplay) => {
     try {
-      if (selectedReciter?.id === reciter.id) return;
+      if (selectedReciter?.id === reciter.id) return; // Don't reload if same reciter
       
       setLoading(true);
       setSelectedReciter(reciter);
-      setCurrentVerse(null);
+      setCurrentVerse(null); // Clear current verse while loading
       
+      // Fetch the verses for this reciter
       const versesData = await fetchSurahVersesWithTranslation(surahNumber, reciter.identifier);
       
+      // Ensure we got valid data
       if (!versesData || !Array.isArray(versesData) || versesData.length === 0) {
         throw new Error('No verses received from API');
       }
@@ -122,6 +126,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
       setCurrentVerseIndex(0);
       setCurrentVerse(versesData[0]);
       
+      // Stop any playing audio
       if (audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
@@ -129,6 +134,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     } catch (err) {
       setError('Failed to load verses');
       console.error('Error loading verses:', err);
+      // Reset states on error
       setSelectedReciter(null);
       setVerses([]);
       setCurrentVerse(null);
@@ -137,6 +143,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     }
   };
 
+  // Handle audio playback
   const handlePlay = () => {
     if (audioRef.current) {
       audioRef.current.play();
@@ -167,11 +174,12 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     }
   };
 
+  // Handle audio ended
   const handleAudioEnded = () => {
     setIsPlaying(false);
     if (currentVerseIndex < verses.length - 1) {
       handleNext();
-      setTimeout(handlePlay, 500);
+      setTimeout(handlePlay, 500); // Auto-play next verse after a short delay
     }
   };
 
@@ -180,7 +188,6 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     const matchesLanguage = selectedLanguage === 'all' || reciter.language === selectedLanguage;
     return matchesSearch && matchesLanguage;
   });
-
   return (
     <motion.div 
       className="audio-view-container"
@@ -306,59 +313,89 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
               />
             </div>
           </div>
-          <div className="reciters-list">
-            {loading ? (
-              <div className="loading-state">Loading reciters...</div>
-            ) : error ? (
-              <div className="error-state">{error}</div>
-            ) : filteredReciters.map((reciter) => (
-              <div 
-                key={reciter.id} 
-                className={`reciter-card ${selectedReciter?.id === reciter.id ? 'selected' : ''}`}
-                onClick={() => handleReciterSelect(reciter)}
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  marginBottom: '0.5rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  background: selectedReciter?.id === reciter.id ? 'rgba(76, 175, 80, 0.1)' : 'transparent'
-                }}
-              >
-                <div className="reciter-info">
-                  <div className="reciter-name" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-                    {reciter.englishName}
-                  </div>
-                  <div className="reciter-details" style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                    <span className="reciter-native-name">{reciter.name}</span>
-                    {reciter.country && (
-                      <span className="reciter-country" style={{ marginLeft: '0.5rem' }}>
-                        ({reciter.country})
-                      </span>
-                    )}
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <span className="reciter-style">{reciter.style}</span>
-                      {reciter.duration && (
-                        <span className="reciter-duration" style={{ marginLeft: '0.5rem' }}>
-                          • {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
+            <div className="reciters-list">
+              {loading ? (
+                <div className="loading-state">Loading reciters...</div>
+              ) : error ? (
+                <div className="error-state">{error}</div>
+              ) : filteredReciters.map((reciter) => (
+                <div 
+                  key={reciter.id} 
+                  className={`reciter-card ${selectedReciter?.id === reciter.id ? 'selected' : ''}`}
+                  onClick={() => handleReciterSelect(reciter)}
+                  style={{
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '0.5rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    background: selectedReciter?.id === reciter.id ? 'rgba(76, 175, 80, 0.1)' : 'transparent'
+                  }}
+                >
+                  <div className="reciter-info">
+                    <div className="reciter-name" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                      {reciter.englishName}
+                    </div>
+                    <div className="reciter-details" style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                      <span className="reciter-native-name">{reciter.name}</span>
+                      {reciter.country && (
+                        <span className="reciter-country" style={{ marginLeft: '0.5rem' }}>
+                          ({reciter.country})
                         </span>
                       )}
+                      <div style={{ marginTop: '0.25rem' }}>
+                        <span className="reciter-style">{reciter.style}</span>
+                        {reciter.duration && (
+                          <span className="reciter-duration" style={{ marginLeft: '0.5rem' }}>
+                            • {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="reciter-language-badge" style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '4px',
+                    fontSize: '0.8rem',
+                    marginTop: '0.5rem'
+                  }}>
+                    {reciter.language.toUpperCase()}
+                  </div>
                 </div>
-                <div className="reciter-language-badge" style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
-                  fontSize: '0.8rem',
-                  marginTop: '0.5rem'
-                }}>
-                  {reciter.language.toUpperCase()}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Audio Controls */}
+        <div className="verse-display">
+          {currentVerse ? (
+            <motion.div
+              key={currentVerse.numberInSurah}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="verse-content"
+            >
+              <div className="verse-number">Verse {currentVerse.numberInSurah} of {verses.length}</div>
+              <div className="arabic-text">{currentVerse.text}</div>
+              <div className="translation-text">{currentVerse.translation}</div>
+              <audio
+                ref={audioRef}
+                src={currentVerse.audio}
+                onEnded={handleAudioEnded}
+                style={{ display: 'none' }}
+              />
+            </motion.div>
+          ) : selectedReciter ? (
+            <div className="loading-verse">Loading verses...</div>
+          ) : (
+            <div className="select-reciter-prompt">Select a reciter to begin</div>
+          )}
         </div>
       </div>
 

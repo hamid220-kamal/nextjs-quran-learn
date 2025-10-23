@@ -1,10 +1,11 @@
-.quran-player-wrapper {
-  min-height: 100vh;
+.page-container {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
   background-color: #fff;
   position: relative;
-  padding-bottom: 60px; /* Adjust based on footer height */
+  overflow-x: hidden;
 }
 
 main {
@@ -15,11 +16,12 @@ main {
   min-height: calc(100vh - 60px); /* Subtracting footer height */
 }
 
-.quran-player-page {
+.quran-player-content {
   flex: 1 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding-bottom: 6rem; /* Space for footer */
 }
 
 .page-header {
@@ -59,8 +61,9 @@ footer {
   margin-top: auto;
   flex-shrink: 0;
   position: relative;
-  z-index: 10;
+  z-index: 2;
   background: linear-gradient(135deg, #1a2a6c, #2a5298);
+  padding: 2rem 0;
 }
 
 .surah-section {

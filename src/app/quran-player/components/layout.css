@@ -1,0 +1,13 @@
+/* Additional layout styles */
+.surahs-container {
+  margin-bottom: 4rem; /* Extra space before footer */
+}
+
+.surah-section:last-child {
+  margin-bottom: 2rem; /* Space after last section */
+}
+
+/* Ensure content doesn't overlap with footer */
+.page-header {
+  margin-bottom: 2rem;
+}

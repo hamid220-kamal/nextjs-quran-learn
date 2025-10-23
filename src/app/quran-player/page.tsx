@@ -106,9 +106,9 @@ export default function QuranPlayerPage() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="page-container">
       <Navbar />
-      <main style={{ flex: '1 0 auto' }}>
+      <main className="main-content">
         <div className="page-header" style={{ 
           padding: '40px 20px',
           marginTop: '20px', 
@@ -149,7 +149,7 @@ export default function QuranPlayerPage() {
           />
         )}
       </main>
-      <Footer style={{ flexShrink: 0 }} />
+      <Footer />
     </div>
   );
 }

@@ -249,9 +249,12 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
       }}>
         {/* Main Verse Display */}
         <div className="verse-display" style={{ 
-          flex: 1, 
-          overflow: 'auto', 
-          padding: '2rem',
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 'calc(100vh - 200px)',
+          width: '100%'
         }}>
           {currentVerse ? (
             <motion.div
@@ -261,10 +264,44 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
               className="verse-content"
+              style={{
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem 2rem',
+                minHeight: 'calc(100vh - 200px)',
+                textAlign: 'center'
+              }}
             >
-              <div className="verse-number">Verse {currentVerse.numberInSurah} of {verses.length}</div>
-              <div className="arabic-text">{currentVerse.text}</div>
-              <div className="translation-text">{currentVerse.translation}</div>
+              <div className="verse-number" style={{
+                fontSize: '1.2rem',
+                marginBottom: '3rem',
+                color: 'rgba(255, 255, 255, 0.8)'
+              }}>
+                Verse {currentVerse.numberInSurah} of {verses.length}
+              </div>
+              <div className="arabic-text" style={{
+                fontSize: '4rem',
+                lineHeight: '2',
+                marginBottom: '3rem',
+                width: '90%',
+                color: 'white'
+              }}>
+                {currentVerse.text}
+              </div>
+              <div className="translation-text" style={{
+                fontSize: '1.5rem',
+                lineHeight: '1.8',
+                maxWidth: '800px',
+                margin: '0 auto',
+                color: 'rgba(255, 255, 255, 0.9)'
+              }}>
+                {currentVerse.translation}
+              </div>
               <audio
                 ref={audioRef}
                 src={currentVerse.audio}

@@ -7,7 +7,7 @@ import {
   getReciterSurahDuration,
   type ReciterWithMetadata,
   type VerseWithTranslation 
-} from '../../utils/quranAPI';
+} from '../../utils/quranApi';
 import './AudioView.css';
 
 interface AudioViewProps {
@@ -38,6 +38,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
   const [verses, setVerses] = useState<VerseDisplay[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  const [showReciterPanel, setShowReciterPanel] = useState(true);
   const audioRef = React.useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -46,10 +47,11 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         setLoading(true);
         setError(null);
         
-        const fetchedReciters = await fetchReciters();
+        const response = await fetchReciters();
+        console.log('Fetched reciters:', response);
         
         // Process all audio reciters with additional metadata
-        const allReciters = fetchedReciters
+        const allReciters = response
           .filter(reciter => reciter.format === 'audio')
           .map(reciter => ({
             ...reciter,
@@ -62,8 +64,6 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         // Extract unique languages
         const languages = [...new Set(allReciters.map(r => r.language))];
         setAvailableLanguages(languages);
-
-        // First set the reciters without durations
         setReciters(allReciters);
         
         // Then update durations in batches
@@ -114,13 +114,19 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
       
       const versesData = await fetchSurahVersesWithTranslation(surahNumber, reciter.identifier);
       
-      if (!versesData || !Array.isArray(versesData) || versesData.length === 0) {
-        throw new Error('No verses received from API');
+      // Handle both array and single object responses
+      const processedVerses = Array.isArray(versesData) ? versesData : [versesData].filter(Boolean);
+      
+      if (processedVerses.length === 0) {
+        console.warn('No verses received from API for surah:', surahNumber);
+        setError('No verses available for this recitation. Please try another reciter.');
+        return;
       }
       
-      setVerses(versesData);
+      setVerses(processedVerses);
       setCurrentVerseIndex(0);
       setCurrentVerse(versesData[0]);
+      setShowReciterPanel(false);
       
       if (audioRef.current) {
         audioRef.current.pause();
@@ -200,7 +206,15 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
       }}
     >
       {/* Top Bar */}
-      <div className="top-bar" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="top-bar" style={{ 
+        padding: '20px', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        background: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 1001
+      }}>
         <div className="surah-info" style={{ color: 'white' }}>
           <Link href="/" style={{ color: 'white', textDecoration: 'none' }}>
             <span>quranplayer</span> | <span>{surahName}</span>
@@ -225,9 +239,23 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
       </div>
 
       {/* Main Content */}
-      <div className="main-content" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Left side - Verse Display */}
-        <div className="verse-display" style={{ flex: 1, overflow: 'auto', padding: '2rem' }}>
+      <div className="main-content" style={{ 
+        display: 'flex', 
+        flex: 1, 
+        overflow: 'hidden', 
+        position: 'relative',
+        marginRight: showReciterPanel ? '400px' : '0',
+        transition: 'margin-right 0.3s ease'
+      }}>
+        {/* Main Verse Display */}
+        <div className="verse-display" style={{ 
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 'calc(100vh - 200px)',
+          width: '100%'
+        }}>
           {currentVerse ? (
             <motion.div
               key={currentVerse.numberInSurah}
@@ -236,10 +264,48 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
               className="verse-content"
+              style={{
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem 2rem',
+                textAlign: 'center'
+              }}
             >
-              <div className="verse-number">Verse {currentVerse.numberInSurah} of {verses.length}</div>
-              <div className="arabic-text">{currentVerse.text}</div>
-              <div className="translation-text">{currentVerse.translation}</div>
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem 2rem',
+                minHeight: 'calc(100vh - 200px)',
+                textAlign: 'center',
+                maxWidth: '1200px',
+                margin: '0 auto'
+              }}
+            >
+              <div className="verse-number" style={{ marginBottom: '2rem', fontSize: '1.2rem' }}>
+                Verse {currentVerse.numberInSurah} of {verses.length}
+              </div>
+              <div className="arabic-text" style={{ 
+                fontSize: '2.5rem', 
+                marginBottom: '2rem',
+                lineHeight: 1.8,
+                padding: '0 2rem'
+              }}>
+                {currentVerse.text}
+              </div>
+              <div className="translation-text" style={{ 
+                fontSize: '1.4rem',
+                lineHeight: 1.6,
+                maxWidth: '800px',
+                padding: '0 1rem'
+              }}>
+                {currentVerse.translation}
+              </div>
               <audio
                 ref={audioRef}
                 src={currentVerse.audio}
@@ -248,38 +314,84 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
               />
             </motion.div>
           ) : (
-            <div className="select-reciter-prompt">Select a reciter to begin</div>
+            <div className="select-reciter-prompt" style={{ 
+              textAlign: 'center', 
+              marginTop: '2rem',
+              color: 'white',
+              fontSize: '1.2rem'
+            }}>
+              {error ? (
+                <div style={{ color: '#ff6b6b' }}>{error}</div>
+              ) : (
+                <div>Select a reciter to begin</div>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Right side - Reciter Selection Panel */}
-        <div className="recitations-panel" style={{ 
-          width: '350px',
-          borderLeft: '1px solid rgba(255,255,255,0.1)',
-          height: '100%',
-          overflowY: 'auto',
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(10px)',
-          padding: '1rem'
-        }}>
-          <div className="recitations-header">
-            <h3>
+        {/* Reciter Selection Panel */}
+        <motion.div 
+          className="recitations-panel"
+          initial={{ x: 0 }}
+          animate={{ x: showReciterPanel ? 0 : 400 }}
+          transition={{ duration: 0.3 }}
+          style={{ 
+            position: 'fixed',
+            right: 0,
+            top: 0,
+            width: '400px',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.9)',
+            backdropFilter: 'blur(16px)',
+            borderLeft: '1px solid rgba(255,255,255,0.2)',
+            padding: '2rem',
+            overflowY: 'auto',
+            zIndex: 1001,
+            boxShadow: '-4px 0 15px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          {/* Toggle Button */}
+          {!showReciterPanel && selectedReciter && (
+            <button
+              onClick={() => setShowReciterPanel(true)}
+              style={{
+                position: 'absolute',
+                left: '-40px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '4px 0 0 4px',
+                cursor: 'pointer',
+                zIndex: 1002
+              }}
+            >
+              ◀
+            </button>
+          )}
+
+          <div className="recitations-header" style={{ marginBottom: '2rem' }}>
+            <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: '1.5rem' }}>
               <span className="recitation-icon">🎤</span> 
               Recitations
             </h3>
-            <div className="filters" style={{ marginBottom: '1rem' }}>
+            <div className="filters">
               <select 
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
                 className="language-filter"
                 style={{
                   width: '100%',
-                  padding: '0.5rem',
-                  marginBottom: '0.5rem',
+                  padding: '12px',
+                  marginBottom: '1rem',
                   background: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '4px'
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  cursor: 'pointer'
                 }}
               >
                 <option value="all">All Languages</option>
@@ -297,20 +409,36 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '0.5rem',
+                  padding: '12px',
                   background: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '4px'
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '1rem'
                 }}
               />
             </div>
           </div>
-          <div className="reciters-list">
+
+          <div className="reciters-list" style={{ paddingBottom: '2rem' }}>
             {loading ? (
-              <div className="loading-state">Loading reciters...</div>
+              <div className="loading-state" style={{ 
+                color: 'white', 
+                textAlign: 'center', 
+                padding: '2rem',
+                fontSize: '1.1rem'
+              }}>
+                Loading reciters...
+              </div>
             ) : error ? (
-              <div className="error-state">{error}</div>
+              <div className="error-state" style={{ 
+                color: '#ff6b6b', 
+                textAlign: 'center', 
+                padding: '2rem',
+                fontSize: '1.1rem'
+              }}>
+                {error}
+              </div>
             ) : filteredReciters.map((reciter) => (
               <div 
                 key={reciter.id} 
@@ -318,26 +446,38 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
                 onClick={() => handleReciterSelect(reciter)}
                 style={{
                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  marginBottom: '0.5rem',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  marginBottom: '1rem',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  background: selectedReciter?.id === reciter.id ? 'rgba(76, 175, 80, 0.1)' : 'transparent'
+                  background: selectedReciter?.id === reciter.id ? 
+                    'rgba(76, 175, 80, 0.15)' : 
+                    'rgba(255, 255, 255, 0.05)',
+                  color: 'white',
+                  transform: selectedReciter?.id === reciter.id ? 'scale(1.02)' : 'scale(1)'
                 }}
               >
                 <div className="reciter-info">
-                  <div className="reciter-name" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                  <div className="reciter-name" style={{ 
+                    fontSize: '1.2rem', 
+                    marginBottom: '0.75rem',
+                    fontWeight: '500'
+                  }}>
                     {reciter.englishName}
                   </div>
-                  <div className="reciter-details" style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <div className="reciter-details" style={{ 
+                    fontSize: '0.9rem', 
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    lineHeight: '1.4'
+                  }}>
                     <span className="reciter-native-name">{reciter.name}</span>
                     {reciter.country && (
                       <span className="reciter-country" style={{ marginLeft: '0.5rem' }}>
                         ({reciter.country})
                       </span>
                     )}
-                    <div style={{ marginTop: '0.25rem' }}>
+                    <div style={{ marginTop: '0.5rem' }}>
                       <span className="reciter-style">{reciter.style}</span>
                       {reciter.duration && (
                         <span className="reciter-duration" style={{ marginLeft: '0.5rem' }}>
@@ -348,33 +488,64 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
                   </div>
                 </div>
                 <div className="reciter-language-badge" style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
+                  background: 'rgba(76, 175, 80, 0.15)',
+                  color: '#4CAF50',
+                  padding: '4px 12px',
+                  borderRadius: '16px',
                   fontSize: '0.8rem',
-                  marginTop: '0.5rem'
+                  fontWeight: '600',
+                  display: 'inline-block',
+                  marginTop: '0.75rem'
                 }}>
                   {reciter.language.toUpperCase()}
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Audio Controls */}
       {currentVerse && (
-        <div className="audio-controls">
+        <div className="audio-controls" style={{
+          padding: '1.5rem',
+          background: 'rgba(0, 0, 0, 0.9)',
+          backdropFilter: 'blur(16px)',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          zIndex: 1001
+        }}>
           <button 
             className="control-btn"
             onClick={handlePrevious}
             disabled={currentVerseIndex === 0}
+            style={{
+              background: currentVerseIndex === 0 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              cursor: currentVerseIndex === 0 ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease'
+            }}
           >
             Previous
           </button>
           <button 
             className="control-btn play-btn"
             onClick={isPlaying ? handlePause : handlePlay}
+            style={{
+              background: 'rgba(76, 175, 80, 0.2)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 36px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              transition: 'all 0.2s ease',
+              transform: isPlaying ? 'scale(0.98)' : 'scale(1)'
+            }}
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
@@ -382,6 +553,15 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
             className="control-btn"
             onClick={handleNext}
             disabled={currentVerseIndex === verses.length - 1}
+            style={{
+              background: currentVerseIndex === verses.length - 1 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              cursor: currentVerseIndex === verses.length - 1 ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease'
+            }}
           >
             Next
           </button>

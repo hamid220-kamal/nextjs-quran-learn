@@ -223,54 +223,56 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
 
       {/* Main Content */}
       <div className="main-content">
-        {/* Left Panel - Recitations */}
-        <div className="recitations-panel">
-          <div className="recitations-header">
-            <h3>
-              <span className="recitation-icon">🎤</span> 
-              Recitations
-            </h3>
-            <div className="search-container">
-              <input 
-                type="search" 
-                placeholder="Search"
-                className="reciter-search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+        {!selectedReciter ? (
+          // Show reciter selection panel only when no reciter is selected
+          <div className="recitations-panel">
+            <div className="recitations-header">
+              <h3>
+                <span className="recitation-icon">🎤</span> 
+                Recitations
+              </h3>
+              <div className="search-container">
+                <input 
+                  type="search" 
+                  placeholder="Search"
+                  className="reciter-search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="reciters-list">
-            {loading ? (
-              <div className="loading-state">Loading reciters...</div>
-            ) : error ? (
-              <div className="error-state">{error}</div>
-            ) : filteredReciters.map((reciter) => (
-              <div 
-                key={reciter.id} 
-                className={`reciter-card ${selectedReciter?.id === reciter.id ? 'selected' : ''}`}
-                onClick={() => handleReciterSelect(reciter)}
-              >
-                <div className="reciter-info">
-                  <div className="reciter-name">{reciter.englishName}</div>
-                  <div className="reciter-details">
-                    <span className="reciter-native-name">{reciter.name}</span>
-                    <span className="reciter-language">{reciter.languageNative}</span>
-                    {reciter.duration && (
-                      <span className="reciter-duration">
-                        {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
-                      </span>
-                    )}
+            <div className="reciters-list">
+              {loading ? (
+                <div className="loading-state">Loading reciters...</div>
+              ) : error ? (
+                <div className="error-state">{error}</div>
+              ) : filteredReciters.map((reciter) => (
+                <div 
+                  key={reciter.id} 
+                  className="reciter-card"
+                  onClick={() => handleReciterSelect(reciter)}
+                >
+                  <div className="reciter-info">
+                    <div className="reciter-name">{reciter.englishName}</div>
+                    <div className="reciter-details">
+                      <span className="reciter-native-name">{reciter.name}</span>
+                      <span className="reciter-language">{reciter.languageNative}</span>
+                      {reciter.duration && (
+                        <span className="reciter-duration">
+                          {Math.floor(reciter.duration / 60)}:{String(reciter.duration % 60).padStart(2, '0')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="reciter-number">
+                    <span className="number-label">{reciter.language.toUpperCase()}</span>
+                    <span className="number-value">{reciter.identifier.split('.')[1]}</span>
                   </div>
                 </div>
-                <div className="reciter-number">
-                  <span className="number-label">{reciter.language.toUpperCase()}</span>
-                  <span className="number-value">{reciter.identifier.split('.')[1]}</span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {/* Center - Verse Display */}
         <div className="verse-display">

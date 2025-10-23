@@ -106,9 +106,9 @@ export default function QuranPlayerPage() {
   );
 
   return (
-    <div className="page-container">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="main-content">
+      <main className="flex-1 w-full">
         <div className="page-header" style={{ 
           padding: '40px 20px',
           marginTop: '20px', 
@@ -124,7 +124,7 @@ export default function QuranPlayerPage() {
           <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
         </div>
 
-        <div className="main-content">
+        <div className="flex-1 w-full px-4">
           <div className="surahs-container">
             {isLoadingSurahs ? (
               <div className="loading">Loading surahs...</div>

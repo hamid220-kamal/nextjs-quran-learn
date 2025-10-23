@@ -34,28 +34,37 @@ const LANGUAGE_NAMES: { [key: string]: string } = {
  */
 export async function fetchReciters(): Promise<ReciterWithMetadata[]> {
   try {
-    const data = await fetchFromAPI('/edition/format/audio');
-    
+    console.log('Fetching reciters...');
+    const response = await fetch('https://api.alquran.cloud/v1/edition/format/audio');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    console.log('Raw API response:', result);
+
+    if (!result.data || !Array.isArray(result.data)) {
+      throw new Error('Invalid API response format');
+    }
+
     // Filter and enhance reciter data
-    const reciters = data
+    const reciters = result.data
       .filter((reciter: ReciterEdition) => reciter.format === 'audio')
       .map((reciter: ReciterEdition) => {
         const lang = reciter.identifier.split('.')[0];
         return {
           ...reciter,
           languageNative: LANGUAGE_NAMES[lang] || lang.toUpperCase(),
-          // Average durations based on typical recitation speeds
-          averageDuration: reciter.identifier.includes('Mujawwad') ? 45 : 25, // seconds per verse
+          averageDuration: reciter.identifier.includes('Mujawwad') ? 45 : 25,
         };
       })
       .sort((a: ReciterWithMetadata, b: ReciterWithMetadata) => {
-        // Sort first by language, then by name
         if (a.language !== b.language) {
           return a.language === 'ar' ? -1 : b.language === 'ar' ? 1 : a.language.localeCompare(b.language);
         }
         return a.englishName.localeCompare(b.englishName);
       });
 
+    console.log('Processed reciters:', reciters);
     return reciters;
   } catch (error) {
     console.error('Error fetching reciters:', error);
@@ -84,11 +93,22 @@ export async function getReciterSurahDuration(surahNumber: number, reciterId: st
   try {
     const surahData = await fetchFromAPI(`/surah/${surahNumber}/quran-uthmani`);
     
-    if (!surahData || !surahData.numberOfAyahs) {
-      throw new Error('Invalid surah data received');
+    // Handle cases where we get an array of data
+    const processedData = Array.isArray(surahData) ? surahData[0] : surahData;
+    
+    if (!processedData) {
+      console.warn('No surah data received for surah:', surahNumber);
+      return 0;
     }
     
-    const numberOfVerses = surahData.numberOfAyahs;
+    // If numberOfAyahs is not available, try to get the length from ayahs array
+    const numberOfVerses = processedData.numberOfAyahs || (processedData.ayahs?.length) || 0;
+    
+    if (numberOfVerses === 0) {
+      console.warn('Could not determine number of verses for surah:', surahNumber);
+      return 0;
+    }
+    
     const isMujawwad = reciterId.toLowerCase().includes('mujawwad');
     const isMinshawi = reciterId.toLowerCase().includes('minshawi');
     
@@ -181,6 +201,7 @@ export async function fetchSurahVersesWithTranslation(
  */
 async function fetchFromAPI(endpoint: string) {
   try {
+    console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'GET',
       headers: {
@@ -190,21 +211,30 @@ async function fetchFromAPI(endpoint: string) {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        console.warn(`Resource not found at ${endpoint}`);
+        return null;
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('API Response:', data);
+
     if (data.code === 200 && data.status === 'OK' && data.data) {
       return data.data;
     } else if (data.code === 404) {
-      throw new Error('Resource not found');
+      console.warn(`API returned 404 for ${endpoint}`);
+      return null;
     } else {
-      console.warn('API Response:', data);
-      throw new Error(`API Error: ${data.status || 'Unknown error'}`);
+      console.warn('Unexpected API Response:', data);
+      // Return null instead of throwing to allow graceful fallback
+      return null;
     }
   } catch (error) {
     console.error(`Error fetching from ${endpoint}:`, error);
-    throw error;
+    // Return null instead of throwing to allow graceful fallback
+    return null;
   }
 }
 
@@ -283,7 +313,7 @@ export async function fetchJuz(juzNumber: number, edition = EDITIONS.ARABIC, opt
   let endpoint = `/juz/${juzNumber}/${edition}`;
   
   // Add optional query parameters if provided
-  const params = [];
+  const params: string[] = [];
   if (offset !== undefined) params.push(`offset=${offset}`);
   if (limit !== undefined) params.push(`limit=${limit}`);
   

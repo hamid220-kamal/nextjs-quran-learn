@@ -19,6 +19,20 @@ export default function QuranPlayerPage() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
   const [isLoadingSurahs, setIsLoadingSurahs] = useState(true);
+  const [mainContentHeight, setMainContentHeight] = useState<number>(0);
+
+  useEffect(() => {
+    // Calculate and set content height
+    const calculateHeight = () => {
+      const windowHeight = window.innerHeight;
+      const navbarHeight = 80; // Height of navbar
+      setMainContentHeight(windowHeight - navbarHeight);
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, []);
 
   useEffect(() => {
     fetch('https://api.alquran.cloud/v1/surah')
@@ -92,9 +106,9 @@ export default function QuranPlayerPage() {
   );
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
-      <div className="quran-player-page" style={{ paddingTop: '80px' }}>
+      <main style={{ flex: '1 0 auto' }}>
         <div className="page-header" style={{ 
           padding: '40px 20px',
           marginTop: '20px', 
@@ -134,8 +148,8 @@ export default function QuranPlayerPage() {
             backgroundImage={getBackgroundImage(selectedSurah.number)}
           />
         )}
-      </div>
-      <Footer />
-    </>
+      </main>
+      <Footer style={{ flexShrink: 0 }} />
+    </div>
   );
 }

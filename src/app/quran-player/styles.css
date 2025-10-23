@@ -1,7 +1,25 @@
-.quran-player-page {
+.quran-player-wrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-color: #fff;
-  padding: 0;
+  position: relative;
+  padding-bottom: 60px; /* Adjust based on footer height */
+}
+
+main {
+  width: 100%;
+  padding: 80px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px); /* Subtracting footer height */
+}
+
+.quran-player-page {
+  flex: 1 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-header {
@@ -24,9 +42,21 @@
 }
 
 .main-content {
+  flex: 1 0 auto;
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  width: 100%;
+  position: relative;
+}
+
+footer {
+  width: 100%;
+  margin-top: auto;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(135deg, #1a2a6c, #2a5298);
 }
 
 .surah-section {

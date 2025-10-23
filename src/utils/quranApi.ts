@@ -206,7 +206,6 @@ async function fetchFromAPI(endpoint: string) {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'Origin': window.location.origin
       },
     });
 

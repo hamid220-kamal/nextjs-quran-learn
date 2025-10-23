@@ -251,12 +251,17 @@
 .list-item {
   display: flex;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--white);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+  border: 1px solid rgba(0, 87, 63, 0.1);
+  height: 100%;
 }
 
 .list-item:hover {
@@ -268,13 +273,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
-  background: var(--gradient-primary);
-  color: var(--white);
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  margin-right: var(--spacing-lg);
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #00573F 0%, #008D63 100%);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-right: 20px;
+  box-shadow: 0 2px 6px rgba(0, 87, 63, 0.2);
 }
 
 .item-details {
@@ -283,15 +290,19 @@
 
 .item-name-ar {
   font-family: 'Scheherazade New', serif;
-  font-size: 1.8rem;
-  margin-bottom: var(--spacing-xs);
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #00573F;
+  font-weight: 700;
+  text-align: right;
 }
 
 .item-name-en {
   font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: var(--spacing-xs);
-  color: var(--dark-gray);
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+  color: #2D3748;
+  text-align: left;
 }
 
 .item-name {
@@ -304,9 +315,11 @@
 .item-info {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
-  color: var(--medium-gray);
+  gap: 12px;
+  color: #4A5568;
   font-size: 0.9rem;
+  margin-top: 8px;
+  align-items: center;
 }
 
 .item-translation {
@@ -314,10 +327,13 @@
 }
 
 .item-count, .item-type {
-  background-color: var(--light-gray);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  background-color: rgba(0, 87, 63, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #00573F;
+  font-weight: 500;
+  display: inline-block;
 }
 
 /* Page List */
@@ -500,10 +516,13 @@
 
 /* Cards Container for QuranBrowser */
 .cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 1400px;
 }
 
 /* Responsive Design for QuranBrowser */

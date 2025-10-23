@@ -19,8 +19,22 @@ export const metadata: Metadata = {
 };
 
 export default async function QuranPage() {
-  // Server-side fetch of initial Quran structure data
-  const initialData = await fetchQuranStructure();
+  let initialData;
+  try {
+    // Server-side fetch of initial Quran structure data
+    initialData = await fetchQuranStructure();
+  } catch (error) {
+    console.error('Error fetching initial data:', error);
+    initialData = {
+      surahs: [],
+      totalSurahs: 114,
+      totalJuz: 30,
+      totalManzil: 7,
+      totalHizb: 60,
+      totalPages: 604,
+      totalRuku: 556
+    };
+  }
   
   return (
     <div className="quran-page-container">

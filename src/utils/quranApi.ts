@@ -168,27 +168,58 @@ export async function fetchSurahVersesWithTranslation(
   try {
     // Get the total number of verses in the surah
     const surahData = await fetchFromAPI(`/surah/${surahNumber}`);
+    if (!surahData || !surahData.numberOfAyahs) {
+      throw new Error(`No surah data found for surah ${surahNumber}`);
+    }
+
     const totalVerses = surahData.numberOfAyahs;
+    const verses: VerseWithTranslation[] = [];
 
-    // Create an array of promises for verse fetching
-    const versePromises = Array.from({ length: totalVerses }, (_, index) => {
-      const verseNumber = index + 1;
-      return Promise.all([
-        // Fetch Arabic verse with audio
-        fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/${reciterId}`),
-        // Fetch English translation
-        fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/en.sahih`)
-      ]).then(([verseData, translationData]) => ({
-        number: verseData.number,
-        numberInSurah: verseData.numberInSurah,
-        text: verseData.text,
-        audio: verseData.audio,
-        translation: translationData.text
-      }));
-    });
+    // Fetch verses in smaller batches to avoid overwhelming the API
+    const BATCH_SIZE = 5;
+    for (let i = 0; i < totalVerses; i += BATCH_SIZE) {
+      const batchPromises = Array.from(
+        { length: Math.min(BATCH_SIZE, totalVerses - i) },
+        async (_, index) => {
+          const verseNumber = i + index + 1;
+          try {
+            const [verseData, translationData] = await Promise.all([
+              fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/${reciterId}`),
+              fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/en.sahih`)
+            ]);
 
-    // Wait for all verses to be fetched
-    const verses = await Promise.all(versePromises);
+            if (!verseData || !translationData) {
+              throw new Error(`Failed to fetch verse ${verseNumber}`);
+            }
+
+            return {
+              number: verseData.number,
+              numberInSurah: verseData.numberInSurah,
+              text: verseData.text,
+              audio: verseData.audio || `https://cdn.islamic.network/quran/audio/128/${reciterId}/${verseData.number}.mp3`,
+              translation: translationData.text
+            };
+          } catch (error) {
+            console.error(`Error fetching verse ${verseNumber}:`, error);
+            // Return a placeholder verse on error
+            return {
+              number: verseNumber,
+              numberInSurah: verseNumber,
+              text: 'Error loading verse',
+              audio: '',
+              translation: 'Error loading translation'
+            };
+          }
+        }
+      );
+
+      const batchVerses = await Promise.all(batchPromises);
+      verses.push(...batchVerses);
+
+      // Add a small delay between batches to prevent rate limiting
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
     return verses;
   } catch (error) {
     console.error('Error fetching surah verses:', error);
@@ -199,7 +230,7 @@ export async function fetchSurahVersesWithTranslation(
 /**
  * Helper function to handle API responses
  */
-async function fetchFromAPI(endpoint: string) {
+async function  fetchFromAPI(endpoint: string) {
   try {
     console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -210,30 +241,23 @@ async function fetchFromAPI(endpoint: string) {
     });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`Resource not found at ${endpoint}`);
-        return null;
-      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('API Response:', data);
-
-    if (data.code === 200 && data.status === 'OK' && data.data) {
-      return data.data;
-    } else if (data.code === 404) {
-      console.warn(`API returned 404 for ${endpoint}`);
-      return null;
-    } else {
-      console.warn('Unexpected API Response:', data);
-      // Return null instead of throwing to allow graceful fallback
-      return null;
+    
+    if (!data || !data.data) {
+      throw new Error('Invalid API response format');
     }
+
+    if (data.code !== 200 || data.status !== 'OK') {
+      throw new Error(`API error: ${data.status}`);
+    }
+
+    return data.data;
   } catch (error) {
     console.error(`Error fetching from ${endpoint}:`, error);
-    // Return null instead of throwing to allow graceful fallback
-    return null;
+    throw error; // Propagate the error to handle it in the calling function
   }
 }
 

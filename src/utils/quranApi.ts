@@ -69,19 +69,109 @@ export async function fetchReciters(): Promise<ReciterWithMetadata[]> {
  * @param reciterId - The reciter's identifier
  * @returns Promise<number> - Estimated duration in seconds
  */
+export interface Verse {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  audio: string;
+}
+
+export interface VerseWithTranslation extends Verse {
+  translation: string;
+}
+
 export async function getReciterSurahDuration(surahNumber: number, reciterId: string): Promise<number> {
   try {
-    const surahData = await fetchFromAPI(`/surah/${surahNumber}`);
-    const reciterData = await fetchFromAPI(`/edition/${reciterId}`);
+    const surahData = await fetchFromAPI(`/surah/${surahNumber}/quran-uthmani`);
+    
+    if (!surahData || !surahData.numberOfAyahs) {
+      throw new Error('Invalid surah data received');
+    }
     
     const numberOfVerses = surahData.numberOfAyahs;
     const isMujawwad = reciterId.toLowerCase().includes('mujawwad');
+    const isMinshawi = reciterId.toLowerCase().includes('minshawi');
     
     // Estimate duration based on recitation style and number of verses
-    const averageVerseTime = isMujawwad ? 45 : 25; // seconds
+    let averageVerseTime = 25; // default
+    if (isMujawwad) {
+      averageVerseTime = 45;
+    } else if (isMinshawi) {
+      averageVerseTime = 35;
+    }
+    
     return numberOfVerses * averageVerseTime;
   } catch (error) {
     console.error('Error calculating surah duration:', error);
+    return 0; // Return 0 instead of throwing to prevent breaking the UI
+  }
+}
+
+/**
+ * Fetch a specific verse with its translation
+ */
+export async function fetchVerseWithTranslation(
+  surahNumber: number, 
+  verseNumber: number, 
+  reciterId: string
+): Promise<VerseWithTranslation> {
+  try {
+    // Fetch Arabic verse and English translation in parallel
+    const [verseData, translationData] = await Promise.all([
+      fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/${reciterId}`),
+      fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/en.sahih`)
+    ]);
+
+    return {
+      number: verseData.number,
+      numberInSurah: verseData.numberInSurah,
+      text: verseData.text,
+      audio: verseData.audio,
+      translation: translationData.text
+    };
+  } catch (error) {
+    console.error('Error fetching verse with translation:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch all verses of a surah with translations
+ */
+/**
+ * Fetch all verses of a surah with translations
+ */
+export async function fetchSurahVersesWithTranslation(
+  surahNumber: number,
+  reciterId: string
+): Promise<VerseWithTranslation[]> {
+  try {
+    // Get the total number of verses in the surah
+    const surahData = await fetchFromAPI(`/surah/${surahNumber}`);
+    const totalVerses = surahData.numberOfAyahs;
+
+    // Create an array of promises for verse fetching
+    const versePromises = Array.from({ length: totalVerses }, (_, index) => {
+      const verseNumber = index + 1;
+      return Promise.all([
+        // Fetch Arabic verse with audio
+        fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/${reciterId}`),
+        // Fetch English translation
+        fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/en.sahih`)
+      ]).then(([verseData, translationData]) => ({
+        number: verseData.number,
+        numberInSurah: verseData.numberInSurah,
+        text: verseData.text,
+        audio: verseData.audio,
+        translation: translationData.text
+      }));
+    });
+
+    // Wait for all verses to be fetched
+    const verses = await Promise.all(versePromises);
+    return verses;
+  } catch (error) {
+    console.error('Error fetching surah verses:', error);
     throw error;
   }
 }
@@ -89,15 +179,28 @@ export async function getReciterSurahDuration(surahNumber: number, reciterId: st
 /**
  * Helper function to handle API responses
  */
-async function fetchFromAPI(endpoint) {
+async function fetchFromAPI(endpoint: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Origin': window.location.origin
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
-    
-    if (data.code === 200 && data.status === 'OK') {
+    if (data.code === 200 && data.status === 'OK' && data.data) {
       return data.data;
+    } else if (data.code === 404) {
+      throw new Error('Resource not found');
     } else {
-      throw new Error(`API Error: ${data.status}`);
+      console.warn('API Response:', data);
+      throw new Error(`API Error: ${data.status || 'Unknown error'}`);
     }
   } catch (error) {
     console.error(`Error fetching from ${endpoint}:`, error);

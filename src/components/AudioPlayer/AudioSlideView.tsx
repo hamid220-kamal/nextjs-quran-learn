@@ -39,6 +39,35 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
 };
 
 export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isScrollView, setIsScrollView] = useState(false);
+  
+  // Add useEffect to handle body overflow
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const toggleScrollView = () => {
+    setIsScrollView(!isScrollView);
+  };
   const [currentAyah, setCurrentAyah] = useState<Ayah | null>(null);
   const [reciters, setReciters] = useState<Reciter[]>([]);
   const [selectedReciter, setSelectedReciter] = useState<string>('');
@@ -197,31 +226,88 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
   );
 
   return (
-    <div className="audio-slide-view" role="dialog" aria-modal="true">
-      <div className="nav-header">
-        <button 
-          onClick={onClose} 
-          className="go-back-button" 
-          aria-label="Go back to previous page"
+    <div className="audio-slide-overlay" role="dialog" aria-modal="true">
+      {/* Toggle Button - Moved outside audio-slide-view */}
+      <button 
+        className="menu-toggle-btn" 
+        onClick={toggleSidebar}
+        aria-label="Toggle menu"
+      >
+        <svg 
+          viewBox="0 0 24 24" 
+          width="24" 
+          height="24" 
+          stroke="currentColor" 
+          strokeWidth="2"
+          fill="none"
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span>Back</span>
-        </button>
-      </div>
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      </button>
 
-      <div className="content-container">
+      <div className="audio-slide-view">
+        {/* Sidebar */}
+        <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div className="sidebar-content">
+            <button onClick={onClose} className="sidebar-button">
+              <span className="icon">←</span>
+              <span>Go Back</span>
+            </button>
+            
+            <button onClick={toggleFullscreen} className="sidebar-button">
+              <span className="icon">{isFullscreen ? '⎌' : '↔'}</span>
+              <span>Full Screen</span>
+            </button>
+
+            <button onClick={toggleScrollView} className="sidebar-button">
+              <span className="icon">⇕</span>
+              <span>Scroll View</span>
+            </button>
+
+            <button 
+              onClick={() => setSelectedReciter('')} 
+              className="sidebar-button"
+            >
+              <span className="icon">🎤</span>
+              <span>Reciter</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="top-navigation">
+          <div className="nav-controls">
+            <div className="nav-left">
+              <button 
+                className="menu-btn" 
+                onClick={toggleSidebar}
+                aria-label="Toggle menu"
+              >
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="4" y1="12" x2="20" y2="12" />
+                  <line x1="4" y1="18" x2="20" y2="18" />
+                </svg>
+              </button>
+              <button 
+                className="nav-button back-button" 
+                onClick={onClose}
+                aria-label="Back to Surah List"
+              >
+                <span className="icon">←</span>
+                <span className="text">Back to Surah List</span>
+              </button>
+            </div>
+            <button 
+              className="nav-button bookmark-button"
+              aria-label="Bookmark this surah"
+            >
+              <span className="icon">☆</span>
+              <span className="text">Bookmark</span>
+            </button>
+          </div>
+        </div>
+
+        <div className={`content-container ${isScrollView ? 'scroll-view' : ''}`}>
         <div className="reciter-panel" aria-hidden={showCompletion}>
           <div className="search-bar">
             <input
@@ -381,21 +467,216 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         </button>
       )}
       <style jsx>{`
-        .nav-header {
+        .audio-slide-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
-          padding: 16px;
-          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
-          z-index: 1100;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.95);
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
         }
 
-        .go-back-button {
+        .menu-toggle-btn {
+          position: absolute;
+          left: 20px;
+          top: 100px;
+          z-index: 100000;
+          background: #2196f3;
+          border: none;
+          border-radius: 8px;
+          color: white;
+          width: 44px;
+          height: 44px;
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 20px;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-toggle-btn:hover {
+          background: #1976d2;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .menu-toggle-btn:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-toggle-btn svg {
+          width: 24px;
+          height: 24px;
+          stroke: white;
+          stroke-width: 2;
+        }
+
+        .audio-slide-view {
+          position: fixed;
+          left: 20px;
+          top: 90px;
+          z-index: 100000;
+          background: #1e88e5;
+          border: none;
+          border-radius: 50%;
+          color: white;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+          font-size: 24px;
+        }
+
+        .sidebar-toggle:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: scale(1.05);
+        }
+
+        .sidebar-toggle:hover {
+          transform: scale(1.1);
+          background: #2196f3;
+        }
+
+        .sidebar-toggle:active {
+          transform: scale(0.95);
+        }
+
+        .sidebar {
+          position: fixed;
+          left: -280px;
+          top: 0;
+          bottom: 0;
+          width: 280px;
+          background: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          z-index: 10000;
+          transition: all 0.3s ease;
+          padding-top: 100px;
+          border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar.open {
+          left: 0;
+          box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-content {
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .sidebar-button {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 16px;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          width: 100%;
+          text-align: left;
+        }
+
+        .sidebar-button:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateX(5px);
+        }
+
+        .sidebar-button .icon {
+          font-size: 20px;
+          width: 24px;
+          text-align: center;
+        }
+
+        .audio-slide-view {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          width: 100%;
+          height: 100%;
+          padding-top: 80px;
+        }
+
+        .top-navigation {
+          position: fixed;
+          top: 80px;
+          left: 0;
+          right: 0;
+          padding: 16px;
+          background: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          z-index: 10000;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 16px;
+        }
+
+        .nav-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .menu-btn {
+          background: #2196f3;
+          border: none;
+          border-radius: 8px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: white;
+        }
+
+        .menu-btn:hover {
+          background: #1976d2;
+          transform: translateY(-2px);
+        }
+
+        .menu-btn:active {
+          transform: translateY(0);
+        }
+
+        .menu-btn svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .nav-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 24px;
           background: rgba(255, 255, 255, 0.15);
           border: none;
           border-radius: 8px;
@@ -408,15 +689,96 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           -webkit-backdrop-filter: blur(8px);
         }
 
-        .go-back-button:hover {
+        .nav-button .icon {
+          font-size: 20px;
+          line-height: 1;
+        }
+
+        .nav-button .text {
+          font-weight: 500;
+        }
+
+        .nav-button:hover {
           background: rgba(255, 255, 255, 0.25);
           transform: translateY(-1px);
         }
 
-        .go-back-button svg {
-          width: 20px;
-          height: 20px;
-          stroke: currentColor;
+        .bookmark-button {
+          background: rgba(33, 150, 243, 0.3);
+        }
+
+        .bookmark-button:hover {
+          background: rgba(33, 150, 243, 0.4);
+        }
+
+        .content-container {
+          flex: 1;
+          overflow-y: auto;
+          padding: 24px;
+          margin-top: 64px;
+          transition: all 0.3s ease;
+          margin-left: ${isSidebarOpen ? '280px' : '0'};
+        }
+
+        .content-container.scroll-view {
+          height: auto;
+          overflow-y: visible;
+        }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            width: 240px;
+            left: -240px;
+          }
+          .content-container {
+            margin-left: 0;
+          }
+        }
+
+        .surah-controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .back-to-surah,
+        .bookmark-button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          background: rgba(255, 255, 255, 0.15);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .back-to-surah:hover,
+        .bookmark-button:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
+        }
+
+        .back-to-surah span:first-child,
+        .bookmark-button span:first-child {
+          font-size: 20px;
+          line-height: 1;
+        }
+
+        .bookmark-button {
+          background: rgba(var(--primary-color-rgb, 33, 150, 243), 0.3);
+        }
+
+        .bookmark-button:hover {
+          background: rgba(var(--primary-color-rgb, 33, 150, 243), 0.4);
         }
       `}</style>
     </div>

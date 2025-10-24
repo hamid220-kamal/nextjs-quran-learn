@@ -39,6 +39,7 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
 };
 
 export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewProps) {
+  console.log('Rendering AudioSlideView'); // Debug log
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isScrollView, setIsScrollView] = useState(false);
@@ -227,23 +228,45 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
   return (
     <div className="audio-slide-overlay" role="dialog" aria-modal="true">
-      {/* Toggle Button - Moved outside audio-slide-view */}
-      <button 
-        className="menu-toggle-btn" 
-        onClick={toggleSidebar}
-        aria-label="Toggle menu"
-      >
-        <svg 
-          viewBox="0 0 24 24" 
-          width="24" 
-          height="24" 
-          stroke="currentColor" 
-          strokeWidth="2"
-          fill="none"
+      <div className="fixed-toggle-wrapper" style={{
+        position: 'fixed',
+        left: '20px',
+        top: '100px',
+        zIndex: 100002,
+        pointerEvents: 'auto',
+      }}>
+        <button 
+          className="menu-toggle-btn" 
+          onClick={toggleSidebar}
+          aria-label="Toggle menu"
+          style={{
+            backgroundColor: '#2196f3',
+            width: '48px',
+            height: '48px',
+            borderRadius: '8px',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+          }}
         >
-          <path d="M3 12h18M3 6h18M3 18h18" />
-        </svg>
-      </button>
+          <svg 
+            viewBox="0 0 24 24" 
+            width="24" 
+            height="24" 
+            stroke="white" 
+            strokeWidth="2.5"
+            fill="none"
+            style={{
+              display: 'block'
+            }}
+          >
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          </svg>
+        </button>
+      </div>
 
       <div className="audio-slide-view">
         {/* Sidebar */}
@@ -274,35 +297,80 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           </div>
         </div>
 
-        <div className="top-navigation">
-          <div className="nav-controls">
-            <div className="nav-left">
+        <div className="top-navigation" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '70px',
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          zIndex: 1003,
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+          padding: '0 20px'
+        }}>
+          <div className="nav-controls" style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <div className="nav-left" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              position: 'relative',
+              zIndex: 10002
+            }}>
               <button 
-                className="menu-btn" 
-                onClick={toggleSidebar}
-                aria-label="Toggle menu"
-              >
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
-                  <line x1="4" y1="6" x2="20" y2="6" />
-                  <line x1="4" y1="12" x2="20" y2="12" />
-                  <line x1="4" y1="18" x2="20" y2="18" />
-                </svg>
-              </button>
-              <button 
-                className="nav-button back-button" 
                 onClick={onClose}
-                aria-label="Back to Surah List"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  zIndex: 1004,
+                  position: 'relative',
+                  margin: '10px 0',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  letterSpacing: '0.3px',
+                  opacity: 1,
+                  visibility: 'visible',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                }}
               >
-                <span className="icon">←</span>
-                <span className="text">Back to Surah List</span>
+                <span>Go back</span>
+                <span>→</span>
               </button>
             </div>
             <button 
               className="nav-button bookmark-button"
               aria-label="Bookmark this surah"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                background: 'rgba(33, 150, 243, 0.3)',
+                border: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                zIndex: 10001,
+              }}
             >
-              <span className="icon">☆</span>
-              <span className="text">Bookmark</span>
+              <span style={{ fontSize: '20px' }}>☆</span>
+              <span>Bookmark</span>
             </button>
           </div>
         </div>
@@ -456,16 +524,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         </div>
       </div>
 
-      {!showCompletion && (
-        <button 
-          onClick={onClose} 
-          className="back-navigation-btn" 
-          aria-label="Back to Surah"
-        >
-          <span className="back-arrow">←</span>
-          <span>Back to Surah</span>
-        </button>
-      )}
+      {/* Removed redundant back button */}
       <style jsx>{`
         .audio-slide-overlay {
           position: fixed;
@@ -474,28 +533,138 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           right: 0;
           bottom: 0;
           background-color: rgba(0, 0, 0, 0.95);
-          z-index: 9999;
+          z-index: 1000;
           display: flex;
           flex-direction: column;
+          pointer-events: auto;
         }
 
-        .menu-toggle-btn {
-          position: absolute;
-          left: 20px;
-          top: 100px;
-          z-index: 100000;
+        /* Z-index hierarchy */
+        .back-button {
+          z-index: 1004 !important;
+        }
+
+        .top-navigation {
+          z-index: 1003 !important;
+        }
+
+        .sidebar {
+          z-index: 1002 !important;
+        }
+
+        .content-container {
+          z-index: 1001 !important;
+        }
+
+        .top-navigation {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 70px;
+          background-color: rgba(0, 0, 0, 0.95);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Main Navigation Styles */
+        .main-nav {
+          position: fixed;
+          top: 80px;
+          left: 0;
+          right: 0;
+          height: 64px;
+          background: #1a1a1a;
+          z-index: 10000;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-wrapper {
+          max-width: 1200px;
+          margin: 0 auto;
+          height: 100%;
+          padding: 0 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .nav-start {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .toggle-btn {
+          width: 40px;
+          height: 40px;
           background: #2196f3;
           border: none;
           border-radius: 8px;
           color: white;
-          width: 44px;
-          height: 44px;
           display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-btn:hover {
+          transform: scale(1.05);
+          background: #1976d2;
+        }
+
+        .toggle-btn svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .nav-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        .fixed-toggle-wrapper {
+          position: fixed !important;
+          z-index: 100002 !important;
+          pointer-events: auto !important;
+        }
+
+        .menu-toggle-btn {
+          position: relative;
+          background: #2196f3 !important;
+          border: none;
+          border-radius: 8px;
+          color: white;
+          width: 48px;
+          height: 48px;
+          display: flex !important;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+          opacity: 1 !important;
+          visibility: visible !important;
+          transform: none !important;
         }
 
         .menu-toggle-btn:hover {
@@ -517,23 +686,14 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         }
 
         .audio-slide-view {
-          position: fixed;
-          left: 20px;
-          top: 90px;
-          z-index: 100000;
-          background: #1e88e5;
-          border: none;
-          border-radius: 50%;
-          color: white;
-          width: 48px;
-          height: 48px;
+          position: relative;
+          width: 100%;
+          height: 100%;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-          font-size: 24px;
+          flex-direction: column;
+          background: rgba(0, 0, 0, 0.95);
+          color: white;
+          z-index: 1000;
         }
 
         .sidebar-toggle:hover {
@@ -617,7 +777,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
         .top-navigation {
           position: fixed;
-          top: 80px;
+          top: 0;
           left: 0;
           right: 0;
           padding: 16px;
@@ -627,6 +787,9 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           z-index: 10000;
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          height: 80px;
+          display: flex;
+          align-items: center;
         }
 
         .nav-controls {
@@ -687,6 +850,10 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           transition: all 0.2s ease;
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
+          position: relative;
+          z-index: 10001;
+          opacity: 1;
+          visibility: visible;
         }
 
         .nav-button .icon {
@@ -715,9 +882,11 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           flex: 1;
           overflow-y: auto;
           padding: 24px;
-          margin-top: 64px;
+          margin-top: 90px;
           transition: all 0.3s ease;
           margin-left: ${isSidebarOpen ? '280px' : '0'};
+          position: relative;
+          z-index: 9998;
         }
 
         .content-container.scroll-view {

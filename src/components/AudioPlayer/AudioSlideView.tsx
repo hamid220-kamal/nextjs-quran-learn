@@ -198,14 +198,28 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
   return (
     <div className="audio-slide-view" role="dialog" aria-modal="true">
-      <button 
-        onClick={onClose} 
-        className="go-back-button" 
-        aria-label="Go back"
-      >
-        <span className="back-icon">←</span>
-        <span>Go Back</span>
-      </button>
+      <div className="nav-header">
+        <button 
+          onClick={onClose} 
+          className="go-back-button" 
+          aria-label="Go back to previous page"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Back</span>
+        </button>
+      </div>
 
       <div className="content-container">
         <div className="reciter-panel" aria-hidden={showCompletion}>
@@ -367,32 +381,42 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         </button>
       )}
       <style jsx>{`
-        .go-back-button {
+        .nav-header {
           position: fixed;
-          top: 20px;
-          left: 20px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 20px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          color: white;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
+          top: 0;
+          left: 0;
+          right: 0;
+          padding: 16px;
+          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
           z-index: 1100;
         }
 
+        .go-back-button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          background: rgba(255, 255, 255, 0.15);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
         .go-back-button:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.25);
           transform: translateY(-1px);
         }
 
-        .back-icon {
-          font-size: 1.2rem;
-          line-height: 1;
+        .go-back-button svg {
+          width: 20px;
+          height: 20px;
+          stroke: currentColor;
         }
       `}</style>
     </div>

@@ -15,6 +15,8 @@
   transform: translateZ(0);
   height: calc(100vh - 60px);
   width: 100vw;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .slide-header {
@@ -188,22 +190,18 @@
 }
 
 .verse-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   width: 90%;
   max-width: 1200px;
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   align-items: center;
   animation: fadeIn 0.5s ease-in-out;
-  margin-top: 20px;
-  max-height: calc(100vh - 180px); /* Adjusted for navbar and header */
-  overflow-y: auto;
+  margin: 100px auto 40px;
+  min-height: auto;
 }
 
 .verse-content::-webkit-scrollbar {
@@ -223,11 +221,9 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -45%);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
   }
 }
 

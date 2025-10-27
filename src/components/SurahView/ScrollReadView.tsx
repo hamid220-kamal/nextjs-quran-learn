@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Verse } from '@/types/QuranTypes';
+import styles from './ScrollReadView.module.css';
 
 interface ScrollReadViewProps {
   surahNumber: number;
@@ -90,49 +91,20 @@ export default function ScrollReadView({
   };
 
   return (
-    <div className="scroll-read-view" style={{
-      backgroundImage: `url(${backgroundImageUrl})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      minHeight: '100vh',
-      position: 'relative',
-    }}>
-      {/* Overlay */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      }} />
+    <div 
+      className={styles.scrollReadView} 
+      style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+    >
+      <div className={styles.overlay} />
 
-      {/* Header */}
-      <div style={{
-        position: 'sticky',
-        top: 0,
-        padding: '1rem',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        zIndex: 10,
-      }}>
+      <div className={styles.header}>
         <h2>{surahName}</h2>
         <div>Verse {currentVerse} of {totalVerses}</div>
       </div>
 
-      {/* Verses Container */}
       <div 
+        className={styles.versesContainer}
         onScroll={handleScroll}
-        style={{
-          height: 'calc(100vh - 64px)',
-          overflowY: 'auto',
-          padding: '2rem',
-          position: 'relative',
-          zIndex: 1,
-        }}
       >
         {loading ? (
           <div style={{ color: 'white', textAlign: 'center' }}>
@@ -148,34 +120,13 @@ export default function ScrollReadView({
               key={verse.number}
               ref={el => verseRefs.current[index] = el}
               onClick={() => handleVerseClick(verse.number)}
-              style={{
-                padding: '1rem',
-                marginBottom: '1rem',
-                backgroundColor: currentVerse === verse.number 
-                  ? 'rgba(0, 0, 0, 0.3)' 
-                  : 'transparent',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s ease',
-              }}
+              className={`${styles.verseCard} ${currentVerse === verse.number ? styles.active : ''}`}
             >
-              {/* Arabic Text */}
-              <div style={{
-                fontSize: '1.5rem',
-                textAlign: 'right',
-                direction: 'rtl',
-                color: 'white',
-                marginBottom: '1rem',
-              }}>
+              <div className={styles.verseNumber}>Verse {verse.number}</div>
+              <div className={styles.arabicText}>
                 {verse.arabic}
               </div>
-
-              {/* English Translation */}
-              <div style={{
-                color: 'rgba(255, 255, 255, 0.9)',
-                fontSize: '1.1rem',
-                lineHeight: '1.6',
-              }}>
+              <div className={styles.translationText}>
                 {verse.translation}
               </div>
             </div>

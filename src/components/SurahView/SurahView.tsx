@@ -4,6 +4,7 @@ import SurahIntroduction from '../SurahIntroduction/SurahIntroduction';
 import AudioView from '../AudioPlayer/AudioView';
 import ScrollReadView from '../ScrollReadView/ScrollReadView';
 import SlideView from '../SlideView/SlideView';
+import ToggleMenu from '../Controls/ToggleMenu';
 import './SurahView.css';
 
 interface SurahViewProps {
@@ -97,7 +98,39 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
   const [showAudioView, setShowAudioView] = useState(false);
   const [showScrollReadView, setShowScrollReadView] = useState(false);
   const [showSlideView, setShowSlideView] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const surahIntro = getSurahIntroduction(surah.number);
+
+  const handleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.share({
+        title: `Surah ${surah.englishName}`,
+        text: `Read Surah ${surah.englishName} on QuranicLearn`,
+        url: url,
+      });
+    } catch (err) {
+      // Fallback to clipboard
+      navigator.clipboard.writeText(url);
+      // TODO: Add toast notification
+      console.log('URL copied to clipboard');
+    }
+  };
+
+  const handleBookmark = () => {
+    // TODO: Implement bookmark functionality
+    console.log('Bookmark clicked');
+  };
   return (
     <div 
       className="surah-view" 
@@ -105,6 +138,16 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`
       }}
     >
+      <ToggleMenu 
+        onFullScreen={handleFullScreen}
+        onScrollViewToggle={() => setShowScrollReadView(!showScrollReadView)}
+        onBookmarkToggle={handleBookmark}
+        onShareClick={handleShare}
+        isFullScreen={isFullScreen}
+        isScrollView={showScrollReadView}
+        currentView={showAudioView ? 'audio' : showScrollReadView ? 'scroll' : showSlideView ? 'slide' : 'surah'}
+      />
+
       {showSlideView ? (
         <SlideView
           surahNumber={surah.number}

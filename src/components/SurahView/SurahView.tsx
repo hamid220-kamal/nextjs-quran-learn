@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSurahIntroduction } from '../../data/surahIntroductions';
 import SurahIntroduction from '../SurahIntroduction/SurahIntroduction';
 import AudioView from '../AudioPlayer/AudioView';
+import ScrollReadView from '../ScrollReadView/ScrollReadView';
 import './SurahView.css';
 
 interface SurahViewProps {
@@ -93,6 +94,7 @@ const TypeWriter = ({ arabicText, englishText, englishMeaning }: TypeWriterProps
 export default function SurahView({ surah, onBack, backgroundImage }: SurahViewProps) {
   const [showIntroduction, setShowIntroduction] = useState(false);
   const [showAudioView, setShowAudioView] = useState(false);
+  const [showScrollReadView, setShowScrollReadView] = useState(false);
   const surahIntro = getSurahIntroduction(surah.number);
   return (
     <div 
@@ -101,17 +103,27 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`
       }}
     >
-      <div className="surah-view-header" style={{ paddingTop: '80px', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px' }}>
-        <button onClick={onBack} className="back-button">
-          ← Go back
-        </button>
-        <div className="bookmark-section">
-          <button className="bookmark-button">
-            <span className="bookmark-icon">🔖</span>
-            Bookmarks
-          </button>
-        </div>
-      </div>
+      {showScrollReadView ? (
+        <ScrollReadView
+          surahNumber={surah.number}
+          surahName={surah.englishName}
+          totalVerses={surah.numberOfAyahs}
+          backgroundImageUrl={backgroundImage}
+          onBack={() => setShowScrollReadView(false)}
+        />
+      ) : (
+        <>
+          <div className="surah-view-header" style={{ paddingTop: '80px', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px' }}>
+            <button onClick={onBack} className="back-button">
+              ← Go back
+            </button>
+            <div className="bookmark-section">
+              <button className="bookmark-button">
+                <span className="bookmark-icon">🔖</span>
+                Bookmarks
+              </button>
+            </div>
+          </div>
 
       <div className="surah-view-content">
         <div className="quran-icon-circle">
@@ -132,11 +144,14 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
               <span className="action-text">Slide View</span>
             </button>
             
-            <button className="feature-button read-button">
+            <button 
+              className="feature-button read-button"
+              onClick={() => setShowScrollReadView(true)}
+            >
               <span className="action-icon">📜</span>
               <span className="action-text">Scroll & Read</span>
             </button>
-
+            
             <button 
               className="feature-button audio-button"
               onClick={() => setShowAudioView(true)}
@@ -172,6 +187,8 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
           )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
-};
+}

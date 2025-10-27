@@ -18,6 +18,8 @@ interface Verse {
   translation: string;
 }
 
+import { createPortal } from 'react-dom';
+
 export default function SlideView({
   surahNumber,
   surahName,
@@ -142,11 +144,16 @@ export default function SlideView({
 
   const currentVerse = verses[currentVerseIndex];
 
-  return (
+  return typeof document !== 'undefined' ? createPortal(
     <div 
       className="slide-view" 
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${backgroundImageUrl})`
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${backgroundImageUrl})`,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
       }}
       {...handlers}
     >
@@ -158,12 +165,15 @@ export default function SlideView({
           Back
         </button>
         <div className="surah-info">
-          <h2>
-            {surahName}
-            <span style={{ opacity: 0.9 }}>
+          <div className="surah-logo">
+            {surahNumber}
+          </div>
+          <div className="surah-details">
+            <h3 className="surah-name">{surahName}</h3>
+            <span className="verse-count">
               {currentVerseIndex + 1} / {totalVerses}
             </span>
-          </h2>
+          </div>
         </div>
         <div className="controls">
           <button 
@@ -215,6 +225,7 @@ export default function SlideView({
         <div className="arabic-text">{currentVerse?.text}</div>
         <div className="translation-text">{currentVerse?.translation}</div>
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

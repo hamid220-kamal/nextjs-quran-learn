@@ -1,0 +1,282 @@
+/* CSS Variables for Responsive Design */
+:root {
+  --header-height: clamp(60px, 8vh, 80px);
+  --card-min-width: clamp(250px, 45vw, 300px);
+  --spacing-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+  --spacing-sm: clamp(0.5rem, 1vw, 1rem);
+  --spacing-md: clamp(1rem, 2vw, 1.5rem);
+  --spacing-lg: clamp(1.5rem, 3vw, 2rem);
+  --font-size-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+  --font-size-sm: clamp(0.875rem, 1.75vw, 1rem);
+  --font-size-md: clamp(1rem, 2vw, 1.25rem);
+  --font-size-lg: clamp(1.25rem, 2.5vw, 1.5rem);
+  --font-size-xl: clamp(1.5rem, 3vw, 2rem);
+}
+
+/* Layout & Container */
+.quran-player-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+/* Header Styles */
+.player-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: var(--spacing-md);
+  z-index: 100;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .player-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Search Bar */
+.search-bar {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Reciter Selection */
+.reciter-select-container {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .reciter-select-container {
+    width: 300px;
+  }
+}
+
+.reciter-search {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.reciter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Surah Cards Grid */
+.surah-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.surah-card {
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.surah-card:hover {
+  transform: translateY(-4px);
+}
+
+.surah-card__overlay {
+  height: 100%;
+  padding: var(--spacing-md);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.surah-card__number {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+}
+
+.surah-card__content {
+  margin-top: auto;
+}
+
+.surah-card__name-ar {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-xs);
+}
+
+.surah-card__details {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+/* Active Player Section */
+.active-player-section {
+  padding: var(--spacing-md);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: #666;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #f5f5f5;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.pagination button.active {
+  background: #2196f3;
+  color: white;
+  border-color: #2196f3;
+}
+
+/* Loading States */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: #666;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) {
+  .surah-card {
+    aspect-ratio: 3/2;
+  }
+
+  .pagination button {
+    min-width: 44px;
+    height: 44px;
+    padding: var(--spacing-sm);
+  }
+
+  .back-button,
+  .search-bar input,
+  .reciter-search {
+    min-height: 44px;
+  }
+}
+
+/* Small Screen Adjustments */
+@media (max-width: 480px) {
+  :root {
+    --card-min-width: 100%;
+  }
+
+  .player-header {
+    padding: var(--spacing-sm);
+  }
+
+  .surah-cards-grid {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .pagination {
+    gap: var(--spacing-xs);
+  }
+}
+
+/* Error Message */
+.error-message {
+  padding: var(--spacing-md);
+  background: #fee;
+  color: #c00;
+  border-radius: 8px;
+  margin: var(--spacing-md) 0;
+  text-align: center;
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .surah-card,
+  .back-button,
+  .pagination button {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (forced-colors: active) {
+  .surah-card {
+    border: 2px solid currentColor;
+  }
+}

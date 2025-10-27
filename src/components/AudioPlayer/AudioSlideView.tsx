@@ -526,6 +526,18 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
       {/* Removed redundant back button */}
       <style jsx>{`
+        /* CSS Variables for Responsive Design */
+        :root {
+          --header-height: clamp(60px, 8vh, 80px);
+          --sidebar-width: clamp(240px, 25vw, 320px);
+          --font-size-small: clamp(0.875rem, 1.5vw, 1rem);
+          --font-size-medium: clamp(1rem, 2vw, 1.125rem);
+          --font-size-large: clamp(1.25rem, 2.5vw, 1.5rem);
+          --spacing-small: clamp(0.5rem, 1vw, 0.75rem);
+          --spacing-medium: clamp(1rem, 2vw, 1.5rem);
+          --spacing-large: clamp(1.5rem, 3vw, 2rem);
+        }
+
         .audio-slide-overlay {
           position: fixed;
           top: 0;
@@ -537,6 +549,14 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           display: flex;
           flex-direction: column;
           pointer-events: auto;
+          overflow: hidden;
+          font-size: var(--font-size-medium);
+        }
+
+        @media (max-width: 480px) {
+          .audio-slide-overlay {
+            font-size: var(--font-size-small);
+          }
         }
 
         /* Z-index hierarchy */
@@ -712,17 +732,26 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
         .sidebar {
           position: fixed;
-          left: -280px;
+          left: calc(-1 * var(--sidebar-width));
           top: 0;
           bottom: 0;
-          width: 280px;
+          width: var(--sidebar-width);
           background: rgba(0, 0, 0, 0.9);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          z-index: 10000;
+          z-index: 1002;
           transition: all 0.3s ease;
-          padding-top: 100px;
+          padding-top: var(--header-height);
           border-right: 1px solid rgba(255, 255, 255, 0.1);
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 480px) {
+          .sidebar {
+            width: 85vw;
+            left: -85vw;
+          }
         }
 
         .sidebar.open {
@@ -881,12 +910,20 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         .content-container {
           flex: 1;
           overflow-y: auto;
-          padding: 24px;
-          margin-top: 90px;
+          padding: var(--spacing-medium);
+          margin-top: var(--header-height);
           transition: all 0.3s ease;
-          margin-left: ${isSidebarOpen ? '280px' : '0'};
+          margin-left: ${isSidebarOpen ? 'var(--sidebar-width)' : '0'};
           position: relative;
           z-index: 9998;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+          .content-container {
+            margin-left: 0;
+            padding: var(--spacing-small);
+          }
         }
 
         .content-container.scroll-view {
@@ -904,12 +941,47 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           }
         }
 
-        .surah-controls {
+        .controls {
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
-          max-width: 1200px;
-          margin: 0 auto;
+          gap: var(--spacing-medium);
+          padding: var(--spacing-medium);
+          flex-wrap: wrap;
+        }
+
+        .controls button {
+          min-width: clamp(80px, 15vw, 120px);
+          min-height: 44px;
+          padding: var(--spacing-small) var(--spacing-medium);
+          font-size: var(--font-size-small);
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .controls button:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        .controls button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        @media (max-width: 480px) {
+          .controls {
+            gap: var(--spacing-small);
+            padding: var(--spacing-small);
+          }
+
+          .controls button {
+            flex: 1;
+            min-width: auto;
+          }
         }
 
         .back-to-surah,

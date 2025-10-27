@@ -7,6 +7,7 @@ import QuranPlayer, { PlaylistItem } from './QuranPlayer';
 import '../app/quran-player/quran-player.css';
 import '../app/quran-player/surah-cards.css';
 import '../app/quran-player/utils.css';
+import './QuranPlayer/responsive.css';
 
 const SURAH_AUDIO_API = (surahNum: number, edition: string) =>
   `https://api.alquran.cloud/v1/surah/${surahNum}/${edition}`;

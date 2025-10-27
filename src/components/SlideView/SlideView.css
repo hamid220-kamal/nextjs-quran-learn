@@ -1,0 +1,328 @@
+.slide-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  z-index: 1001;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.back-button {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.back-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.surah-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.surah-info h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.surah-info p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-right: -0.5rem;
+}
+
+.control-button {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.control-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.control-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.control-button.active {
+  background: #4CAF50;
+}
+
+.verse-navigation {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.nav-button {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+
+.nav-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.verse-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 1200px;
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  animation: fadeIn 0.5s ease-in-out;
+  margin-top: 40px; /* Add space for header */
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.verse-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.verse-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.verse-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.verse-number {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.arabic-text {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 2;
+  font-family: 'Noto Naskh Arabic', serif;
+  direction: rtl;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.translation-text {
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  line-height: 1.8;
+  opacity: 0.9;
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .verse-content {
+    width: 95%;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .arabic-text {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    padding: 0 1rem;
+  }
+
+  .translation-text {
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+  }
+
+  .nav-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .nav-button {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.loading,
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  text-align: center;
+  color: white;
+}
+
+.error-message h3 {
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+}
+
+.error-message button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .slide-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  .verse-container {
+    padding: 1rem;
+  }
+
+  .nav-button {
+    padding: 1rem;
+    font-size: 2rem;
+  }
+
+  .verse-content {
+    padding: 1rem;
+  }
+}
+
+/* Fullscreen styles */
+:fullscreen .slide-view {
+  background-size: cover;
+}
+
+:fullscreen .slide-header {
+  top: 0;
+  padding-top: 2rem;
+}

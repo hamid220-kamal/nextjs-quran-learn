@@ -3,6 +3,7 @@ import { getSurahIntroduction } from '../../data/surahIntroductions';
 import SurahIntroduction from '../SurahIntroduction/SurahIntroduction';
 import AudioView from '../AudioPlayer/AudioView';
 import ScrollReadView from '../ScrollReadView/ScrollReadView';
+import SlideView from '../SlideView/SlideView';
 import './SurahView.css';
 
 interface SurahViewProps {
@@ -95,6 +96,7 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
   const [showIntroduction, setShowIntroduction] = useState(false);
   const [showAudioView, setShowAudioView] = useState(false);
   const [showScrollReadView, setShowScrollReadView] = useState(false);
+  const [showSlideView, setShowSlideView] = useState(false);
   const surahIntro = getSurahIntroduction(surah.number);
   return (
     <div 
@@ -103,7 +105,15 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`
       }}
     >
-      {showScrollReadView ? (
+      {showSlideView ? (
+        <SlideView
+          surahNumber={surah.number}
+          surahName={surah.englishName}
+          totalVerses={surah.numberOfAyahs}
+          backgroundImageUrl={backgroundImage}
+          onBack={() => setShowSlideView(false)}
+        />
+      ) : showScrollReadView ? (
         <ScrollReadView
           surahNumber={surah.number}
           surahName={surah.englishName}
@@ -139,7 +149,10 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
 
         <div className="actions-layout">
           <div className="main-actions">
-            <button className="feature-button view-button">
+            <button 
+              className="feature-button view-button"
+              onClick={() => setShowSlideView(true)}
+            >
               <span className="action-icon">🖥️</span>
               <span className="action-text">Slide View</span>
             </button>

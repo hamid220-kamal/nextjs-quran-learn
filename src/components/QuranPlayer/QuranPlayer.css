@@ -1,43 +1,52 @@
 .quran-player {
-  margin-top: 80px; /* Space below navbar */
+  margin-top: var(--player-margin-top);
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: var(--spacing-md);
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+  transition: all 0.3s ease;
 }
 
 .qp-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
+  margin-bottom: var(--spacing-md);
+  padding: 0 var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .qp-track-info {
   flex: 1;
+  min-width: 200px;
 }
 
 .qp-title {
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
 }
 
 .qp-sub {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: #666;
+  line-height: 1.6;
 }
 
 .qp-times {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: #666;
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
+  align-items: center;
+  flex-wrap: nowrap;
+}
   align-items: center;
 }
 

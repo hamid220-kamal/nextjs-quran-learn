@@ -11,6 +11,9 @@
   --font-size-md: clamp(1rem, 2vw, 1.25rem);
   --font-size-lg: clamp(1.25rem, 2.5vw, 1.5rem);
   --font-size-xl: clamp(1.5rem, 3vw, 2rem);
+  --player-margin-top: clamp(70px, 10vh, 100px);
+  --player-controls-height: clamp(44px, 6vh, 56px);
+  --button-size: clamp(36px, 5vh, 48px);
 }
 
 /* Layout & Container */

@@ -1,31 +1,34 @@
 .scroll-read-view {
   position: fixed;
-  top: 0;
+  top: 64px; /* Start below navbar */
   left: 0;
   right: 0;
   bottom: 0;
   background-color: #000;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   color: white;
   z-index: 1000;
+  overflow: hidden;
 }
 
 .scroll-read-header {
-  position: fixed;
-  top: 80px;
+  position: sticky;
+  top: 0;
   left: 0;
   right: 0;
-  padding: 1rem;
+  padding: 16px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  z-index: 1001;
+  z-index: 2001;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .back-button {
@@ -78,29 +81,30 @@
 }
 
 .verses-container {
-  margin-top: calc(80px + 5rem); /* Account for navbar (80px) and new header height */
-  padding: 1rem;
+  flex: 1;
+  width: 100%;
   overflow-y: auto;
-  height: calc(100vh - 80px - 5rem); /* Subtract navbar and new header height */
   scroll-behavior: smooth;
+  padding: 24px 16px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding-bottom: 2rem;
+  position: relative;
 }
 
 .verse-container {
   background: rgba(255, 255, 255, 0.05);
-  margin: 1rem auto; /* Center horizontally */
-  padding: 2rem 1.5rem;
-  border-radius: 8px;
+  margin: 12px auto;
+  padding: 28px 24px;
+  border-radius: 12px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 900px; /* Maximum width for larger screens */
-  width: 95%; /* Responsive width */
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .verse-container.active {
@@ -121,56 +125,99 @@
   margin-bottom: 1rem;
 }
 
+.verse-number {
+  background: rgba(255, 255, 255, 0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .verse-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
   width: 100%;
-  align-items: center;
-  text-align: center;
 }
 
 .arabic-text {
-  font-size: clamp(1.8rem, 4vw, 2.5rem); /* Responsive font size */
-  line-height: 2;
-  font-family: 'Noto Naskh Arabic', serif;
-  width: 100%;
-  direction: rtl; /* For proper Arabic text direction */
+  font-family: 'Uthmanic', 'Noto Naskh Arabic', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1.8;
+  direction: rtl;
   text-align: center;
+  margin: 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .translation-text {
-  font-size: clamp(1rem, 2vw, 1.2rem); /* Responsive font size */
-  line-height: 1.8;
-  opacity: 0.9;
-  max-width: 800px; /* Maximum width for readability */
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 800px;
   width: 100%;
   text-align: center;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .verses-container {
+    padding: 90px 12px 24px;
+  }
+
   .verse-container {
-    padding: 1.5rem 1rem;
-    margin: 0.75rem auto;
+    padding: 24px 16px;
+    margin: 12px auto;
   }
   
   .verse-number {
-    width: 2rem;
-    height: 2rem;
+    width: 32px;
+    height: 32px;
     font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  .verse-content {
+    gap: 20px;
+  }
+
+  .arabic-text {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    line-height: 1.8;
   }
 }
 
 @media (max-width: 480px) {
+  .verses-container {
+    padding: 80px 8px 16px;
+  }
+
   .verse-container {
-    padding: 1rem;
-    margin: 0.5rem auto;
+    padding: 20px 12px;
+    margin: 8px auto;
+    border-radius: 8px;
   }
   
+  .verse-content {
+    gap: 16px;
+  }
+
+  .arabic-text {
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    line-height: 1.6;
+  }
+
   .translation-text {
-    padding: 0 0.5rem;
+    font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+    line-height: 1.6;
   }
 }
 

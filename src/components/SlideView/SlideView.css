@@ -16,14 +16,14 @@
 
 .slide-header {
   position: fixed;
-  top: 0;
+  top: 64px;
   left: 0;
   right: 0;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 20;
+  z-index: 2001;
 }
 
 .back-button {

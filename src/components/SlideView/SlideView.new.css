@@ -1,0 +1,175 @@
+.slide-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.9));
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.slide-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.back-button {
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.verse-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1000px, 92%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.verse-number {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.arabic-text {
+  font-family: 'Uthmanic', 'Noto Naskh Arabic', serif;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  line-height: 1.3;
+  direction: rtl;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.translation-text {
+  font-size: clamp(1.1rem, 2.4vw, 1.3rem);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 12px 0 0;
+  padding: 0;
+  max-width: 800px;
+}
+
+.navigation-controls {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  pointer-events: none;
+}
+
+.nav-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 768px) {
+  .verse-content {
+    width: 94%;
+  }
+
+  .arabic-text {
+    font-size: clamp(3rem, 11vw, 5rem);
+  }
+
+  .translation-text {
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .verse-content {
+    width: 96%;
+  }
+
+  .arabic-text {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+
+  .translation-text {
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    margin-top: 8px;
+  }
+
+  .nav-button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .back-button span:last-child {
+    display: none;
+  }
+}
+
+@media (max-height: 600px) {
+  .arabic-text {
+    font-size: clamp(2.5rem, 9vh, 4rem);
+  }
+
+  .translation-text {
+    font-size: clamp(0.9rem, 2vh, 1rem);
+    margin-top: 8px;
+  }
+}

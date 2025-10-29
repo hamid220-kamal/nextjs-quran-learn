@@ -2,6 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import './AudioSlideView.css';
+
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import './AudioSlideView.css';
 
 interface AudioSlideViewProps {
   surahNumber: number;
@@ -32,43 +39,16 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
     } catch (error) {
       console.log(`Attempt ${i + 1} failed, retrying...`);
       if (i === retries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
   throw new Error('Failed to fetch after retries');
 };
 
 export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewProps) {
-  console.log('Rendering AudioSlideView'); // Debug log
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isScrollView, setIsScrollView] = useState(false);
-  
-  // Add useEffect to handle body overflow
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
-  const toggleScrollView = () => {
-    setIsScrollView(!isScrollView);
-  };
   const [currentAyah, setCurrentAyah] = useState<Ayah | null>(null);
   const [reciters, setReciters] = useState<Reciter[]>([]);
   const [selectedReciter, setSelectedReciter] = useState<string>('');
@@ -83,84 +63,77 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const completionTriggeredRef = useRef(false);
+  const [textLength, setTextLength] = useState<'short' | 'medium' | 'long'>('medium');
 
+  // Prevent body scroll while overlay is open
   useEffect(() => {
-    fetchReciters();
+    const old = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = old || '';
+    };
   }, []);
 
   useEffect(() => {
-    if (selectedReciter) {
-      fetchAyah(currentAyahIndex);
-    }
+    // When a reciter is selected, fetch the first ayah
+    if (selectedReciter) fetchAyah(currentAyahIndex).catch(console.error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReciter, currentAyahIndex]);
 
   useEffect(() => {
-    if (showCompletion) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  }, [showCompletion]);
+    if (currentAyah) setTextLength(determineTextLength(currentAyah.text || ''));
+  }, [currentAyah]);
+
+  const determineTextLength = (text: string): 'short' | 'medium' | 'long' => {
+    if (!text) return 'medium';
+    const cleaned = text.replace(/[^\\p{L}\\p{N}]/gu, '');
+    const len = cleaned.length;
+    if (len <= 40) return 'short';
+    if (len <= 120) return 'medium';
+    return 'long';
+  };
 
   const fetchReciters = async () => {
     try {
-      const response = await fetch('https://api.alquran.cloud/v1/edition?format=audio&type=versebyverse');
-      const data = await response.json();
-      const formattedReciters = data.data.map((reciter: any) => ({
-        identifier: reciter.identifier,
-        name: reciter.englishName,
-        language: reciter.language
-      }));
-      setReciters(formattedReciters);
-    } catch (error) {
-      console.error('Error fetching reciters:', error);
+      const res = await fetch('https://api.alquran.cloud/v1/edition?format=audio&type=versebyverse');
+      const data = await res.json();
+      const formatted = (data.data || []).map((r: any) => ({ identifier: r.identifier, name: r.englishName, language: r.language }));
+      setReciters(formatted);
+    } catch (e) {
+      console.error('fetchReciters error', e);
     }
   };
+
+  useEffect(() => {
+    fetchReciters();
+  }, []);
 
   const fetchAyah = async (ayahNumber: number) => {
     try {
       setIsLoading(true);
       setError(null);
       setIsAudioLoaded(false);
-      
-      // Fetch Arabic text and audio with retry
-      const arabicResponse = await fetchWithRetry(
-        `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/${selectedReciter}`
-      );
-      const arabicData = await arabicResponse.json();
 
-      // Fetch English translation with retry
-      const translationResponse = await fetchWithRetry(
-        `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/en.asad`
-      );
-      const translationData = await translationResponse.json();
+      const arabicResp = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/${selectedReciter}`);
+      const arabicData = await arabicResp.json();
 
-      if (!arabicData.data || !translationData.data) {
-        throw new Error('Invalid API response format');
-      }
+      const translationResp = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/en.asad`);
+      const translationData = await translationResp.json();
 
-      setCurrentAyah({
-        number: ayahNumber,
-        text: arabicData.data.text,
-        translation: translationData.data.text,
-        audio: arabicData.data.audio || ''
-      });
-      setTotalAyahs(arabicData.data.surah.numberOfAyahs);
-    } catch (error) {
-      console.error('Error fetching ayah:', error);
-      setError('Error loading verse. Please try again.');
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      setIsPlaying(false);
+      if (!arabicData.data || !translationData.data) throw new Error('Invalid API response');
+
+      setCurrentAyah({ number: ayahNumber, text: arabicData.data.text, translation: translationData.data.text, audio: arabicData.data.audio || '' });
+      setTotalAyahs(arabicData.data.surah?.numberOfAyahs || 0);
+    } catch (e) {
+      console.error(e);
+      setError('Failed to load verse');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleReciterSelect = (reciterId: string) => {
-    setSelectedReciter(reciterId);
+  const handleReciterSelect = (id: string) => {
+    setSelectedReciter(id);
     setCurrentAyahIndex(1);
     setShowCompletion(false);
     setIsPlaying(true);
@@ -169,21 +142,13 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
   const handleAudioEnd = () => {
     if (completionTriggeredRef.current) return;
-
     if (currentAyahIndex === totalAyahs) {
-      // Last ayah completed - show completion screen
       completionTriggeredRef.current = true;
       setIsPlaying(false);
-      
-      // Brief pause before showing completion
-      setTimeout(() => {
-        setShowCompletion(true);
-      }, 500);
+      setTimeout(() => setShowCompletion(true), 500);
       return;
     }
-
-    // Move to next ayah automatically
-    setCurrentAyahIndex((prev) => prev + 1);
+    setCurrentAyahIndex((p) => p + 1);
   };
 
   const togglePlayPause = () => {
@@ -192,836 +157,184 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().catch((e) => console.error('Playback error', e));
+      audioRef.current.play().catch(console.error);
       setIsPlaying(true);
     }
   };
 
-  const handleNext = () => {
-    if (currentAyahIndex < totalAyahs) {
-      setCurrentAyahIndex((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentAyahIndex > 1) {
-      setCurrentAyahIndex((prev) => prev - 1);
-    }
-  };
-
-  const handlePlayAgain = () => {
-    setShowCompletion(false);
-    setCurrentAyahIndex(1);
-    completionTriggeredRef.current = false;
-    setIsPlaying(true);
-  };
-
-  const handleBackToSurah = () => {
-    setShowCompletion(false);
-    completionTriggeredRef.current = false;
-    onClose(); // This should be handled by parent component to close the view
-  };
-
-  const filteredReciters = reciters.filter((reciter) =>
-    reciter.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleNext = () => setCurrentAyahIndex((p) => Math.min(p + 1, totalAyahs));
+  const handlePrevious = () => setCurrentAyahIndex((p) => Math.max(1, p - 1));
 
   return (
     <div className="audio-slide-overlay" role="dialog" aria-modal="true">
-      <div className="fixed-toggle-wrapper" style={{
-        position: 'fixed',
-        left: '20px',
-        top: '100px',
-        zIndex: 100002,
-        pointerEvents: 'auto',
-      }}>
-        <button 
-          className="menu-toggle-btn" 
-          onClick={toggleSidebar}
-          aria-label="Toggle menu"
-          style={{
-            backgroundColor: '#2196f3',
-            width: '48px',
-            height: '48px',
-            borderRadius: '8px',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-          }}
-        >
-          <svg 
-            viewBox="0 0 24 24" 
-            width="24" 
-            height="24" 
-            stroke="white" 
-            strokeWidth="2.5"
-            fill="none"
-            style={{
-              display: 'block'
-            }}
-          >
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          </svg>
-        </button>
+      <div className="top-navigation">
+        <div className="nav-wrapper">
+          <div className="nav-start">
+            <button onClick={onClose} className="nav-button">
+              <span>←</span>
+              <span>Back</span>
+            </button>
+            <h1 className="nav-title">Surah {surahNumber}</h1>
+          </div>
+          <div className="nav-end">
+            <button 
+              onClick={() => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }} 
+              className="nav-icon-button"
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            >
+              {isFullscreen ? '⊠' : '⊞'}
+            </button>
+            <button 
+              onClick={() => setIsSidebarOpen((s) => !s)} 
+              className="nav-icon-button"
+              aria-label="Select reciter"
+            >
+              🎧
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="audio-slide-view">
-        {/* Sidebar */}
-        <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-          <div className="sidebar-content">
-            <button onClick={onClose} className="sidebar-button">
-              <span className="icon">←</span>
-              <span>Go Back</span>
-            </button>
-            
-            <button onClick={toggleFullscreen} className="sidebar-button">
-              <span className="icon">{isFullscreen ? '⎌' : '↔'}</span>
-              <span>Full Screen</span>
-            </button>
-
-            <button onClick={toggleScrollView} className="sidebar-button">
-              <span className="icon">⇕</span>
-              <span>Scroll View</span>
-            </button>
-
-            <button 
-              onClick={() => setSelectedReciter('')} 
-              className="sidebar-button"
-            >
-              <span className="icon">🎤</span>
-              <span>Reciter</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="top-navigation" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '70px',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          zIndex: 1003,
-          display: 'flex',
-          alignItems: 'center',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-          padding: '0 20px'
-        }}>
-          <div className="nav-controls" style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div className="nav-left" style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              position: 'relative',
-              zIndex: 10002
-            }}>
-              <button 
-                onClick={onClose}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  zIndex: 1004,
-                  position: 'relative',
-                  margin: '10px 0',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  letterSpacing: '0.3px',
-                  opacity: 1,
-                  visibility: 'visible',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-                }}
-              >
-                <span>Go back</span>
-                <span>→</span>
-              </button>
-            </div>
-            <button 
-              className="nav-button bookmark-button"
-              aria-label="Bookmark this surah"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                background: 'rgba(33, 150, 243, 0.3)',
-                border: 'none',
-                borderRadius: '8px',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                zIndex: 10001,
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>☆</span>
-              <span>Bookmark</span>
-            </button>
-          </div>
-        </div>
-
-        <div className={`content-container ${isScrollView ? 'scroll-view' : ''}`}>
-        <div className="reciter-panel" aria-hidden={showCompletion}>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search reciters..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="reciter-search"
-            />
-          </div>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-content">
+          <input placeholder="Search reciters" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           <div className="reciters-list">
-            {filteredReciters.map((reciter) => (
-              <button
-                key={reciter.identifier}
-                onClick={() => handleReciterSelect(reciter.identifier)}
-                className={`reciter-item ${selectedReciter === reciter.identifier ? 'selected' : ''}`}
-              >
-                {reciter.name} ({reciter.language})
+            {reciters.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).map(r => (
+              <button key={r.identifier} onClick={() => handleReciterSelect(r.identifier)} className="sidebar-button">
+                <span className="icon">🎧</span>
+                <span>{r.name}</span>
               </button>
             ))}
           </div>
         </div>
+      </aside>
 
-        <div className="ayah-display" aria-live="polite">
-          <div className="slide-container">
+      <main className={`content-container ${isScrollView ? 'scroll-view' : ''}`}>
+        <div className="ayah-content" aria-live="polite">
+          <AnimatePresence mode="wait">
             {isLoading && (
-              <div className="loading-indicator">
-                Loading verse...
-              </div>
+              <motion.div 
+                className="loading-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="loading-spinner"></div>
+                <div className="loading-text">Loading verse...</div>
+              </motion.div>
             )}
             {error && (
-              <div className="error-message">
-                {error}
-              </div>
+              <motion.div 
+                className="error-message"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <span className="error-icon">⚠️</span>
+                <span>{error}</span>
+                <button onClick={() => fetchAyah(currentAyahIndex)} className="retry-button">
+                  Retry
+                </button>
+              </motion.div>
             )}
-            <AnimatePresence mode="wait" initial={false}>
-              {!showCompletion ? (
-                currentAyah && (
-                  <motion.div
-                    key={`ayah-${currentAyah.number}`}
-                    initial={{ opacity: 0, x: '100%' }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ 
-                      opacity: 0, 
-                      x: '-100%',
-                      transition: { 
-                        duration: 0.7, 
-                        ease: [0.32, 0.72, 0, 1] 
-                      } 
-                    }}
-                    transition={{ 
-                      duration: 0.7, 
-                      ease: [0.32, 0.72, 0, 1]
-                    }}
-                    className="ayah-content"
+            {currentAyah && (
+              <motion.div 
+                className="verse-container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="verse-wrapper">
+                  <div className="verse-number">
+                    {currentAyahIndex} / {totalAyahs}
+                  </div>
+                  <motion.div 
+                    className="arabic-text" 
+                    data-length={textLength}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    <div className="arabic-text">{currentAyah.text}</div>
-                    <div className="translation-text">{currentAyah.translation}</div>
+                    {currentAyah.text}
                   </motion.div>
-                )
-              ) : (
-                <motion.div
-                  key="completion"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ 
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30
-                  }}
-                  className="completion-container"
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Surah complete"
-                >
-                  <div className="completion-message">
-                    <h2>Surah Complete</h2>
-                    <p>You have finished listening to the surah</p>
-                  </div>
-                  <div className="completion-buttons" role="group" aria-label="Completion actions">
-                    <button 
-                      onClick={handlePlayAgain} 
-                      className="completion-btn play-again" 
-                      autoFocus
-                    >
-                      PLAY SURAH AGAIN
-                    </button>
-                    <button 
-                      onClick={handleBackToSurah} 
-                      className="completion-btn back-to-surah"
-                    >
-                      BACK TO SURAH
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <audio
-              ref={audioRef}
-              src={currentAyah?.audio || undefined}
-              onEnded={handleAudioEnd}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onLoadedData={() => setIsAudioLoaded(true)}
-              onError={(e) => {
-                console.error('Audio loading error:', e);
-                setIsAudioLoaded(false);
-                setError('Error loading audio. Please try again.');
-                setIsPlaying(false);
-              }}
-            />
-
-            {!showCompletion && (
-              <>
-                <div className="controls">
-                  <button 
-                    onClick={handlePrevious} 
-                    disabled={currentAyahIndex === 1}
+                  <motion.div 
+                    className="translation-text"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {currentAyah.translation}
+                  </motion.div>
+                </div>
+                
+                <div className="verse-nav">
+                  <button
+                    onClick={handlePrevious}
+                    disabled={currentAyahIndex <= 1}
                     aria-label="Previous verse"
                   >
-                    Previous
+                    ❮
                   </button>
-                  <button 
-                    onClick={togglePlayPause}
-                    aria-label={isPlaying ? 'Pause' : 'Play'}
-                  >
-                    {isPlaying ? 'Pause' : 'Play'}
-                  </button>
-                  <button 
-                    onClick={handleNext} 
-                    disabled={currentAyahIndex === totalAyahs}
+                  <button
+                    onClick={handleNext}
+                    disabled={currentAyahIndex >= totalAyahs}
                     aria-label="Next verse"
                   >
-                    Next
+                    ❯
                   </button>
                 </div>
-
-                <div className="ayah-counter">
-                  Verse {currentAyahIndex} of {totalAyahs}
-                </div>
-              </>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
-      </div>
 
-      {/* Removed redundant back button */}
-      <style jsx>{`
-        /* CSS Variables for Responsive Design */
-        :root {
-          --header-height: clamp(60px, 8vh, 80px);
-          --sidebar-width: clamp(240px, 25vw, 320px);
-          --font-size-small: clamp(0.875rem, 1.5vw, 1rem);
-          --font-size-medium: clamp(1rem, 2vw, 1.125rem);
-          --font-size-large: clamp(1.25rem, 2.5vw, 1.5rem);
-          --spacing-small: clamp(0.5rem, 1vw, 0.75rem);
-          --spacing-medium: clamp(1rem, 2vw, 1.5rem);
-          --spacing-large: clamp(1.5rem, 3vw, 2rem);
-        }
+        <div className="progress-bar">
+          <div 
+            className="progress-indicator" 
+            style={{ width: `${(currentAyahIndex / totalAyahs) * 100}%` }}
+            role="progressbar"
+            aria-valuenow={currentAyahIndex}
+            aria-valuemin={1}
+            aria-valuemax={totalAyahs}
+          />
+        </div>
 
-        .audio-slide-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.95);
-          z-index: 1000;
-          display: flex;
-          flex-direction: column;
-          pointer-events: auto;
-          overflow: hidden;
-          font-size: var(--font-size-medium);
-        }
+        <div className="controls">
+          <button 
+            className="control-button"
+            onClick={handlePrevious} 
+            disabled={currentAyahIndex <= 1}
+            aria-label="Previous verse"
+          >
+            ⮜
+          </button>
+          <button 
+            className="control-button play-pause"
+            onClick={togglePlayPause}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? '⏸' : '▶'}
+          </button>
+          <button 
+            className="control-button"
+            onClick={handleNext} 
+            disabled={currentAyahIndex >= totalAyahs}
+            aria-label="Next verse"
+          >
+            ⮞
+          </button>
+        </div>
 
-        @media (max-width: 480px) {
-          .audio-slide-overlay {
-            font-size: var(--font-size-small);
-          }
-        }
+        {!isScrollView && (
+          <div className="scroll-indicator">
+            <span>Scroll to navigate</span>
+            <span>↕️</span>
+          </div>
+        )}
 
-        /* Z-index hierarchy */
-        .back-button {
-          z-index: 1004 !important;
-        }
-
-        .top-navigation {
-          z-index: 1003 !important;
-        }
-
-        .sidebar {
-          z-index: 1002 !important;
-        }
-
-        .content-container {
-          z-index: 1001 !important;
-        }
-
-        .top-navigation {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 70px;
-          background-color: rgba(0, 0, 0, 0.95);
-          z-index: 10000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Main Navigation Styles */
-        .main-nav {
-          position: fixed;
-          top: 80px;
-          left: 0;
-          right: 0;
-          height: 64px;
-          background: #1a1a1a;
-          z-index: 10000;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-wrapper {
-          max-width: 1200px;
-          margin: 0 auto;
-          height: 100%;
-          padding: 0 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .nav-start {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .toggle-btn {
-          width: 40px;
-          height: 40px;
-          background: #2196f3;
-          border: none;
-          border-radius: 8px;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: transform 0.2s ease;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .toggle-btn:hover {
-          transform: scale(1.05);
-          background: #1976d2;
-        }
-
-        .toggle-btn svg {
-          width: 24px;
-          height: 24px;
-        }
-
-        .nav-btn {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 16px;
-          background: rgba(255, 255, 255, 0.1);
-          border: none;
-          border-radius: 8px;
-          color: white;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .nav-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-
-        .fixed-toggle-wrapper {
-          position: fixed !important;
-          z-index: 100002 !important;
-          pointer-events: auto !important;
-        }
-
-        .menu-toggle-btn {
-          position: relative;
-          background: #2196f3 !important;
-          border: none;
-          border-radius: 8px;
-          color: white;
-          width: 48px;
-          height: 48px;
-          display: flex !important;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-          opacity: 1 !important;
-          visibility: visible !important;
-          transform: none !important;
-        }
-
-        .menu-toggle-btn:hover {
-          background: #1976d2;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
-        }
-
-        .menu-toggle-btn:active {
-          transform: translateY(0);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .menu-toggle-btn svg {
-          width: 24px;
-          height: 24px;
-          stroke: white;
-          stroke-width: 2;
-        }
-
-        .audio-slide-view {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          background: rgba(0, 0, 0, 0.95);
-          color: white;
-          z-index: 1000;
-        }
-
-        .sidebar-toggle:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: scale(1.05);
-        }
-
-        .sidebar-toggle:hover {
-          transform: scale(1.1);
-          background: #2196f3;
-        }
-
-        .sidebar-toggle:active {
-          transform: scale(0.95);
-        }
-
-        .sidebar {
-          position: fixed;
-          left: calc(-1 * var(--sidebar-width));
-          top: 0;
-          bottom: 0;
-          width: var(--sidebar-width);
-          background: rgba(0, 0, 0, 0.9);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          z-index: 1002;
-          transition: all 0.3s ease;
-          padding-top: var(--header-height);
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        @media (max-width: 480px) {
-          .sidebar {
-            width: 85vw;
-            left: -85vw;
-          }
-        }
-
-        .sidebar.open {
-          left: 0;
-          box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .sidebar-content {
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .sidebar-button {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          background: rgba(255, 255, 255, 0.1);
-          border: none;
-          border-radius: 8px;
-          color: white;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          width: 100%;
-          text-align: left;
-        }
-
-        .sidebar-button:hover {
-          background: rgba(255, 255, 255, 0.2);
-          transform: translateX(5px);
-        }
-
-        .sidebar-button .icon {
-          font-size: 20px;
-          width: 24px;
-          text-align: center;
-        }
-
-        .audio-slide-view {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          position: relative;
-          width: 100%;
-          height: 100%;
-          padding-top: 80px;
-        }
-
-        .top-navigation {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          padding: 16px;
-          background: rgba(0, 0, 0, 0.9);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          z-index: 10000;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-          height: 80px;
-          display: flex;
-          align-items: center;
-        }
-
-        .nav-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-
-        .nav-left {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .menu-btn {
-          background: #2196f3;
-          border: none;
-          border-radius: 8px;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          color: white;
-        }
-
-        .menu-btn:hover {
-          background: #1976d2;
-          transform: translateY(-2px);
-        }
-
-        .menu-btn:active {
-          transform: translateY(0);
-        }
-
-        .menu-btn svg {
-          width: 24px;
-          height: 24px;
-        }
-
-        .nav-button {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 24px;
-          background: rgba(255, 255, 255, 0.15);
-          border: none;
-          border-radius: 8px;
-          color: white;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          position: relative;
-          z-index: 10001;
-          opacity: 1;
-          visibility: visible;
-        }
-
-        .nav-button .icon {
-          font-size: 20px;
-          line-height: 1;
-        }
-
-        .nav-button .text {
-          font-weight: 500;
-        }
-
-        .nav-button:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-1px);
-        }
-
-        .bookmark-button {
-          background: rgba(33, 150, 243, 0.3);
-        }
-
-        .bookmark-button:hover {
-          background: rgba(33, 150, 243, 0.4);
-        }
-
-        .content-container {
-          flex: 1;
-          overflow-y: auto;
-          padding: var(--spacing-medium);
-          margin-top: var(--header-height);
-          transition: all 0.3s ease;
-          margin-left: ${isSidebarOpen ? 'var(--sidebar-width)' : '0'};
-          position: relative;
-          z-index: 9998;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        @media (max-width: 768px) {
-          .content-container {
-            margin-left: 0;
-            padding: var(--spacing-small);
-          }
-        }
-
-        .content-container.scroll-view {
-          height: auto;
-          overflow-y: visible;
-        }
-
-        @media (max-width: 768px) {
-          .sidebar {
-            width: 240px;
-            left: -240px;
-          }
-          .content-container {
-            margin-left: 0;
-          }
-        }
-
-        .controls {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: var(--spacing-medium);
-          padding: var(--spacing-medium);
-          flex-wrap: wrap;
-        }
-
-        .controls button {
-          min-width: clamp(80px, 15vw, 120px);
-          min-height: 44px;
-          padding: var(--spacing-small) var(--spacing-medium);
-          font-size: var(--font-size-small);
-          border-radius: 8px;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .controls button:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-
-        .controls button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        @media (max-width: 480px) {
-          .controls {
-            gap: var(--spacing-small);
-            padding: var(--spacing-small);
-          }
-
-          .controls button {
-            flex: 1;
-            min-width: auto;
-          }
-        }
-
-        .back-to-surah,
-        .bookmark-button {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 24px;
-          background: rgba(255, 255, 255, 0.15);
-          border: none;
-          border-radius: 8px;
-          color: white;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-        }
-
-        .back-to-surah:hover,
-        .bookmark-button:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-1px);
-        }
-
-        .back-to-surah span:first-child,
-        .bookmark-button span:first-child {
-          font-size: 20px;
-          line-height: 1;
-        }
-
-        .bookmark-button {
-          background: rgba(var(--primary-color-rgb, 33, 150, 243), 0.3);
-        }
-
-        .bookmark-button:hover {
-          background: rgba(var(--primary-color-rgb, 33, 150, 243), 0.4);
-        }
-      `}</style>
+        <audio ref={audioRef} src={currentAyah?.audio} onEnded={handleAudioEnd} onLoadedData={() => setIsAudioLoaded(true)} />
+      </main>
     </div>
   );
 }

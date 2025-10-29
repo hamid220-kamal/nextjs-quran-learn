@@ -244,16 +244,14 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         flex: 1, 
         overflow: 'hidden', 
         position: 'relative',
-        marginRight: showReciterPanel ? '400px' : '0',
         transition: 'margin-right 0.3s ease'
       }}>
         {/* Main Verse Display */}
         <div className="verse-display" style={{ 
           flex: 1,
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
-          minHeight: 'calc(100vh - 200px)',
           width: '100%'
         }}>
           {currentVerse ? (
@@ -271,9 +269,8 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                padding: '4rem 2rem',
-                minHeight: 'calc(100vh - 200px)',
+                justifyContent: 'flex-start',
+                padding: '2rem 1rem',
                 textAlign: 'center'
               }}
             >
@@ -329,18 +326,16 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         <motion.div 
           className="recitations-panel"
           initial={{ x: 0 }}
-          animate={{ x: showReciterPanel ? 0 : 400 }}
+          animate={{ x: showReciterPanel ? 0 : 1 }}
           transition={{ duration: 0.3 }}
           style={{ 
             position: 'fixed',
             right: 0,
             top: 0,
-            width: '400px',
-            height: '100%',
             background: 'rgba(0, 0, 0, 0.9)',
             backdropFilter: 'blur(16px)',
             borderLeft: '1px solid rgba(255,255,255,0.2)',
-            padding: '2rem',
+            padding: '1.25rem',
             overflowY: 'auto',
             zIndex: 1001,
             boxShadow: '-4px 0 15px rgba(0, 0, 0, 0.3)'

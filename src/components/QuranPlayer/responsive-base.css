@@ -1,0 +1,213 @@
+/* Base CSS variables for consistent spacing and sizing */
+:root {
+  --header-height: clamp(60px, 8vh, 80px);
+  --sidebar-width: clamp(240px, 25vw, 320px);
+  --content-max-width: 1200px;
+  --card-min-width: clamp(280px, 45vw, 320px);
+  
+  /* Spacing */
+  --spacing-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+  --spacing-sm: clamp(0.5rem, 1vw, 1rem);
+  --spacing-md: clamp(1rem, 2vw, 1.5rem);
+  --spacing-lg: clamp(1.5rem, 3vw, 2rem);
+  --spacing-xl: clamp(2rem, 4vw, 3rem);
+  
+  /* Typography */
+  --font-size-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+  --font-size-sm: clamp(0.875rem, 1.75vw, 1rem);
+  --font-size-base: clamp(1rem, 2vw, 1.125rem);
+  --font-size-lg: clamp(1.125rem, 2.25vw, 1.25rem);
+  --font-size-xl: clamp(1.25rem, 2.5vw, 1.5rem);
+  
+  /* Arabic text sizes */
+  --arabic-size-short: clamp(2rem, 6vw, 4rem);
+  --arabic-size-medium: clamp(1.6rem, 5vw, 3rem);
+  --arabic-size-long: clamp(1.2rem, 4vw, 2.25rem);
+  
+  /* Translation text */
+  --translation-size: clamp(0.95rem, 2vw, 1.25rem);
+  
+  /* Controls & UI */
+  --control-height: clamp(44px, 6vh, 56px);
+  --button-size: clamp(36px, 5vw, 48px);
+  --icon-size: clamp(20px, 3vw, 24px);
+  
+  /* Safe areas & margins */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --content-margin: calc(var(--header-height) + var(--safe-area-inset-top));
+}
+
+/* Responsive grid layouts */
+.grid-layout {
+  display: grid;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-min-width), 1fr));
+}
+
+/* Flexible container for verse content */
+.verse-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  max-height: calc(100vh - var(--header-height) - var(--control-height));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Base button styles */
+.player-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-size);
+  height: var(--button-size);
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: currentColor;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.player-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.player-button:active {
+  transform: scale(0.95);
+}
+
+/* Text content styling */
+.arabic-text {
+  font-family: "Noto Naskh Arabic", "Uthmanic", serif;
+  text-align: center;
+  direction: rtl;
+  line-height: 1.8;
+  margin: 0 0 var(--spacing-md) 0;
+  width: 95%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.translation-text {
+  font-size: var(--translation-size);
+  line-height: 1.6;
+  text-align: left;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Responsive audio controls */
+.audio-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--control-height);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  z-index: 100;
+  padding-bottom: calc(var(--spacing-sm) + var(--safe-area-inset-bottom));
+}
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-sm);
+  }
+  
+  .verse-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .audio-controls {
+    gap: var(--spacing-sm);
+  }
+  
+  .player-button {
+    --button-size: clamp(32px, 4.5vw, 44px);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: clamp(50px, 7vh, 60px);
+    --control-height: clamp(40px, 5.5vh, 48px);
+  }
+  
+  .translation-text {
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .player-button {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .player-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* High contrast mode */
+@media (forced-colors: active) {
+  .player-button {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Print styles */
+@media print {
+  .audio-controls,
+  .player-button {
+    display: none;
+  }
+  
+  .verse-container {
+    overflow: visible;
+    max-height: none;
+  }
+}
+
+/* RTL support */
+[dir="rtl"] .audio-controls {
+  flex-direction: row-reverse;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .player-button,
+  .audio-controls {
+    transition: none;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .player-button {
+    min-height: 44px; /* iOS minimum touch target */
+    min-width: 44px;
+  }
+  
+  .audio-controls {
+    position: sticky;
+  }
+}

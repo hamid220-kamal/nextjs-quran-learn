@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import './ScrollReadView.css';
+import styles from './ScrollReadView.module.css';
 
 interface ScrollReadViewProps {
   surahNumber: number;
@@ -71,9 +71,9 @@ export default function ScrollReadView({
 
   if (loading) {
     return (
-      <div className="scrollReadContainer">
-        <div className="loadingContainer">
-          <div className="loadingSpinner" />
+      <div className={styles.scrollReadContainer}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner} />
           <p>Loading Surah {surahName}...</p>
         </div>
       </div>
@@ -82,29 +82,29 @@ export default function ScrollReadView({
 
   if (error) {
     return (
-      <div className="scrollReadContainer">
-        <div className="verseContainer">
+      <div className={styles.scrollReadContainer}>
+        <div className={styles.verseContainer}>
           <h3>Error Loading Surah</h3>
           <p>{error}</p>
-          <button className="navButton" onClick={onBack}>Return to Surah List</button>
+          <button className={styles.navButton} onClick={onBack}>Return to Surah List</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="scrollReadContainer">
-      <div className="surahInfo">
-        <button onClick={onBack} className="navButton">
+    <div className={styles.scrollReadContainer}>
+      <div className={styles.surahInfo}>
+        <button onClick={onBack} className={styles.navButton}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Back
         </button>
-        <h1 className="surahTitle">
+        <h1 className={styles.surahTitle}>
           {surahName}
         </h1>
-        <div className="surahSubtitle">
+        <div className={styles.surahSubtitle}>
           Verse {currentVerse} of {totalVerses}
         </div>
       </div>
@@ -114,18 +114,18 @@ export default function ScrollReadView({
           <div
             key={verse.number}
             data-verse={verse.number}
-            className="verseContainer"
+            className={styles.verseContainer}
           >
-            <span className="verseNumber">{verse.number}</span>
-            <div className="arabicText">{verse.text}</div>
-            <div className="translationText">{verse.translation}</div>
+            <span className={styles.verseNumber}>{verse.number}</span>
+            <div className={styles.arabicText}>{verse.text}</div>
+            <div className={styles.translationText}>{verse.translation}</div>
           </div>
         ))}
       </div>
 
-      <div className="navigationControls">
+      <div className={styles.navigationControls}>
         <button
-          className="navButton"
+          className={styles.navButton}
           onClick={() => {
             if (currentVerse > 1) {
               setCurrentVerse(prev => prev - 1);
@@ -137,7 +137,7 @@ export default function ScrollReadView({
           Previous
         </button>
         <button
-          className="navButton"
+          className={styles.navButton}
           onClick={() => {
             if (currentVerse < totalVerses) {
               setCurrentVerse(prev => prev + 1);

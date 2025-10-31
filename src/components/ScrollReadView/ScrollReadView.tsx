@@ -59,124 +59,60 @@ export default function ScrollReadView({
   }, []);
 
   useEffect(() => {
-    async function fetchVerses() {
+    const fetchVerses = async () => {
       try {
-        setLoading(true);
-        const [arabicResponse, translationResponse] = await Promise.all([
-          fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/quran-uthmani`),
-          fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/en.asad`)
-        ]);
-
-        const arabicData = await arabicResponse.json();
-        const translationData = await translationResponse.json();
-
-        if (arabicData.code === 200 && translationData.code === 200) {
-          const combinedVerses = arabicData.data.ayahs.map((verse: any, index: number) => ({
-            number: verse.numberInSurah,
-            text: verse.text,
-            translation: translationData.data.ayahs[index].text
-          }));
-          setVerses(combinedVerses);
-        } else {
-          throw new Error('Failed to fetch verses');
-        }
+        const response = await fetch(`api/verses/${surahNumber}`);
+        if (!response.ok) throw new Error('Failed to fetch verses');
+        const data = await response.json();
+        setVerses(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load verses');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
-    }
-
+    };
     fetchVerses();
   }, [surahNumber]);
 
-  const scrollToVerse = useCallback((verseNumber: number) => {
-    const verseElement = document.querySelector(`[data-verse="${verseNumber}"]`);
-    if (verseElement) {
-      verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const handleNextVerse = () => {
+    if (currentVerse < totalVerses) {
+      setCurrentVerse((prev) => prev + 1);
     }
-  }, []);
+  };
 
-  if (loading) {
-    return (
-      <div className={styles.readerContainer}>
-        <div className={styles.loadingContainer}>
-          <div className={styles.loadingSpinner} />
-          <p>Loading Surah {surahName}...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.readerContainer}>
-        <div className={styles.errorContainer}>
-          <h3 className={styles.errorTitle}>Error Loading Surah</h3>
-          <p className={styles.errorMessage}>{error}</p>
-          <button className={styles.backButton} onClick={onBack}>Return to Surah List</button>
-        </div>
-      </div>
-    );
-  }
+  const handlePreviousVerse = () => {
+    if (currentVerse > 1) {
+      setCurrentVerse((prev) => prev - 1);
+    }
+  };
 
   return (
     <div className={styles.readerContainer}>
-      <div className={styles.header}>
-        <button onClick={onBack} className={styles.backButton} aria-label={`Back to surah list`}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          <span className={styles.backLabel}>Back</span>
-        </button>
+      <header className={styles.header}>
+        <button className={styles.backButton} onClick={onBack}>Back</button>
         <div className={styles.surahInfo}>
           <h1 className={styles.surahTitle}>{surahName}</h1>
-          <div className={styles.verseCount}>
-            Verse {currentVerse} of {totalVerses}
-          </div>
+          <p className={styles.verseCount}>{totalVerses} Verses</p>
         </div>
-        <div style={{ width: '80px' }} /> {/* Balance header layout */}
+      </header>
+      <div className={styles.versesContainer}>
+        {loading ? (
+          <div className={styles.loadingContainer}>Loading...</div>
+        ) : error ? (
+          <div className={styles.errorContainer}>{error}</div>
+        ) : (
+          verses.map((verse) => (
+            <div key={verse.number} className={styles.verseCard}>
+              <span className={styles.verseNumber}>{verse.number}</span>
+              <p className={styles.arabicText}>{verse.text}</p>
+              <p className={styles.translationText}>{verse.translation}</p>
+            </div>
+          ))
+        )}
       </div>
-
-      <div ref={containerRef} className={styles.versesContainer}>
-        {verses.map((verse) => (
-          <div
-            key={verse.number}
-            data-verse={verse.number}
-            className={styles.verseCard}
-          >
-            <span className={styles.verseNumber}>{verse.number}</span>
-            <div className={styles.arabicText}>{verse.text}</div>
-            <div className={styles.translationText}>{verse.translation}</div>
-          </div>
-        ))}
-      </div>
-
       <div className={styles.navigationControls}>
-        <button
-          className={styles.navButton}
-          onClick={() => {
-            if (currentVerse > 1) {
-              setCurrentVerse(prev => prev - 1);
-              scrollToVerse(currentVerse - 1);
-            }
-          }}
-          disabled={currentVerse === 1}
-        >
-          Previous
-        </button>
-        <button
-          className={styles.navButton}
-          onClick={() => {
-            if (currentVerse < totalVerses) {
-              setCurrentVerse(prev => prev + 1);
-              scrollToVerse(currentVerse + 1);
-            }
-          }}
-          disabled={currentVerse === totalVerses}
-        >
-          Next
-        </button>
+        <button className={styles.navButton} onClick={handlePreviousVerse} disabled={currentVerse === 1}>Previous</button>
+        <button className={styles.navButton} onClick={handleNextVerse} disabled={currentVerse === totalVerses}>Next</button>
       </div>
     </div>
   );

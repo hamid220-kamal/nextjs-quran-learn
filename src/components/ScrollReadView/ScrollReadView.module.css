@@ -41,6 +41,44 @@
   position: relative;
 }
 
+/* Responsive Design */
+@media (max-width: 768px) {
+  .readerContainer {
+    padding: 1rem;
+  }
+  .header {
+    padding: 0 1rem;
+  }
+  .navigationControls {
+    width: calc(100% - (var(--verse-spacing) * 2));
+    border-radius: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: env(safe-area-inset-bottom, 8px);
+    padding-left: var(--verse-spacing);
+    padding-right: var(--verse-spacing);
+  }
+  .navButton {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+  .backLabel {
+    display: none;
+  }
+  .backButton {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .navButton {
+    padding: 12px 18px;
+    min-width: 110px;
+  }
+  .versesContainer {
+    width: calc(100% - 1rem);
+    padding-left: 0.5rem;
+  }
+}
+
 /* Header */
 .header {
   position: fixed;
@@ -312,11 +350,6 @@
   .versesContainer {
     width: calc(100% - 1rem);
     padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  .verseCard {
-    padding: calc(var(--verse-padding) / 1.8);
-    margin: 0.5rem auto;
   }
 }
 

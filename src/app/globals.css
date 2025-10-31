@@ -39,6 +39,12 @@ body {
   --accent: #0066cc;
 }
 
+/* Header / footer layout variables for reader pages */
+:root {
+  --quran-header-height: 120px; /* safe default, content will add padding for this space */
+  --bottom-nav-height: 84px; /* height reserved for fixed bottom controls */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -185,4 +191,29 @@ button:focus,
 input:focus {
   outline: 2px solid #10b981;
   outline-offset: 2px;
+}
+
+/* Fixed header used on Quran pages - keep above content */
+.quran-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  /* allow the existing inline padding to remain, but reserve space for it */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  background: inherit;
+}
+
+/* Reserve space so fixed header and bottom nav don't overlap content */
+.quran-browser .quran-content,
+.quran-browser .cards-container,
+.quran-browser .section-list {
+  padding-top: calc(var(--quran-header-height) + 8px);
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 16px));
+}
+
+/* Generic safe rule for main app pages using fixed header + bottom nav */
+main {
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 16px));
 }

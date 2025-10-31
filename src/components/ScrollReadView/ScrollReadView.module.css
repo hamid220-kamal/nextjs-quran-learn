@@ -1,92 +1,227 @@
 /* ScrollReadView.module.css */
-.scrollReadContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: var(--bg-primary);
+/* CSS Module variables need to be scoped to a local class */
+.readerContainer {
+  /* Layout variables */
+  --header-height: 60px;
+  --nav-height: 60px;
+  --container-width: min(1200px, 95vw);
+  --card-width: min(800px, 90vw);
+  --verse-spacing: clamp(1rem, 2vw, 2rem);
+  --verse-padding: clamp(1rem, 3vw, 2rem);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.2); }
+  50% { box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.4); }
+  100% { box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.2); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Main Container */
+.readerContainer {
+  width: 100%;
   min-height: 100vh;
+  /* reserve space for the fixed header so content doesn't sit underneath it */
+  padding: var(--verse-spacing);
+  /* leave space for global navbar + local header; teams can override --global-navbar-height */
+  padding-top: calc(var(--verse-spacing) + var(--header-height) + var(--global-navbar-height, 64px) + env(safe-area-inset-top, 0px));
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-.verseContainer {
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 8px;
-  background: var(--bg-secondary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+/* Header */
+.header {
+  position: fixed;
+  /* place this header under the global navbar (if present). Default navbar height fallback = 64px */
+  top: calc(var(--global-navbar-height, 64px));
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  padding: 0 var(--verse-spacing);
+  /* Ensure header background is opaque enough on mobile so content underneath isn't visible */
+  background: linear-gradient(135deg, rgba(var(--bg-secondary-rgb), 0.98) 0%, rgba(var(--bg-primary-rgb), 0.98) 100%);
+  background-color: rgba(255,255,255,0.96);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20000; /* Ensure header sits above other fixed elements */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.arabicText {
-  font-family: 'Uthmani', Arial;
-  font-size: 24px;
-  line-height: 2;
-  text-align: right;
-  direction: rtl;
-  margin-bottom: 20px;
-  color: var(--text-primary);
-}
-
-.translationText {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  padding: 15px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.verseNumber {
-  display: inline-block;
-  font-size: 14px;
-  color: var(--bg-primary);
-  background: var(--accent-color);
-  padding: 5px 10px;
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
   border-radius: 20px;
-  margin-bottom: 15px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: var(--bg-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.backButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.backButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.backLabel {
+  display: inline-block;
+  margin-left: 6px;
 }
 
 .surahInfo {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 .surahTitle {
-  font-size: 32px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   color: var(--text-primary);
-  margin-bottom: 10px;
   font-weight: 600;
+  margin: 0;
 }
 
-.surahSubtitle {
+.verseCount {
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  font-size: 16px;
+  margin-top: 4px;
 }
 
+/* Verses Container */
+.versesContainer {
+  width: var(--container-width);
+  margin: var(--verse-spacing) auto;
+  padding-bottom: calc(var(--nav-height) + var(--verse-spacing));
+}
+
+/* Make verse cards fluid on small screens */
+.verseCard {
+  width: 100%;
+  max-width: var(--card-width);
+}
+
+/* Verse Cards */
+.verseCard {
+  width: var(--card-width);
+  margin: var(--verse-spacing) auto;
+  padding: var(--verse-padding);
+  background: linear-gradient(135deg, rgba(var(--bg-secondary-rgb), 0.95) 0%, rgba(var(--bg-primary-rgb), 0.95) 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.verseCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.verseCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.verseCard:hover::before {
+  transform: scaleX(1);
+}
+
+.verseNumber {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: var(--bg-primary);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.arabicText {
+  font-family: 'Uthmani', Arial, serif;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  line-height: 2;
+  text-align: right;
+  direction: rtl;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.1);
+}
+
+.translationText {
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding: 1rem;
+  background: rgba(var(--bg-secondary-rgb), 0.5);
+  border-radius: 8px;
+}
+
+/* Navigation Controls */
 .navigationControls {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+  width: var(--container-width);
+  height: var(--nav-height);
+  padding: 0 var(--verse-spacing);
+  background: linear-gradient(135deg, rgba(var(--bg-secondary-rgb), 0.95) 0%, rgba(var(--bg-primary-rgb), 0.95) 100%);
+  backdrop-filter: blur(10px);
   display: flex;
-  gap: 15px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .navButton {
-  padding: 10px 20px;
+  padding: 8px 24px;
   border: none;
   border-radius: 20px;
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
   color: var(--bg-primary);
+  font-weight: 500;
   cursor: pointer;
-  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
 }
 
 .navButton:disabled {
@@ -95,62 +230,176 @@
   background: var(--text-secondary);
 }
 
+/* Loading State */
 .loadingContainer {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  min-height: 300px;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 2rem;
+  text-align: center;
 }
 
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
+  border: 3px solid rgba(var(--primary-color-rgb), 0.1);
   border-top-color: var(--primary-color);
   border-radius: 50%;
+  animation: spin 1s linear infinite, glowPulse 2s ease-in-out infinite;
 }
 
+/* Error State */
+.errorContainer {
+  text-align: center;
+  padding: 2rem;
+  max-width: var(--card-width);
+  margin: 2rem auto;
+  background: linear-gradient(135deg, rgba(var(--bg-secondary-rgb), 0.95) 0%, rgba(var(--bg-primary-rgb), 0.95) 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.errorTitle {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.errorMessage {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .scrollReadContainer {
-    padding: 15px;
+  .header {
+    padding: 0 1rem;
   }
-
-  .verseContainer {
-    padding: 15px;
-    margin: 15px 0;
-  }
-
-  .arabicText {
-    font-size: 20px;
-  }
-
-  .translationText {
-    font-size: 14px;
-  }
-
+  
   .navigationControls {
-    padding: 10px;
+    width: calc(100% - (var(--verse-spacing) * 2));
+    border-radius: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: env(safe-area-inset-bottom, 8px);
+    padding-left: var(--verse-spacing);
+    padding-right: var(--verse-spacing);
   }
 
   .navButton {
     padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* On small screens, hide text label of back and keep icon only */
+  .backLabel {
+    display: none;
+  }
+
+  .backButton {
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .navButton {
+    padding: 12px 18px;
+    min-width: 110px;
+  }
+
+  /* Mobile tweaks for verse layout */
+  .versesContainer {
+    width: calc(100% - 1rem);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .verseCard {
+    padding: calc(var(--verse-padding) / 1.8);
+    margin: 0.5rem auto;
   }
 }
 
+@media (max-width: 480px) {
+  .verseCard {
+    margin: 0.5rem auto;
+  }
+
+  .arabicText {
+    font-size: 1.25rem;
+  }
+
+  .translationText {
+    font-size: 0.9rem;
+  }
+  .navigationControls {
+    width: calc(100% - 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    height: calc(var(--nav-height) + env(safe-area-inset-bottom, 12px));
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Larger screens: expand max widths */
+@media (min-width: 1200px) {
+  /* Keep this module pure by scoping adjustments to local classes */
+  .versesContainer {
+    width: min(var(--container-width), 1200px);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .header,
+  .navigationControls {
+    background: linear-gradient(135deg, 
+      rgba(var(--bg-secondary-rgb), 0.9),
+      rgba(var(--bg-primary-rgb), 0.9)
+    );
+  }
+
+  .verseCard {
+    background: linear-gradient(135deg, 
+      rgba(var(--bg-secondary-rgb), 0.8),
+      rgba(var(--bg-primary-rgb), 0.8)
+    );
+  }
+
+  .arabicText {
+    border-bottom-color: rgba(var(--text-primary-rgb), 0.2);
+  }
+}
+
+/* Print Mode */
 @media print {
-  .scrollReadContainer {
-    padding: 0;
-    background: none;
-  }
-
-  .verseContainer {
-    box-shadow: none;
-    border: 1px solid var(--text-secondary);
-    margin: 10px 0;
-    page-break-inside: avoid;
-  }
-
+  .header,
   .navigationControls {
     display: none;
+  }
+
+  .verseCard {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid var(--text-secondary);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .readerContainer,
+  .readerContainer *,
+  .verseCard,
+  .verseCard::before,
+  .backButton,
+  .navButton,
+  .loadingSpinner {
+    animation: none !important;
+    transition: none !important;
   }
 }

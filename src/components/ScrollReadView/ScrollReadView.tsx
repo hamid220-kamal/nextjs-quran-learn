@@ -30,6 +30,34 @@ export default function ScrollReadView({
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Measure the site's global navbar (if present) and set a CSS variable so
+  // the local header can position itself correctly below it. This avoids hard
+  // coding heights and fixes overlap on small screens.
+  useEffect(() => {
+    function setGlobalNavbarHeight() {
+      try {
+        // Try common selectors used in this repo
+        const navbar = document.querySelector('.navbar') as HTMLElement | null;
+        const alt = document.querySelector('[data-global-navbar]') as HTMLElement | null;
+        const target = navbar ?? alt;
+        const height = target ? target.getBoundingClientRect().height : 0;
+        document.documentElement.style.setProperty('--global-navbar-height', `${height}px`);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    setGlobalNavbarHeight();
+    window.addEventListener('resize', setGlobalNavbarHeight);
+    const mo = new MutationObserver(setGlobalNavbarHeight);
+    const observed = document.querySelector('.navbar') || document.querySelector('[data-global-navbar]');
+    if (observed) mo.observe(observed, { attributes: true, childList: true, subtree: true });
+    return () => {
+      window.removeEventListener('resize', setGlobalNavbarHeight);
+      mo.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     async function fetchVerses() {
       try {
@@ -71,7 +99,7 @@ export default function ScrollReadView({
 
   if (loading) {
     return (
-      <div className={styles.scrollReadContainer}>
+      <div className={styles.readerContainer}>
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner} />
           <p>Loading Surah {surahName}...</p>
@@ -82,39 +110,40 @@ export default function ScrollReadView({
 
   if (error) {
     return (
-      <div className={styles.scrollReadContainer}>
-        <div className={styles.verseContainer}>
-          <h3>Error Loading Surah</h3>
-          <p>{error}</p>
-          <button className={styles.navButton} onClick={onBack}>Return to Surah List</button>
+      <div className={styles.readerContainer}>
+        <div className={styles.errorContainer}>
+          <h3 className={styles.errorTitle}>Error Loading Surah</h3>
+          <p className={styles.errorMessage}>{error}</p>
+          <button className={styles.backButton} onClick={onBack}>Return to Surah List</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.scrollReadContainer}>
-      <div className={styles.surahInfo}>
-        <button onClick={onBack} className={styles.navButton}>
+    <div className={styles.readerContainer}>
+      <div className={styles.header}>
+        <button onClick={onBack} className={styles.backButton} aria-label={`Back to surah list`}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Back
+          <span className={styles.backLabel}>Back</span>
         </button>
-        <h1 className={styles.surahTitle}>
-          {surahName}
-        </h1>
-        <div className={styles.surahSubtitle}>
-          Verse {currentVerse} of {totalVerses}
+        <div className={styles.surahInfo}>
+          <h1 className={styles.surahTitle}>{surahName}</h1>
+          <div className={styles.verseCount}>
+            Verse {currentVerse} of {totalVerses}
+          </div>
         </div>
+        <div style={{ width: '80px' }} /> {/* Balance header layout */}
       </div>
 
-      <div ref={containerRef}>
+      <div ref={containerRef} className={styles.versesContainer}>
         {verses.map((verse) => (
           <div
             key={verse.number}
             data-verse={verse.number}
-            className={styles.verseContainer}
+            className={styles.verseCard}
           >
             <span className={styles.verseNumber}>{verse.number}</span>
             <div className={styles.arabicText}>{verse.text}</div>

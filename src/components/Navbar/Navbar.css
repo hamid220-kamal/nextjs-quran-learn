@@ -258,15 +258,15 @@ main {
 
 /* Z-index layers */
 .navbar {
-  z-index: 9999;
+  z-index: 10000; /* align with header/global expectations */
 }
 
 .navbar-menu {
-  z-index: 10000;
+  z-index: 10001;
 }
 
 .dropdown-menu {
-  z-index: 10001;
+  z-index: 10002;
 }
 
 .content-layer {

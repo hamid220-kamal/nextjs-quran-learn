@@ -103,7 +103,7 @@ export default function ScrollReadView({
   return (
     <div className={styles.readerContainer}>
       <header className={styles.header}>
-        <button className={styles.backButton} onClick={onBack}>Back</button>
+        <button className={styles.backButton} onClick={onBack}>← Go back</button>
         <div className={styles.surahInfo}>
           <h1 className={styles.surahTitle}>{surahName}</h1>
           <p className={styles.verseCount}>{totalVerses} Verses</p>
@@ -123,10 +123,6 @@ export default function ScrollReadView({
             </div>
           ))
         )}
-      </div>
-      <div className={styles.navigationControls}>
-        <button className={styles.navButton} onClick={handlePreviousVerse} disabled={currentVerse === 1}>Previous</button>
-        <button className={styles.navButton} onClick={handleNextVerse} disabled={currentVerse === totalVerses}>Next</button>
       </div>
     </div>
   );

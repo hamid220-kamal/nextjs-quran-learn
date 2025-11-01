@@ -4,12 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AudioSlideView.css';
 
-'use client';
-
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import './AudioSlideView.css';
-
 interface AudioSlideViewProps {
   surahNumber: number;
   onClose: () => void;
@@ -114,6 +108,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
       setError(null);
       setIsAudioLoaded(false);
 
+      // Fetch verse text and translation
       const arabicResp = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/${selectedReciter}`);
       const arabicData = await arabicResp.json();
 
@@ -122,11 +117,49 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
       if (!arabicData.data || !translationData.data) throw new Error('Invalid API response');
 
-      setCurrentAyah({ number: ayahNumber, text: arabicData.data.text, translation: translationData.data.text, audio: arabicData.data.audio || '' });
+      // Generate all possible audio URLs for this verse using primary and fallback sources
+      const verseNumber = arabicData.data.number;
+      const audioUrls = [
+        `https://cdn.islamic.network/quran/audio/128/${selectedReciter}/${verseNumber}.mp3`,
+        `https://cdn.islamic.network/quran/audio/64/${selectedReciter}/${verseNumber}.mp3`,
+        `https://verses.quran.com/${selectedReciter}/${verseNumber}.mp3`,
+        `https://audio.qurancdn.com/${selectedReciter}/mp3/${verseNumber}.mp3`,
+        `https://download.quranicaudio.com/quran/${selectedReciter}/${verseNumber}.mp3`,
+        // Add ogg format fallbacks
+        `https://cdn.islamic.network/quran/audio/128/${selectedReciter}/${verseNumber}.ogg`,
+        `https://cdn.islamic.network/quran/audio/64/${selectedReciter}/${verseNumber}.ogg`,
+        arabicData.data.audio // Include the API-provided URL as last fallback
+      ].filter(Boolean); // Remove any undefined/null URLs
+
+      // Try each audio URL until we find one that works
+      let workingAudioUrl = null;
+      for (const url of audioUrls) {
+        try {
+          const response = await fetch(url, { method: 'HEAD' });
+          if (response.ok) {
+            workingAudioUrl = url;
+            break;
+          }
+        } catch (error) {
+          console.warn(`Audio source failed: ${url}`, error);
+          continue;
+        }
+      }
+
+      if (!workingAudioUrl) {
+        throw new Error('No working audio source found');
+      }
+
+      setCurrentAyah({
+        number: ayahNumber,
+        text: arabicData.data.text,
+        translation: translationData.data.text,
+        audio: workingAudioUrl
+      });
       setTotalAyahs(arabicData.data.surah?.numberOfAyahs || 0);
     } catch (e) {
       console.error(e);
-      setError('Failed to load verse');
+      setError('Failed to load verse audio. Please try another reciter.');
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +197,39 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
 
   const handleNext = () => setCurrentAyahIndex((p) => Math.min(p + 1, totalAyahs));
   const handlePrevious = () => setCurrentAyahIndex((p) => Math.max(1, p - 1));
+
+  // Initialize audio element on mount and handle audio events
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    audio.preload = 'auto'; // Preload audio metadata
+    
+    const handleError = (e: ErrorEvent) => {
+      console.error('Audio error:', e);
+      // If we get a "no supported source" error, try to recover by switching to next verse
+      if ((e.target as HTMLAudioElement)?.error?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+        setError('Audio format not supported. Trying another source...');
+        // Try fetching the ayah again which will try alternative sources
+        fetchAyah(currentAyahIndex).catch(console.error);
+      }
+    };
+
+    const handleCanPlayThrough = () => {
+      setIsAudioLoaded(true);
+      if (isPlaying) {
+        audio.play().catch(console.error);
+      }
+    };
+
+    audio.addEventListener('error', handleError as EventListener);
+    audio.addEventListener('canplaythrough', handleCanPlayThrough);
+
+    return () => {
+      audio.removeEventListener('error', handleError as EventListener);
+      audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+    };
+  }, [currentAyahIndex, isPlaying]);
 
   return (
     <div className="audio-slide-overlay" role="dialog" aria-modal="true">
@@ -304,7 +370,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           <button 
             className="control-button"
             onClick={handlePrevious} 
-            disabled={currentAyahIndex <= 1}
+            disabled={currentAyahIndex <= 1 || isLoading}
             aria-label="Previous verse"
           >
             ⮜
@@ -312,14 +378,15 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           <button 
             className="control-button play-pause"
             onClick={togglePlayPause}
+            disabled={!isAudioLoaded || isLoading || !currentAyah?.audio}
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
-            {isPlaying ? '⏸' : '▶'}
+            {isLoading ? '⏳' : isPlaying ? '⏸' : '▶'}
           </button>
           <button 
             className="control-button"
             onClick={handleNext} 
-            disabled={currentAyahIndex >= totalAyahs}
+            disabled={currentAyahIndex >= totalAyahs || isLoading}
             aria-label="Next verse"
           >
             ⮞
@@ -333,7 +400,14 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           </div>
         )}
 
-        <audio ref={audioRef} src={currentAyah?.audio} onEnded={handleAudioEnd} onLoadedData={() => setIsAudioLoaded(true)} />
+        <audio 
+          ref={audioRef} 
+          src={currentAyah?.audio} 
+          onEnded={handleAudioEnd} 
+          onLoadedData={() => setIsAudioLoaded(true)}
+          preload="auto"
+          crossOrigin="anonymous"
+        />
       </main>
     </div>
   );

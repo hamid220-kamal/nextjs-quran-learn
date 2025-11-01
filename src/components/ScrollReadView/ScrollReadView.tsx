@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from './ScrollReadView.module.css';
+import { fetchSurahVersesWithTranslation } from '../../utils/quranApi';
 
 interface ScrollReadViewProps {
   surahNumber: number;
@@ -60,17 +61,30 @@ export default function ScrollReadView({
 
   useEffect(() => {
     const fetchVerses = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch(`api/verses/${surahNumber}`);
-        if (!response.ok) throw new Error('Failed to fetch verses');
-        const data = await response.json();
-        setVerses(data);
-      } catch (err) {
-        setError(err.message);
+        // Use the shared quran API util which fetches Arabic + English translation
+        // Provide a sensible default reciter id for audio-related fields if needed
+        const DEFAULT_RECITER_ID = 'ar.alafasy';
+        const data = await fetchSurahVersesWithTranslation(surahNumber, DEFAULT_RECITER_ID);
+
+        // Map the utility's VerseWithTranslation -> local Verse shape
+        const mapped = data.map((v: any) => ({
+          number: v.numberInSurah || v.number || v.numberInSurah,
+          text: v.text || v.arabic || '',
+          translation: v.translation || v.translationText || ''
+        }));
+
+        setVerses(mapped);
+      } catch (err: any) {
+        // Provide more context for easier debugging
+        setError(err?.message || String(err) || 'Unknown error while fetching verses');
       } finally {
         setLoading(false);
       }
     };
+
     fetchVerses();
   }, [surahNumber]);
 

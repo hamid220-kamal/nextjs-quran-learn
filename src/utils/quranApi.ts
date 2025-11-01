@@ -2,6 +2,34 @@
 // Documentation: https://alquran.cloud/api
 
 const API_BASE_URL = 'https://api.alquran.cloud/v1';
+const FALLBACK_API_URL = 'https://cdn.islamic.network/quran/api/v1';
+
+// Configure fetch with retry logic and timeout
+const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
+    }
+  }
+  throw new Error('All retry attempts failed');
+};
 
 export interface ReciterEdition {
   identifier: string;
@@ -166,42 +194,81 @@ export async function fetchSurahVersesWithTranslation(
   reciterId: string
 ): Promise<VerseWithTranslation[]> {
   try {
-    // Get the total number of verses in the surah
-    const surahData = await fetchFromAPI(`/surah/${surahNumber}`);
-    if (!surahData || !surahData.numberOfAyahs) {
+    // Try to fetch complete surah with translations in one request first
+    try {
+      const completeData = await fetchWithRetry(
+        `${API_BASE_URL}/surah/${surahNumber}/editions/quran-uthmani,en.sahih`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      const data = await completeData.json();
+      
+      if (data?.data?.[0]?.ayahs && data?.data?.[1]?.ayahs) {
+        const arabicVerses = data.data[0].ayahs;
+        const translationVerses = data.data[1].ayahs;
+        
+        return arabicVerses.map((verse: any, index: number) => ({
+          number: verse.number,
+          numberInSurah: verse.numberInSurah,
+          text: verse.text,
+          audio: `https://cdn.islamic.network/quran/audio/128/${reciterId}/${verse.number}.mp3`,
+          translation: translationVerses[index]?.text || 'Translation not available'
+        }));
+      }
+    } catch (bulkError) {
+      console.warn('Bulk fetch failed, falling back to batch mode:', bulkError);
+    }
+
+    // Fallback: Get the total number of verses and fetch in batches
+    const surahData = await fetchWithRetry(
+      `${API_BASE_URL}/surah/${surahNumber}`,
+      { headers: { 'Accept': 'application/json' } }
+    ).then(r => r.json());
+
+    if (!surahData?.data?.numberOfAyahs) {
       throw new Error(`No surah data found for surah ${surahNumber}`);
     }
 
-    const totalVerses = surahData.numberOfAyahs;
+    const totalVerses = surahData.data.numberOfAyahs;
     const verses: VerseWithTranslation[] = [];
-
-    // Fetch verses in smaller batches to avoid overwhelming the API
     const BATCH_SIZE = 5;
+
     for (let i = 0; i < totalVerses; i += BATCH_SIZE) {
       const batchPromises = Array.from(
         { length: Math.min(BATCH_SIZE, totalVerses - i) },
         async (_, index) => {
           const verseNumber = i + index + 1;
           try {
-            const [verseData, translationData] = await Promise.all([
-              fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/${reciterId}`),
-              fetchFromAPI(`/ayah/${surahNumber}:${verseNumber}/en.sahih`)
+            // Parallel fetch for Arabic and translation
+            const [arabicRes, translationRes] = await Promise.all([
+              fetchWithRetry(
+                `${API_BASE_URL}/ayah/${surahNumber}:${verseNumber}/${reciterId}`,
+                { headers: { 'Accept': 'application/json' } }
+              ),
+              fetchWithRetry(
+                `${API_BASE_URL}/ayah/${surahNumber}:${verseNumber}/en.sahih`,
+                { headers: { 'Accept': 'application/json' } }
+              )
             ]);
 
-            if (!verseData || !translationData) {
-              throw new Error(`Failed to fetch verse ${verseNumber}`);
+            const [arabicData, translationData] = await Promise.all([
+              arabicRes.json(),
+              translationRes.json()
+            ]);
+
+            if (!arabicData?.data || !translationData?.data) {
+              throw new Error(`Invalid response for verse ${verseNumber}`);
             }
 
             return {
-              number: verseData.number,
-              numberInSurah: verseData.numberInSurah,
-              text: verseData.text,
-              audio: verseData.audio || `https://cdn.islamic.network/quran/audio/128/${reciterId}/${verseData.number}.mp3`,
-              translation: translationData.text
+              number: arabicData.data.number,
+              numberInSurah: arabicData.data.numberInSurah,
+              text: arabicData.data.text,
+              audio: arabicData.data.audio || 
+                    `https://cdn.islamic.network/quran/audio/128/${reciterId}/${arabicData.data.number}.mp3`,
+              translation: translationData.data.text
             };
           } catch (error) {
             console.error(`Error fetching verse ${verseNumber}:`, error);
-            // Return a placeholder verse on error
             return {
               number: verseNumber,
               numberInSurah: verseNumber,
@@ -216,48 +283,28 @@ export async function fetchSurahVersesWithTranslation(
       const batchVerses = await Promise.all(batchPromises);
       verses.push(...batchVerses);
 
-      // Add a small delay between batches to prevent rate limiting
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Backoff between batches
+      if (i + BATCH_SIZE < totalVerses) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
 
     return verses;
   } catch (error) {
     console.error('Error fetching surah verses:', error);
-    throw error;
+    throw new Error(`Failed to fetch surah ${surahNumber}: ${error.message}`);
   }
 }
 
 /**
  * Helper function to handle API responses
  */
-async function  fetchFromAPI(endpoint: string) {
+async function fetchFromAPI(endpoint: string) {
   try {
-    console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data || !data.data) {
-      throw new Error('Invalid API response format');
-    }
-
-    if (data.code !== 200 || data.status !== 'OK') {
-      throw new Error(`API error: ${data.status}`);
-    }
-
-    return data.data;
+    return await fetchWithFallback(endpoint);
   } catch (error) {
-    console.error(`Error fetching from ${endpoint}:`, error);
-    throw error; // Propagate the error to handle it in the calling function
+    console.error(`Error in fetchFromAPI for ${endpoint}:`, error);
+    throw new Error(`Failed to fetch data: ${error.message}`);
   }
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import './AudioSlideView.css';
+import styles from './AudioSlideView.module.css';
 
 interface AudioSlideViewProps {
   surahNumber: number;
@@ -51,6 +51,17 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalAyahs, setTotalAyahs] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle responsive detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCompletion, setShowCompletion] = useState(false);
   const [isAudioLoaded, setIsAudioLoaded] = useState(false);
@@ -170,6 +181,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
     setCurrentAyahIndex(1);
     setShowCompletion(false);
     setIsPlaying(true);
+    setIsSidebarOpen(false); // Close sidebar after selection
     completionTriggeredRef.current = false;
   };
 
@@ -232,27 +244,27 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
   }, [currentAyahIndex, isPlaying]);
 
   return (
-    <div className="audio-slide-overlay" role="dialog" aria-modal="true">
-      <div className="top-navigation">
-        <div className="nav-wrapper">
-          <div className="nav-start">
-            <button onClick={onClose} className="nav-button">
+    <div className={styles.audio_slide_overlay} role="dialog" aria-modal="true">
+      <div className={styles.top_navigation}>
+        <div className={styles.nav_wrapper}>
+          <div className={styles.nav_start}>
+            <button onClick={onClose} className={styles.nav_button}>
               <span>←</span>
               <span>Back</span>
             </button>
-            <h1 className="nav-title">Surah {surahNumber}</h1>
+            <h1 className={styles.nav_title}>Surah {surahNumber}</h1>
           </div>
-          <div className="nav-end">
+          <div className={styles.nav_end}>
             <button 
               onClick={() => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }} 
-              className="nav-icon-button"
+              className={styles.nav_icon_button}
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
               {isFullscreen ? '⊠' : '⊞'}
             </button>
             <button 
               onClick={() => setIsSidebarOpen((s) => !s)} 
-              className="nav-icon-button"
+              className={styles.nav_icon_button}
               aria-label="Select reciter"
             >
               🎧
@@ -261,62 +273,71 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         </div>
       </div>
 
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-content">
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
+        <div className={styles.sidebar_content}>
           <input placeholder="Search reciters" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          <div className="reciters-list">
+          <div className={styles.reciters_list}>
             {reciters.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).map(r => (
-              <button key={r.identifier} onClick={() => handleReciterSelect(r.identifier)} className="sidebar-button">
-                <span className="icon">🎧</span>
-                <span>{r.name}</span>
+              <button 
+                key={r.identifier} 
+                onClick={() => handleReciterSelect(r.identifier)} 
+                className={`${styles.sidebar_button} ${selectedReciter === r.identifier ? styles.active : ''}`}
+              >
+                <div className={styles.reciter_info}>
+                  <span className={styles.icon}>🎧</span>
+                  <span className={styles.reciter_name}>{r.name}</span>
+                </div>
+                <span className={`${styles.language_tag} ${styles[r.language.toLowerCase()]}`}>
+                  {r.language.toUpperCase()}
+                </span>
               </button>
             ))}
           </div>
         </div>
       </aside>
 
-      <main className={`content-container ${isScrollView ? 'scroll-view' : ''}`}>
-        <div className="ayah-content" aria-live="polite">
+      <main className={`${styles.content_container} ${isScrollView ? styles.scroll_view : ''} ${isSidebarOpen ? styles.sidebar_open : ''}`}>
+        <div className={styles.ayah_content} aria-live="polite">
           <AnimatePresence mode="wait">
             {isLoading && (
               <motion.div 
-                className="loading-overlay"
+                className={styles.loading_overlay}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <div className="loading-spinner"></div>
-                <div className="loading-text">Loading verse...</div>
+                <div className={styles.loading_spinner}></div>
+                <div className={styles.loading_text}>Loading verse...</div>
               </motion.div>
             )}
             {error && (
               <motion.div 
-                className="error-message"
+                className={styles.error_message}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <span className="error-icon">⚠️</span>
+                <span className={styles.error_icon}>⚠️</span>
                 <span>{error}</span>
-                <button onClick={() => fetchAyah(currentAyahIndex)} className="retry-button">
+                <button onClick={() => fetchAyah(currentAyahIndex)} className={styles.retry_button}>
                   Retry
                 </button>
               </motion.div>
             )}
             {currentAyah && (
               <motion.div 
-                className="verse-container"
+                className={styles.verse_container}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="verse-wrapper">
-                  <div className="verse-number">
+                <div className={styles.verse_wrapper}>
+                  <div className={styles.verse_number}>
                     {currentAyahIndex} / {totalAyahs}
                   </div>
                   <motion.div 
-                    className="arabic-text" 
+                    className={styles.arabic_text}
                     data-length={textLength}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -325,7 +346,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
                     {currentAyah.text}
                   </motion.div>
                   <motion.div 
-                    className="translation-text"
+                    className={styles.translation_text}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
@@ -334,7 +355,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
                   </motion.div>
                 </div>
                 
-                <div className="verse-nav">
+                <div className={styles.verse_nav}>
                   <button
                     onClick={handlePrevious}
                     disabled={currentAyahIndex <= 1}
@@ -355,9 +376,9 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           </AnimatePresence>
         </div>
 
-        <div className="progress-bar">
+        <div className={styles.progress_bar}>
           <div 
-            className="progress-indicator" 
+            className={styles.progress_indicator}
             style={{ width: `${(currentAyahIndex / totalAyahs) * 100}%` }}
             role="progressbar"
             aria-valuenow={currentAyahIndex}
@@ -366,9 +387,9 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
           />
         </div>
 
-        <div className="controls">
+        <div className={styles.controls}>
           <button 
-            className="control-button"
+            className={styles.control_button}
             onClick={handlePrevious} 
             disabled={currentAyahIndex <= 1 || isLoading}
             aria-label="Previous verse"
@@ -376,7 +397,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
             ⮜
           </button>
           <button 
-            className="control-button play-pause"
+            className={`${styles.control_button} ${styles.play_pause}`}
             onClick={togglePlayPause}
             disabled={!isAudioLoaded || isLoading || !currentAyah?.audio}
             aria-label={isPlaying ? 'Pause' : 'Play'}
@@ -384,7 +405,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
             {isLoading ? '⏳' : isPlaying ? '⏸' : '▶'}
           </button>
           <button 
-            className="control-button"
+            className={styles.control_button}
             onClick={handleNext} 
             disabled={currentAyahIndex >= totalAyahs || isLoading}
             aria-label="Next verse"
@@ -394,7 +415,7 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
         </div>
 
         {!isScrollView && (
-          <div className="scroll-indicator">
+          <div className={styles.scroll_indicator}>
             <span>Scroll to navigate</span>
             <span>↕️</span>
           </div>
@@ -412,3 +433,4 @@ export default function AudioSlideView({ surahNumber, onClose }: AudioSlideViewP
     </div>
   );
 }
+

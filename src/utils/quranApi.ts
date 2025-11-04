@@ -106,11 +106,17 @@ export async function fetchReciters(): Promise<ReciterWithMetadata[]> {
  * @param reciterId - The reciter's identifier
  * @returns Promise<number> - Estimated duration in seconds
  */
+export interface AudioSource {
+  url: string;
+  type: string;
+}
+
 export interface Verse {
   number: number;
   text: string;
   numberInSurah: number;
   audio: string;
+  audioSources?: AudioSource[];
 }
 
 export interface VerseWithTranslation extends Verse {
@@ -259,12 +265,13 @@ export async function fetchSurahVersesWithTranslation(
               throw new Error(`Invalid response for verse ${verseNumber}`);
             }
 
+            const audioSources = await getAyahAudioUrl(surahNumber, verseNumber, reciterId);
             return {
               number: arabicData.data.number,
               numberInSurah: arabicData.data.numberInSurah,
               text: arabicData.data.text,
-              audio: arabicData.data.audio || 
-                    `https://cdn.islamic.network/quran/audio/128/${reciterId}/${arabicData.data.number}.mp3`,
+              audio: audioSources[0].url, // Keep the primary source for backward compatibility
+              audioSources: audioSources, // Add all available sources
               translation: translationData.data.text
             };
           } catch (error) {
@@ -294,6 +301,32 @@ export async function fetchSurahVersesWithTranslation(
     console.error('Error fetching surah verses:', error);
     throw new Error(`Failed to fetch surah ${surahNumber}: ${error.message}`);
   }
+}
+
+/**
+ * Helper function to handle API responses with fallback URLs
+ */
+async function fetchWithFallback(endpoint: string, retries = 3) {
+  const urls = [
+    `${API_BASE_URL}${endpoint}`,
+    `${FALLBACK_API_URL}${endpoint}`
+  ];
+  
+  let lastError;
+  for (const url of urls) {
+    try {
+      const response = await fetchWithRetry(url, {}, retries);
+      const data = await response.json();
+      if (data.code === 200 && data.data) {
+        return data.data;
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch from ${url}:`, error);
+      lastError = error;
+      continue;
+    }
+  }
+  throw lastError || new Error('All API endpoints failed');
 }
 
 /**
@@ -569,24 +602,76 @@ export async function fetchSurahWithTranslation(surahNumber, translationEdition 
 }
 
 /**
- * Get audio URL for a specific verse
+ * Audio format configuration with fallbacks
+ */
+interface AudioFormat {
+  bitrate: string;
+  extension: string;
+  mimeType: string;
+}
+
+const AUDIO_FORMATS: AudioFormat[] = [
+  { bitrate: '128kbps', extension: 'mp3', mimeType: 'audio/mpeg' },
+  { bitrate: '64kbps', extension: 'mp3', mimeType: 'audio/mpeg' },
+  { bitrate: '32kbps', extension: 'mp3', mimeType: 'audio/mpeg' },
+  { bitrate: '192kbps', extension: 'ogg', mimeType: 'audio/ogg' }
+];
+
+/**
+ * Get audio URL for a specific verse with format fallbacks
  * @param {number} surahNumber - The surah number (1-114)
  * @param {number} ayahNumber - The ayah number within the surah
  * @param {string} audioEdition - The audio edition to use
- * @returns {Promise<string>} - URL to the audio file
+ * @returns {Promise<Array<{url: string, type: string}>>} - Array of audio sources with types
  */
-export async function getAyahAudioUrl(surahNumber, ayahNumber, audioEdition = EDITIONS.AUDIO_ALAFASY) {
+export async function getAyahAudioUrl(surahNumber: number, ayahNumber: number, audioEdition = EDITIONS.AUDIO_ALAFASY) {
   try {
+    // First try the API endpoint
     const data = await fetchFromAPI(`/ayah/${surahNumber}:${ayahNumber}/${audioEdition}`);
-    if (data && data.audio) {
-      return data.audio;
+    if (data?.audio) {
+      // If API returns a URL, use it as the primary source
+      return [{
+        url: data.audio,
+        type: 'audio/mpeg' // Most API endpoints return MP3
+      }];
     }
-    throw new Error('Audio URL not found in API response');
   } catch (error) {
-    console.error('Error fetching ayah audio URL:', error);
-    // Return a fallback URL to prevent complete failure
-    return `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${surahNumber * 1000 + ayahNumber}.mp3`;
+    console.warn('API audio fetch failed, using fallback URLs:', error);
   }
+
+  // Generate fallback URLs for different formats
+  const verseNumber = surahNumber * 1000 + ayahNumber;
+  const reciterCode = audioEdition.split('.')[1] || 'alafasy';
+  
+  // Return an array of audio sources with different formats
+  // Create array of possible audio sources with fallbacks
+  const sources = [
+    // Primary source: everyayah.com MP3
+    {
+      url: `https://everyayah.com/data/${reciterCode}_128kbps/${surahNumber.toString().padStart(3, '0')}${ayahNumber.toString().padStart(3, '0')}.mp3`,
+      type: 'audio/mpeg'
+    },
+    // Fallback 1: Islamic Network MP3
+    {
+      url: `https://cdn.islamic.network/quran/audio/128/${reciterCode}/${surahNumber * 1000 + ayahNumber}.mp3`,
+      type: 'audio/mpeg'
+    },
+    // Fallback 2: everyayah.com lower bitrate
+    {
+      url: `https://everyayah.com/data/${reciterCode}_64kbps/${surahNumber.toString().padStart(3, '0')}${ayahNumber.toString().padStart(3, '0')}.mp3`,
+      type: 'audio/mpeg'
+    },
+    // Fallback 3: Alternative CDN ogg format
+    {
+      url: `https://cdn.islamic.network/quran/audio/${reciterCode}/${surahNumber * 1000 + ayahNumber}.ogg`,
+      type: 'audio/ogg'
+    }
+  ];
+
+  // Return only unique, valid URLs
+  return sources.filter((source, index, self) => 
+    self.findIndex(s => s.url === source.url) === index
+  );
 }
 
 /**

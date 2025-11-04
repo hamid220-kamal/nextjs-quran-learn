@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import './QuranPlayer.css';
+import AudioPlayer from '@/components/AudioPlayer/AudioPlayer';
 
 interface Surah {
   number: number;
@@ -26,6 +27,8 @@ export default function QuranPlayer() {
   const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState(1);
+  const [currentVerse, setCurrentVerse] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const filteredSurahs = mockSurahs.filter(surah => 
     surah.name.includes(searchQuery) || 
@@ -81,8 +84,44 @@ export default function QuranPlayer() {
               </option>
             ))}
           </select>
+          {selectedSurah && (
+            <button
+              className="play-button"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? 'Stop' : 'Play with Audio'}
+            </button>
+          )}
         </div>
-        {/* Audio player and verse list will be added here */}
+        
+        {selectedSurah && (
+          <div className="player-content">
+            <div className="verse-display">
+              <h2>Verse {currentVerse}</h2>
+              {/* Add verse text here when you have the actual verse data */}
+            </div>
+            
+            {isPlaying && (
+              <AudioPlayer
+                reciterId={selectedReciter.toString()}
+                surahNumber={selectedSurah}
+                verseNumber={currentVerse}
+                totalVerses={mockSurahs.find(s => s.number === selectedSurah)?.verses || 0}
+                onEnded={() => {
+                  const totalVerses = mockSurahs.find(s => s.number === selectedSurah)?.verses || 0;
+                  if (currentVerse < totalVerses) {
+                    setCurrentVerse(prev => prev + 1);
+                  } else {
+                    setIsPlaying(false);
+                    setCurrentVerse(1);
+                  }
+                }}
+                onVerseChange={setCurrentVerse}
+                autoPlay={true}
+              />
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -99,6 +99,39 @@
   font-size: 14px;
 }
 
+.play-button {
+  padding: 8px 16px;
+  margin-left: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.play-button:hover {
+  background-color: #45a049;
+}
+
+.player-content {
+  margin-top: 24px;
+}
+
+.verse-display {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.verse-display h2 {
+  margin-bottom: 16px;
+  color: #1e293b;
+}
+
 @media (max-width: 768px) {
   .quran-player-container {
     grid-template-columns: 1fr;

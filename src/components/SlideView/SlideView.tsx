@@ -27,6 +27,7 @@ export default function SlideView({
   backgroundImageUrl,
   onBack
 }: SlideViewProps) {
+  const [selectedReciter, setSelectedReciter] = useState('ar.alafasy'); // Default reciter
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -149,6 +150,8 @@ export default function SlideView({
       className="slide-view" 
       style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -215,6 +218,15 @@ export default function SlideView({
         <div className="verse-number">{currentVerse?.number}</div>
         <div className="arabic-text">{currentVerse?.text}</div>
         <div className="translation-text">{currentVerse?.translation}</div>
+        {currentVerse && (
+          <AudioPlayer
+            reciterId={selectedReciter}
+            surahNumber={surahNumber}
+            verseNumber={currentVerse.number}
+            onEnded={goToNextVerse}
+            autoPlay={isAutoPlay}
+          />
+        )}
       </div>
     </div>,
     document.body

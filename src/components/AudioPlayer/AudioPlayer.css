@@ -1,0 +1,178 @@
+.audio-player {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #4CAF50;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.play-pause-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.play-pause-button:hover {
+  transform: scale(1.1);
+}
+
+.play-pause-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.time-display {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 4px;
+}
+
+.audio-error {
+  color: #ff6b6b;
+  text-align: center;
+  padding: 10px;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 480px) {
+  .audio-player {
+    width: 90%;
+    bottom: 10px;
+    padding: 8px;
+  }
+
+  .play-pause-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .play-pause-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .time-display {
+    font-size: 0.8rem;
+  }
+
+  .volume-control {
+    display: none;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) {
+  .progress-container {
+    height: 6px;
+  }
+
+  .play-pause-button {
+    padding: 8px;
+  }
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.volume-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.volume-button:hover {
+  transform: scale(1.1);
+}
+
+.volume-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.volume-slider-container {
+  width: 80px;
+  padding: 0 8px;
+}
+
+.volume-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #4CAF50;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #4CAF50;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}

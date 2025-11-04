@@ -69,19 +69,74 @@ export default function AudioPlayer({ reciterId, surahNumber, verseNumber, onEnd
   }, [volume]);
 
   useEffect(() => {
-    const fetchAudioUrl = async () => {
+      const fetchAudioUrl = async () => {
       try {
         console.log('Fetching audio for:', { surahNumber, verseNumber, reciterId });
         setError(null);
+        setIsPlaying(false);
+        setProgress(0);
         
         // Show loading state
         setAudioUrl('');
         
         const result = await fetchQuranAudio(surahNumber, verseNumber, reciterId);
         
-        if (result.status === 'success' && result.data) {
-          setAudioUrl(result.data.audioUrl);
-          console.log('Audio URL set:', result.data.audioUrl);
+        if (result.status === 'success' && result.data?.audioUrl) {
+          const audioUrl = result.data.audioUrl;
+          console.log('Received audio URL:', audioUrl);
+          
+          // Verify the audio URL is accessible and is an MP3
+          try {
+            const response = await fetch(audioUrl, {
+              method: 'HEAD',
+              headers: {
+                'Accept': 'audio/mpeg',
+                'Range': 'bytes=0-0' // Request just the first byte to check format
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error('Audio file not accessible');
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('audio')) {
+              throw new Error('Invalid audio format');
+            }
+
+            // Create an Audio object to test playability
+            // Test audio playability
+            const testAudio = new Audio();
+            try {
+              await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                  reject(new Error('Audio load timed out'));
+                }, 5000);
+
+                testAudio.oncanplaythrough = () => {
+                  clearTimeout(timeoutId);
+                  resolve(true);
+                };
+
+                testAudio.onerror = () => {
+                  clearTimeout(timeoutId);
+                  reject(new Error('Failed to load audio source'));
+                };
+
+                testAudio.src = audioUrl;
+              });
+            } finally {
+              testAudio.src = '';  // Clean up
+            }
+
+            // If we get here, the audio loaded successfully
+            setAudioUrl(audioUrl);
+            console.log('Audio URL validated and set:', audioUrl);          } catch (audioError) {
+            console.error('Audio validation failed:', audioError);
+            throw new Error('Audio format not supported');
+          } finally {
+            testAudio.src = ''; // Clean up
+          }
         } else {
           throw new Error(result.error || 'Failed to fetch audio');
         }
@@ -89,12 +144,47 @@ export default function AudioPlayer({ reciterId, surahNumber, verseNumber, onEnd
         console.error('Audio fetch error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load audio');
         setAudioUrl('');
+        
+        // Try everyayah.com CDN URL directly
+        try {
+          const paddedSurah = surahNumber.toString().padStart(3, '0');
+          const paddedVerse = verseNumber.toString().padStart(3, '0');
+          const alternativeUrl = `https://everyayah.com/data/Alafasy_128kbps/${paddedSurah}${paddedVerse}.mp3`;
+          
+          console.log('Trying alternative URL:', alternativeUrl);
+          const testAudio = new Audio();
+          
+          await new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+              testAudio.src = '';
+              reject(new Error('Alternative audio load timed out'));
+            }, 5000);
+
+            testAudio.oncanplaythrough = () => {
+              clearTimeout(timeoutId);
+              resolve(true);
+            };
+
+            testAudio.onerror = () => {
+              clearTimeout(timeoutId);
+              reject(new Error('Failed to load alternative audio source'));
+            };
+
+            testAudio.src = alternativeUrl;
+          });
+
+          // If we get here, the alternative URL worked
+          setAudioUrl(alternativeUrl);
+          setError(null);
+          console.log('Alternative audio URL set successfully');
+        } catch (altError) {
+          console.error('Alternative audio URL also failed:', altError);
+          setError('Could not load audio from any source');
+        }
       }
     };
 
     if (surahNumber && verseNumber && reciterId) {
-      setIsPlaying(false); // Reset playing state
-      setProgress(0); // Reset progress
       fetchAudioUrl();
     }
   }, [reciterId, surahNumber, verseNumber]);
@@ -181,7 +271,26 @@ export default function AudioPlayer({ reciterId, surahNumber, verseNumber, onEnd
 
   return (
     <div className="audio-player">
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      <source 
+        src={audioUrl} 
+        type="audio/mpeg" 
+      />
+      <audio 
+        ref={audioRef} 
+        preload="auto"
+        playsInline
+        controlsList="nodownload"
+        onError={(e) => {
+          const audioElement = e.currentTarget;
+          console.error('Audio element error:', {
+            error: audioElement.error,
+            networkState: audioElement.networkState,
+            readyState: audioElement.readyState,
+            src: audioElement.src
+          });
+          setError(`Failed to load audio: ${audioElement.error?.message || 'Unknown error'}`);
+        }}
+      />
       
       <div className="progress-container" onClick={handleProgressClick}>
         <div className="progress-bar" style={{ width: `${progress}%` }} />

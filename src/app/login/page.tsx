@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import Navbar from '../../components/Navbar/Navbar';
 import Link from 'next/link';
 import './Login.css';
-import Footer from '../../components/Footer';
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -105,7 +104,6 @@ export const metadata: Metadata = {
             </div>
           </div>
         </main>
-        <Footer />
       </>
     );
   };

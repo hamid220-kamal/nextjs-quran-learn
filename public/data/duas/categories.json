@@ -1,0 +1,39 @@
+{
+  "categories": [
+    {
+      "id": "morning-evening",
+      "slug": "morning-evening",
+      "title": "Morning & Evening",
+      "description": "Duas for morning and evening",
+      "totalDuas": 20
+    },
+    {
+      "id": "quran",
+      "slug": "quran",
+      "title": "Quranic Duas",
+      "description": "Supplications from the Holy Quran",
+      "totalDuas": 40
+    },
+    {
+      "id": "daily",
+      "slug": "daily",
+      "title": "Daily Duas",
+      "description": "Duas for daily activities",
+      "totalDuas": 30
+    },
+    {
+      "id": "protection",
+      "slug": "protection",
+      "title": "Protection & Safety",
+      "description": "Duas for seeking protection",
+      "totalDuas": 25
+    },
+    {
+      "id": "forgiveness",
+      "slug": "forgiveness",
+      "title": "Forgiveness",
+      "description": "Duas for seeking forgiveness",
+      "totalDuas": 15
+    }
+  ]
+}

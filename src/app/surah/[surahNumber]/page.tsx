@@ -5,7 +5,6 @@ import { fetchSurah } from '../../../utils/quranApi';
 import './SurahViewer.css';
 import './AudioTranslationControls.css';
 import { toNumber } from '../../../types/app';
-import Footer from '../../../components/Footer';
 
 type SurahParams = {
   surahNumber: string;
@@ -45,7 +44,6 @@ export default function SurahPage({ params }: PageProps) {
       <main>
         <SurahViewer surahNumber={surahNumber} />
       </main>
-      <Footer />
     </div>
   );
 }

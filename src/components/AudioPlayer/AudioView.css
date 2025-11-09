@@ -16,12 +16,20 @@
 }
 
 .recitations-panel {
+  position: fixed;
+  right: 0;
+  top: var(--navbar-height, 80px);
   width: 320px;
-  background: rgba(0, 0, 0, 0.75);
+  height: calc(100vh - var(--navbar-height, 80px));
+  background: rgba(0, 0, 0, 0.95);
   padding: 20px;
   color: white;
   overflow-y: auto;
-  height: 100%;
+  z-index: 1000;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .recitations-header {
@@ -48,12 +56,20 @@
 
 .reciter-search {
   width: 100%;
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
   color: white;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.reciter-search:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(66, 153, 225, 0.5);
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
 }
 
 .reciter-search::placeholder {
@@ -67,18 +83,27 @@
 }
 
 .reciter-card {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 12px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
 }
 
 .reciter-card:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(-4px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.reciter-card.selected {
+  background: rgba(49, 130, 206, 0.2);
+  border-color: rgba(66, 153, 225, 0.5);
 }
 
 .reciter-info {
@@ -330,14 +355,73 @@
 }
 
 .loading-verse,
-.select-reciter-prompt {
+.select-reciter-prompt,
+.loading-state,
+.error-state {
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 20px;
+}
+
+.error-state {
+  color: #ff6b6b;
+}
+
+.error-state button {
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.error-state button:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .reciter-card.selected {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(49, 130, 206, 0.2);
+  border: 1px solid rgba(66, 153, 225, 0.5);
+}
+
+.current-reciter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.current-reciter span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
+.change-reciter {
+  background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.change-reciter:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.surah-info {
+  display: flex;
+  align-items: center;
+  color: white;
 }
 
 .control-btn:disabled {
@@ -365,6 +449,32 @@
 @media (max-width: 1024px) {
   .recitations-panel {
     width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .recitations-panel {
+    position: fixed;
+    top: auto;
+    bottom: var(--controls-height, 90px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.98);
+  }
+
+  .reciter-card {
+    padding: 10px 12px;
+  }
+
+  .reciter-search {
+    padding: 10px 14px;
+    font-size: 0.9rem;
   }
   
   .verse-content {

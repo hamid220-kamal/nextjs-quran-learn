@@ -2,7 +2,6 @@
 "use client";
 
 import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer";
 import React, { useState, useEffect, useCallback } from 'react';
 import './Hifz.css';
 
@@ -770,7 +769,6 @@ export default function HifzPage() {
         </>
       )}
         </main>
-      <Footer />
     </>
   );
 }

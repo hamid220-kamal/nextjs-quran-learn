@@ -1,0 +1,190 @@
+/* === MANZIL GRID LAYOUT === */
+.manzil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* === MANZIL CARD === */
+.manzil-card {
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.manzil-card:hover {
+  background-color: #f9fafb;
+  border-color: #009fb2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* === LEFT CONTENT === */
+.left-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.manzil-number {
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* === NAME CONTAINER === */
+.name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.manzil-name-en {
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  transition: color 0.2s ease;
+}
+
+.manzil-description {
+  font-size: 0.813rem;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+/* === RIGHT CONTENT === */
+.right-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.manzil-name-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.125rem;
+  color: #111827;
+  font-weight: 500;
+  direction: rtl;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.manzil-range {
+  font-size: 0.813rem;
+  color: #6b7280;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+
+/* === HOVER EFFECTS (Blue Accent Glow) === */
+.manzil-card:hover .manzil-number {
+  background: #009fb2;
+  color: #ffffff;
+}
+
+.manzil-card:hover .manzil-name-en {
+  color: #009fb2;
+}
+
+.manzil-card:hover .manzil-description,
+.manzil-card:hover .manzil-range {
+  color: #009fb2;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .manzil-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .manzil-card {
+    padding: 8px 12px;
+  }
+
+  .manzil-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
+  }
+
+  .manzil-name-en {
+    font-size: 0.875rem;
+  }
+
+  .manzil-description,
+  .manzil-range {
+    font-size: 0.75rem;
+  }
+
+  .manzil-name-ar {
+    font-size: 1rem;
+  }
+}
+
+/* === DARK MODE === */
+@media (prefers-color-scheme: dark) {
+  [data-theme="dark"] .manzil-card {
+    background: #1f2937;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .manzil-card:hover {
+    background: #374151;
+    border-color: #00bcd4;
+  }
+
+  [data-theme="dark"] .manzil-number,
+  [data-theme="dark"] .manzil-description,
+  [data-theme="dark"] .manzil-range {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+  }
+
+  [data-theme="dark"] .manzil-card:hover .manzil-number {
+    background: #00bcd4;
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .manzil-card:hover .manzil-name-en {
+    color: #00bcd4;
+  }
+
+  [data-theme="dark"] .manzil-card:hover .manzil-description,
+  [data-theme="dark"] .manzil-card:hover .manzil-range {
+    color: #00bcd4;
+  }
+
+  [data-theme="dark"] .manzil-name-en,
+  [data-theme="dark"] .manzil-name-ar {
+    color: #f9fafb;
+  }
+
+  [data-theme="dark"] .manzil-description,
+  [data-theme="dark"] .manzil-range {
+    color: #9ca3af;
+  }
+}

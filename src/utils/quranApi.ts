@@ -526,16 +526,58 @@ export async function fetchAllHizb() {
 /**
  * Fetch all ruku data
  * Note: The AlQuran.cloud API doesn't have a direct endpoint for rukus
- * The ruku information is available in the metadata of ayahs
- * For our purposes, we'll use surah data and approximate the ruku count
+ * We'll use surah data and metadata to determine ruku boundaries
  */
 export async function getRukuInfo() {
-  // The total number of rukus in the Quran is 556
   return {
     totalRuku: 556,
-    // We can't easily get precise ruku data from the API
-    // For detailed ruku information, we'd need to analyze ayah metadata
   };
+}
+
+/**
+ * Fetch data for a specific ruku
+ * @param {number} rukuNumber - The ruku number (1-556)
+ * @returns Promise<{ rukuNumber: number, surahNumber: number, startVerse: number, endVerse: number, verses: Array<{ number: number, text: string, translation: string, audio: string }> }>
+ */
+export async function getRukuData(rukuNumber: number) {
+  try {
+    if (rukuNumber < 1 || rukuNumber > 556) {
+      throw new Error('Invalid Ruku number');
+    }
+
+    // This is a simplified implementation. In a real application,
+    // you would have a complete mapping of ruku boundaries.
+    // For now, we'll approximate based on surah data.
+    const surahNumber = Math.ceil(rukuNumber / 5); // Approximate surah number
+    const verseOffset = ((rukuNumber - 1) % 5) * 10; // Approximate verse offset
+
+    // Fetch the surah data
+    const surahData = await fetchSurahWithTranslation(surahNumber);
+    
+    // Get verses for this ruku (approximately 10 verses per ruku)
+    const startVerse = verseOffset + 1;
+    const endVerse = Math.min(verseOffset + 10, surahData.ayahs.length);
+    
+    const verses = surahData.ayahs
+      .slice(startVerse - 1, endVerse)
+      .map(ayah => ({
+        number: ayah.number,
+        text: ayah.text,
+        translation: ayah.translation,
+        audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah.number}.mp3`
+      }));
+
+    return {
+      rukuNumber,
+      surahNumber,
+      startVerse,
+      endVerse,
+      verses
+    };
+  } catch (error) {
+    console.error('Error fetching Ruku data:', error);
+    throw error;
+  }
 }
 
 /**

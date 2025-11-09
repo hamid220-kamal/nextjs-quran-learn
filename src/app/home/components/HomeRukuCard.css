@@ -1,0 +1,187 @@
+/* === RUKU GRID LAYOUT === */
+.ruku-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* === RUKU CARD === */
+.ruku-card {
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ruku-card:hover {
+  background-color: #f9fafb;
+  border-color: #009fb2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* === LEFT SECTION === */
+.left-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ruku-number {
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* === RUKU NAMES === */
+.name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.ruku-name-en {
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  transition: color 0.2s ease;
+}
+
+.ruku-name-translation {
+  font-size: 0.813rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* === RIGHT SECTION === */
+.right-content {
+  text-align: right;
+}
+
+.ruku-name-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.125rem;
+  color: #111827;
+  margin-bottom: 4px;
+  direction: rtl;
+  white-space: nowrap;
+}
+
+.ayah-count {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 1px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* === HOVER EFFECTS (Blue Accent) === */
+.ruku-card:hover .ruku-number {
+  background: #009fb2;
+  color: #ffffff;
+}
+
+.ruku-card:hover .ruku-name-en {
+  color: #009fb2;
+}
+
+.ruku-card:hover .ayah-count {
+  background: #e0f7fa;
+  color: #009fb2;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .ruku-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .ruku-card {
+    padding: 8px 12px;
+  }
+
+  .ruku-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
+  }
+
+  .ruku-name-en {
+    font-size: 0.875rem;
+  }
+
+  .ruku-name-translation {
+    font-size: 0.75rem;
+  }
+
+  .ruku-name-ar {
+    font-size: 1rem;
+  }
+}
+
+/* === DARK MODE === */
+@media (prefers-color-scheme: dark) {
+  [data-theme="dark"] .ruku-card {
+    background: #1f2937;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .ruku-card:hover {
+    background: #374151;
+    border-color: #00bcd4;
+  }
+
+  [data-theme="dark"] .ruku-number,
+  [data-theme="dark"] .ayah-count {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+  }
+
+  [data-theme="dark"] .ruku-card:hover .ruku-number {
+    background: #00bcd4;
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .ruku-card:hover .ruku-name-en {
+    color: #00bcd4;
+  }
+
+  [data-theme="dark"] .ruku-card:hover .ayah-count {
+    background: rgba(0, 188, 212, 0.15);
+    color: #00bcd4;
+  }
+
+  [data-theme="dark"] .ruku-name-en,
+  [data-theme="dark"] .ruku-name-ar {
+    color: #f9fafb;
+  }
+
+  [data-theme="dark"] .ruku-name-translation {
+    color: #9ca3af;
+  }
+}

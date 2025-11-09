@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Metadata } from 'next';
 import Navbar from '../../components/Navbar/Navbar';
 import './Community.css';
-import Footer from '../../components/Footer';
 
 // Types
 interface StudyGroup {
@@ -484,7 +483,6 @@ export default function CommunityPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

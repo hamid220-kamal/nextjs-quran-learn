@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+.font-arabic {
+  font-family: 'Noto Naskh Arabic', serif;
+}
+
+/* Dua Page Specific Styles */
+.dua-card-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dua-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dua-arabic {
+  font-family: 'Noto Naskh Arabic', serif;
+  font-size: 1.75rem;
+  line-height: 2.5;
+  text-align: right;
+  direction: rtl;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dua-card-enter {
+  animation: fadeIn 0.3s ease-out forwards;
+}

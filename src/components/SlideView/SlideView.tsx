@@ -27,12 +27,10 @@ export default function SlideView({
   backgroundImageUrl,
   onBack
 }: SlideViewProps) {
-  const [selectedReciter, setSelectedReciter] = useState('ar.alafasy'); // Default reciter
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAutoPlay, setIsAutoPlay] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -68,18 +66,6 @@ export default function SlideView({
   }, [surahNumber]);
 
   useEffect(() => {
-    let autoPlayInterval: NodeJS.Timeout;
-    if (isAutoPlay) {
-      autoPlayInterval = setInterval(() => {
-        setCurrentVerseIndex(prev => 
-          prev < verses.length - 1 ? prev + 1 : 0
-        );
-      }, 5000); // Change verse every 5 seconds
-    }
-    return () => clearInterval(autoPlayInterval);
-  }, [isAutoPlay, verses.length]);
-
-  useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
         goToNextVerse();
@@ -97,7 +83,6 @@ export default function SlideView({
   const handlers = useSwipeable({
     onSwipedLeft: () => goToNextVerse(),
     onSwipedRight: () => goToPreviousVerse(),
-    preventDefaultTouchmoveEvent: true,
     trackMouse: true
   });
 
@@ -218,15 +203,6 @@ export default function SlideView({
         <div className="verse-number">{currentVerse?.number}</div>
         <div className="arabic-text">{currentVerse?.text}</div>
         <div className="translation-text">{currentVerse?.translation}</div>
-        {currentVerse && (
-          <AudioPlayer
-            reciterId={selectedReciter}
-            surahNumber={surahNumber}
-            verseNumber={currentVerse.number}
-            onEnded={goToNextVerse}
-            autoPlay={isAutoPlay}
-          />
-        )}
       </div>
     </div>,
     document.body

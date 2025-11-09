@@ -3,9 +3,6 @@
    Modern Minimal Design with SEO Optimization
    ======================================== */
 
-/* ===== IMPORTS ===== */
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 /* ===== ROOT VARIABLES ===== */
 :root {
   /* Colors - Modern Blue/Green Palette */
@@ -76,7 +73,7 @@
   background: var(--gradient-bg);
   position: relative;
   overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-primary);
   color: var(--dark-gray);
   line-height: 1.6;
 }
@@ -180,7 +177,7 @@
 }
 
 .urdu-heading {
-  font-family: 'Amiri', 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 3.2rem;
   font-weight: 700;
   color: var(--primary-green-dark);
@@ -190,7 +187,7 @@
 }
 
 .urdu-subtitle {
-  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-family: var(--font-arabic);
   font-size: 1.6rem;
   font-weight: 400;
   color: var(--accent-purple-dark);
@@ -390,7 +387,7 @@
 
 /* Arabic Text Styling */
 .surah-name-ar {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 1.8rem;
   text-align: center;
   margin-top: var(--spacing-md);

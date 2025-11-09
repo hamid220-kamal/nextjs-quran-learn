@@ -1,5 +1,5 @@
 "use client";
-import Footer from '../../components/Footer';
+
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Head from "next/head";
 import { motion } from "framer-motion";
@@ -263,7 +263,7 @@ export default function AudioQuranPage() {
     setCurrentPage((p) => Math.min(totalPages, p + 1));
 
   return (
-  <>
+    <div>
       <Head>
         <title>Quran Audio Player | Listen to Surah Online</title>
         <meta
@@ -526,7 +526,6 @@ export default function AudioQuranPage() {
           </div>
         )}
       </div>
-      <Footer />
-    </>
+    </div>
   );
 }

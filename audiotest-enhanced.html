@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Test - Enhanced</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #e6ffe6; color: #006600; }
+        .error { background: #ffe6e6; color: #660000; }
+        .loading { background: #e6e6ff; color: #000066; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Quran Audio Test</h2>
+    <div id="controls">
+        <button onclick="testDirectAudio()">Test Direct Audio</button>
+        <button onclick="testCorsProxy()">Test with CORS Proxy</button>
+        <button onclick="testAllProxies()">Test All Proxies</button>
+    </div>
+    <div id="status"></div>
+    <div id="details"></div>
+
+    <script>
+    const CORS_PROXIES = [
+        'https://api.allorigins.win/raw?url=',
+        'https://corsproxy.io/?',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://proxy.cors.sh/',
+        'https://cors.bridged.cc/'
+    ];
+
+    const CDN_URLS = [
+        'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3',
+        'https://verses.quran.com/ar.alafasy/1.mp3',
+        'https://download.quranicaudio.com/quran/ar.alafasy/1.mp3',
+        'https://audio.mp3quran.net/arabic/ar.alafasy/1.mp3'
+    ];
+
+    function updateStatus(message, type = 'loading') {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = `status ${type}`;
+        statusDiv.textContent = message;
+    }
+
+    function addDetail(message, type = 'info') {
+        const detailsDiv = document.getElementById('details');
+        const detail = document.createElement('div');
+        detail.className = `status ${type}`;
+        detail.textContent = message;
+        detailsDiv.insertBefore(detail, detailsDiv.firstChild);
+    }
+
+    async function testAudio(url, timeout = 10000) {
+        try {
+            const audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+
+            const loadPromise = new Promise((resolve, reject) => {
+                audio.oncanplaythrough = () => resolve();
+                audio.onerror = (e) => reject(new Error(`Audio error: ${e.target.error?.message || 'Unknown error'}`));
+            });
+
+            // Set up timeout
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout')), timeout));
+
+            audio.src = url;
+            audio.load();
+
+            // Race between load and timeout
+            await Promise.race([loadPromise, timeoutPromise]);
+            return true;
+        } catch (e) {
+            throw new Error(`Failed to load audio from ${url}: ${e.message}`);
+        }
+    }
+
+    async function testDirectAudio() {
+        updateStatus('Testing direct CDN access...');
+        document.getElementById('details').innerHTML = '';
+        
+        for (const url of CDN_URLS) {
+            try {
+                await testAudio(url);
+                addDetail(`✅ Success: ${url}`, 'success');
+            } catch (e) {
+                addDetail(`❌ Failed: ${url} - ${e.message}`, 'error');
+            }
+        }
+        
+        updateStatus('Direct CDN tests complete', 'success');
+    }
+
+    async function testCorsProxy() {
+        updateStatus('Testing primary CORS proxy...');
+        const url = CDN_URLS[0];
+        const proxy = CORS_PROXIES[0];
+        
+        try {
+            await testAudio(`${proxy}${encodeURIComponent(url)}`);
+            updateStatus('CORS proxy test successful!', 'success');
+            addDetail(`✅ Success with proxy: ${proxy}`, 'success');
+        } catch (e) {
+            updateStatus('CORS proxy test failed', 'error');
+            addDetail(`❌ Failed with proxy: ${proxy} - ${e.message}`, 'error');
+        }
+    }
+
+    async function testAllProxies() {
+        updateStatus('Testing all CORS proxies...');
+        document.getElementById('details').innerHTML = '';
+        
+        const url = CDN_URLS[0];
+        
+        for (const proxy of CORS_PROXIES) {
+            try {
+                const proxyUrl = `${proxy}${encodeURIComponent(url)}`;
+                await testAudio(proxyUrl);
+                addDetail(`✅ Success: ${proxy}`, 'success');
+            } catch (e) {
+                addDetail(`❌ Failed: ${proxy} - ${e.message}`, 'error');
+            }
+        }
+        
+        updateStatus('All proxy tests complete', 'success');
+    }
+    </script>
+</body>
+</html>

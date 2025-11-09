@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import './About.css';
 import Navbar from '../../components/Navbar/Navbar';
 import AboutClient from '../../components/about/AboutClient';
-import Footer from '../../components/Footer';
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -60,7 +59,6 @@ export default function AboutPage() {
       </div>
       {/* Interactive client component */}
       <AboutClient />
-      <Footer />
     </>
   );
 }

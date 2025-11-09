@@ -1,4 +1,3 @@
-import Footer from '../../components/Footer';
 import { Metadata } from 'next';
 import QuranBrowser from './QuranBrowser';
 import Navbar from '../../components/Navbar/Navbar';
@@ -40,7 +39,6 @@ export default async function QuranPage() {
     <div className="quran-page-container">
       <Navbar />
       <QuranBrowser initialData={initialData} />
-      <Footer />
     </div>
   );
 }

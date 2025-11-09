@@ -1,12 +1,35 @@
 
-@import './base.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Primary Font - Figtree */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap');
+
+/* Arabic Font - KFGQPC Uthmanic Script HAFS */
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script HAFS';
+  src: url('/kfgqpc-uthmanic-script-hafs-regular/KFGQPC Uthmanic Script HAFS Regular/KFGQPC Uthmanic Script HAFS Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  --font-arabic: 'Noto Naskh Arabic', serif;
+  --font-primary: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-arabic: 'KFGQPC Uthmanic Script HAFS', serif;
+  
+  --bg: #f7f7fb;
+  --card: #fff;
+  --accent: #0066cc;
+  
+  --quran-header-height: 120px;
+  --bottom-nav-height: 84px;
 }
 
 body {
   background-color: #f9fafb;
+  font-family: var(--font-primary);
 }
 
 /* Optional divider tweak */
@@ -56,7 +79,7 @@ html, body {
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: var(--font-primary);
   background: var(--bg);
   color: #111;
   line-height: 1.6;
@@ -144,10 +167,12 @@ button:focus,
 .responsive-heading {
   font-size: clamp(1.5rem, 5vw, 2.5rem);
 }/* app/globals.css - Add these styles */
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 .font-arabic {
-  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-family: var(--font-arabic);
+}
+
+.font-primary {
+  font-family: var(--font-primary);
 }
 
 /* Smooth scrolling */

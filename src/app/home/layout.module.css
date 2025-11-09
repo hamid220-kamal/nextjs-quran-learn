@@ -1,0 +1,226 @@
+.homeLayout {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f7f7fb;
+  position: relative;
+  overflow-x: hidden;
+  padding-top: 64px;
+  display: flex;
+  flex-direction: column;
+}
+
+.homeBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.6;
+}
+
+.contentContainer {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  width: 100%;
+}
+
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.floatingBgElement {
+  position: absolute;
+  border-radius: 50%;
+  animation: float 20s infinite ease-in-out;
+  filter: blur(40px);
+}
+
+.element1 {
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  left: -50px;
+  background: radial-gradient(circle, rgba(52, 168, 83, 0.05) 0%, rgba(52, 168, 83, 0) 70%);
+}
+
+.element2 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  right: -30px;
+  background: radial-gradient(circle, rgba(26, 115, 232, 0.04) 0%, rgba(26, 115, 232, 0) 70%);
+  animation-delay: -5s;
+}
+
+.element3 {
+  width: 200px;
+  height: 200px;
+  bottom: -50px;
+  left: 15%;
+  background: radial-gradient(circle, rgba(142, 68, 173, 0.04) 0%, rgba(142, 68, 173, 0) 70%);
+  animation-delay: -10s;
+}
+
+.element4 {
+  width: 180px;
+  height: 180px;
+  top: 60%;
+  right: 10%;
+  background: radial-gradient(circle, rgba(52, 168, 83, 0.04) 0%, rgba(52, 168, 83, 0) 70%);
+  animation-delay: -15s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(20px, -10px) rotate(2deg);
+  }
+  50% {
+    transform: translate(-5px, 15px) rotate(-2deg);
+  }
+  75% {
+    transform: translate(-15px, -7px) rotate(1deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .contentWrapper {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 1rem 0.5rem;
+    gap: 1rem;
+  }
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.homeBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.6;
+}
+
+.floatingBgElement {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26, 115, 232, 0.05) 0%, rgba(26, 115, 232, 0) 70%);
+  animation: floatDrift 20s infinite ease-in-out;
+  filter: blur(40px);
+}
+
+.element1 {
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  left: -50px;
+  animation-duration: 25s;
+  background: radial-gradient(circle, rgba(52, 168, 83, 0.05) 0%, rgba(52, 168, 83, 0) 70%);
+}
+
+.element2 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  right: -30px;
+  animation-duration: 30s;
+  animation-delay: -5s;
+  background: radial-gradient(circle, rgba(142, 68, 173, 0.04) 0%, rgba(142, 68, 173, 0) 70%);
+}
+
+.element3 {
+  width: 200px;
+  height: 200px;
+  bottom: -50px;
+  left: 15%;
+  animation-duration: 28s;
+  animation-delay: -10s;
+}
+
+.element4 {
+  width: 180px;
+  height: 180px;
+  top: 60%;
+  right: 10%;
+  animation-duration: 22s;
+  animation-delay: -15s;
+  background: radial-gradient(circle, rgba(52, 168, 83, 0.04) 0%, rgba(52, 168, 83, 0) 70%);
+}
+
+@keyframes floatDrift {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(20px, -10px) rotate(2deg);
+  }
+  50% {
+    transform: translate(-5px, 15px) rotate(-2deg);
+  }
+  75% {
+    transform: translate(-15px, -7px) rotate(1deg);
+  }
+}
+
+/* ===== MAIN CONTENT CONTAINER ===== */
+.contentContainer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.contentWrapper {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl, 2rem) var(--spacing-md, 1rem);
+  position: relative;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .contentWrapper {
+    padding: var(--spacing-lg, 1.5rem) var(--spacing-md, 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: var(--spacing-md, 1rem) var(--spacing-sm, 0.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: var(--spacing-sm, 0.5rem);
+  }
+}

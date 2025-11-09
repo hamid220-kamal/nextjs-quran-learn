@@ -3,7 +3,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import Navbar from '../../components/Navbar/Navbar';
 import './Tafsir.css';
-import Footer from '../../components/Footer';
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -171,7 +170,6 @@ export const metadata: Metadata = {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 

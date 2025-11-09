@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import SurahView from '@/components/SurahView/SurahView';
-import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar/Navbar';
 import './styles.css';
 
@@ -149,7 +148,6 @@ export default function QuranPlayerPage() {
           />
         )}
       </main>
-      <Footer />
     </div>
   );
 }

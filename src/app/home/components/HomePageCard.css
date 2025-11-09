@@ -1,0 +1,241 @@
+/* === PAGE GRID LAYOUT === */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* === PAGE CARD === */
+.page-card {
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* === Hover Lift === */
+.page-card:hover {
+  background-color: #f9fafb;
+  border-color: #009fb2; /* subtle blue border */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* === LEFT SECTION === */
+.left-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-number {
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+
+/* === HOVER EFFECT FOR DIAMOND === */
+.page-card:hover .page-number,
+.page-card.active .page-number {
+  background: #ecfeff;
+  border: 2px solid rgba(6, 182, 212, 0.7);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+}
+
+.page-card:hover .page-number span,
+.page-card.active .page-number span {
+  color: #06b6d4;
+}
+
+/* === NAME CONTAINER === */
+.name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.page-name-en {
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #111827;
+  transition: color 0.2s ease;
+}
+
+.page-description {
+  font-size: 0.813rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* === RIGHT SECTION === */
+.right-content {
+  text-align: right;
+}
+
+.page-name-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.125rem;
+  color: #111827;
+  margin-bottom: 4px;
+  direction: rtl;
+  white-space: nowrap;
+}
+
+.page-range {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 1px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* === TEXT GLOW EFFECT (on hover/active) === */
+.page-card:hover .page-name-en,
+.page-card.active .page-name-en,
+.page-card:hover .page-description,
+.page-card.active .page-description,
+.page-card:hover .page-name-ar,
+.page-card.active .page-name-ar,
+.page-card:hover .page-range,
+.page-card.active .page-range {
+  color: #06b6d4;
+  text-shadow: 0 0 6px rgba(6, 182, 212, 0.6);
+}
+
+/* === DARK MODE === */
+@media (prefers-color-scheme: dark) {
+  [data-theme="dark"] .page-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .page-card::after {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .page-card:hover::after,
+  [data-theme="dark"] .page-card.active::after {
+    border-color: rgba(6, 182, 212, 0.9);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+  }
+
+  [data-theme="dark"] .page-name-en,
+  [data-theme="dark"] .page-description,
+  [data-theme="dark"] .page-name-ar,
+  [data-theme="dark"] .page-range {
+    color: #e2e8f0;
+  }
+
+  [data-theme="dark"] .page-card:hover .page-name-en,
+  [data-theme="dark"] .page-card.active .page-name-en,
+  [data-theme="dark"] .page-card:hover .page-name-ar,
+  [data-theme="dark"] .page-card.active .page-name-ar,
+  [data-theme="dark"] .page-card:hover .page-description,
+  [data-theme="dark"] .page-card.active .page-description {
+    color: #67e8f9;
+    text-shadow: 0 0 12px rgba(6, 182, 212, 0.8);
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .page-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-card {
+    padding: 1rem;
+    height: 80px;
+  }
+
+  .left-content {
+    gap: 0.75rem;
+  }
+
+  .page-number {
+    width: 38px;
+    height: 38px;
+  }
+
+  .page-name-en {
+    font-size: 0.938rem;
+  }
+
+  .page-description {
+    font-size: 0.813rem;
+  }
+
+  .page-name-ar {
+    font-size: 1.125rem;
+  }
+
+  .page-range {
+    font-size: 0.813rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .page-card {
+    padding: 0.875rem;
+    height: 72px;
+  }
+
+  .left-content {
+    gap: 0.625rem;
+  }
+
+  .page-number {
+    width: 34px;
+    height: 34px;
+  }
+
+  .page-name-en {
+    font-size: 0.875rem;
+  }
+
+  .page-description {
+    font-size: 0.75rem;
+  }
+
+  .page-name-ar {
+    font-size: 1rem;
+  }
+
+  .page-range {
+    font-size: 0.75rem;
+  }
+}

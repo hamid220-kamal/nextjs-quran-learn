@@ -3,7 +3,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import Navbar from '../../components/Navbar/Navbar';
 import './Courses.css';
-import Footer from '../../components/Footer';
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -125,7 +124,6 @@ const CoursesPage = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 };

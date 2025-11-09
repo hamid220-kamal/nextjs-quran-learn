@@ -1,9 +1,8 @@
 // app/layout.tsx
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import Navbar from '@/components/Navbar/Navbar';
+import Footer from '@/components/Footer';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'QuranicLearn - Learn the Noble Quran | Interactive Quranic Education',
@@ -79,7 +78,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link 
-          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" 
+          href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" 
           rel="stylesheet" 
         />
         <link 
@@ -88,8 +87,12 @@ export default function RootLayout({
           type="image/x-icon" 
         />
       </head>
-      <body className={inter.className}>
-        {children}
+      <body>
+        <Navbar />
+        <main>
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

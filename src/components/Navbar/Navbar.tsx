@@ -162,6 +162,9 @@ export default function Navbar() {
               <i className={`fas ${isFeaturesOpen ? 'fa-caret-up' : 'fa-caret-down'}`} style={{ marginLeft: 'auto' }} aria-hidden />
             </button>
             <div className={`dropdown-menu ${isFeaturesOpen ? 'active' : ''}`}>
+              <Link href="/duas" className="dropdown-item" onClick={closeMenu}>
+                <i className="fas fa-pray"></i> DUAS
+              </Link>
               <Link href="/hifz" className="dropdown-item" onClick={closeMenu}>
                 <i className="fas fa-book-open"></i> HIFZ
               </Link>

@@ -3,7 +3,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import Navbar from '../../components/Navbar/Navbar';
 import './Tajweed.css';
-import Footer from '../../components/Footer';
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -193,7 +192,6 @@ export default function Page() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

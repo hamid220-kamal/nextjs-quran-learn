@@ -464,7 +464,7 @@
 }
 
 .arabic-name {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #059669, #0d9488);
@@ -665,7 +665,7 @@
 }
 
 .verse-text {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 1.75rem;
   line-height: 2.25;
   margin-bottom: 1rem;
@@ -761,7 +761,7 @@
 }
 
 .arabic-name {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #059669, #0d9488);
@@ -778,7 +778,7 @@
 
 /* Bismillah */
 .bismillah {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 2rem;
   text-align: center;
   margin: 1.5rem 0;
@@ -842,7 +842,7 @@
 }
 
 .ayah-text {
-  font-family: 'Scheherazade New', serif;
+  font-family: var(--font-arabic);
   font-size: 1.6rem;
   line-height: 2.2;
   margin-bottom: 1rem;

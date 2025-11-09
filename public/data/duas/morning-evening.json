@@ -1,0 +1,22 @@
+{
+  "duas": [
+    {
+      "id": "1",
+      "category": "morning-evening",
+      "title": "Morning Supplication",
+      "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَـهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ",
+      "transliteration": "Asbahna wa asbahal mulku lillah, walhamdu lillah, la ilaha illallah wahdahu la shareeka lah",
+      "translation": "We have reached the morning and at this very time all sovereignty belongs to Allah, praise is to Allah. None has the right to be worshipped except Allah, alone, without any partner",
+      "reference": "Abu Dawud"
+    },
+    {
+      "id": "2",
+      "category": "morning-evening",
+      "title": "Evening Supplication",
+      "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَـهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ",
+      "transliteration": "Amsayna wa amsal mulku lillah, walhamdu lillah, la ilaha illallah wahdahu la shareeka lah",
+      "translation": "We have reached the evening and at this very time all sovereignty belongs to Allah, praise is to Allah. None has the right to be worshipped except Allah, alone, without any partner",
+      "reference": "Abu Dawud"
+    }
+  ]
+}

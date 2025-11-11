@@ -82,13 +82,186 @@
 
 /* action buttons */
 .action-buttons { display:flex; gap:8px; align-items:center; }
+
+/* ===== PROFESSIONAL BUTTON STYLING ===== */
 .control-btn {
-	border:none; width:44px; height:44px; border-radius:10px; background:#f3f4f6; cursor:pointer; font-size:16px;
-	display:flex; align-items:center; justify-content:center; transition:transform .08s;
+	border: none;
+	width: 44px;
+	height: 44px;
+	border-radius: 10px;
+	cursor: pointer;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+	font-weight: 600;
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+	color: #374151;
+	box-shadow: 
+		0 2px 8px rgba(0, 0, 0, 0.1),
+		inset 0 1px 2px rgba(255, 255, 255, 0.8),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	user-select: none;
+	-webkit-user-select: none;
 }
-.control-btn:hover { transform:translateY(-2px); }
-.control-btn.stop { background:#fee2e2; color:#991b1b; }
-.control-btn.small { width:36px; height:36px; font-size:14px; }
+
+/* Shine overlay effect */
+.control-btn::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.5) 0%,
+		rgba(255, 255, 255, 0.2) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	pointer-events: none;
+	border-radius: 10px;
+}
+
+/* Hover state - smooth lift with scale */
+.control-btn:hover:not(:disabled) {
+	transform: translateY(-4px) scale(1.08);
+	box-shadow: 
+		0 8px 20px rgba(0, 0, 0, 0.15),
+		inset 0 1px 2px rgba(255, 255, 255, 0.8),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+	background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+
+/* Active/Press state */
+.control-btn:active:not(:disabled) {
+	transform: translateY(-1px) scale(0.96);
+	box-shadow: 
+		0 3px 8px rgba(0, 0, 0, 0.12),
+		inset 0 2px 4px rgba(0, 0, 0, 0.1),
+		inset 0 -1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Focus state for keyboard navigation */
+.control-btn:focus {
+	outline: 2px solid #2b6cb0;
+	outline-offset: 2px;
+}
+
+.control-btn:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* ===== PLAY BUTTON - MAIN CTA ===== */
+.control-btn[aria-label="Play"],
+.control-btn[aria-label="Pause"],
+.control-btn[aria-label="Resume"] {
+	background: linear-gradient(135deg, #2b6cb0 0%, #1e3a8a 100%);
+	color: white;
+	box-shadow: 
+		0 4px 16px rgba(43, 108, 176, 0.35),
+		inset 0 1px 2px rgba(255, 255, 255, 0.3),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.control-btn[aria-label="Play"]::before,
+.control-btn[aria-label="Pause"]::before,
+.control-btn[aria-label="Resume"]::before {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.4) 0%,
+		rgba(255, 255, 255, 0.15) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+}
+
+.control-btn[aria-label="Play"]:hover:not(:disabled),
+.control-btn[aria-label="Pause"]:hover:not(:disabled),
+.control-btn[aria-label="Resume"]:hover:not(:disabled) {
+	background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+	box-shadow: 
+		0 12px 28px rgba(43, 108, 176, 0.45),
+		inset 0 1px 2px rgba(255, 255, 255, 0.3),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+	transform: translateY(-5px) scale(1.12);
+}
+
+.control-btn[aria-label="Play"]:active:not(:disabled),
+.control-btn[aria-label="Pause"]:active:not(:disabled),
+.control-btn[aria-label="Resume"]:active:not(:disabled) {
+	transform: translateY(-1px) scale(0.94);
+	box-shadow: 
+		0 4px 12px rgba(43, 108, 176, 0.25),
+		inset 0 2px 4px rgba(0, 0, 0, 0.15),
+		inset 0 -1px 2px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== STOP BUTTON - DANGER STATE ===== */
+.control-btn.stop {
+	background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+	color: white;
+	box-shadow: 
+		0 4px 16px rgba(220, 38, 38, 0.3),
+		inset 0 1px 2px rgba(255, 255, 255, 0.2),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.control-btn.stop::before {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.3) 0%,
+		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+}
+
+.control-btn.stop:hover:not(:disabled) {
+	background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+	box-shadow: 
+		0 8px 20px rgba(220, 38, 38, 0.4),
+		inset 0 1px 2px rgba(255, 255, 255, 0.2),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+	transform: translateY(-4px) scale(1.08);
+}
+
+/* ===== SMALL NAVIGATION BUTTONS (PREV/NEXT) ===== */
+.control-btn.small {
+	width: 36px;
+	height: 36px;
+	font-size: 14px;
+	background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+	color: #0369a1;
+	box-shadow: 
+		0 2px 6px rgba(3, 105, 161, 0.12),
+		inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.control-btn.small:hover:not(:disabled) {
+	background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+	box-shadow: 
+		0 6px 12px rgba(3, 105, 161, 0.2),
+		inset 0 1px 2px rgba(255, 255, 255, 0.8);
+	transform: translateY(-3px) scale(1.1);
+	color: #0284c7;
+}
+
+/* Disabled state */
+.control-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.control-btn:disabled:hover {
+	transform: none;
+	box-shadow: 
+		0 2px 8px rgba(0, 0, 0, 0.1),
+		inset 0 1px 2px rgba(255, 255, 255, 0.8),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
 
 /* now playing sticky bar */
 .now-playing-bar { position: fixed; left:0; right:0; bottom:0; z-index:999; background: linear-gradient(90deg,#2b6cb0,#16a34a); color:#fff; padding:10px 14px; box-shadow:0 -8px 30px rgba(15,23,42,0.12); }
@@ -280,33 +453,78 @@
 }
 
 .sticky-control-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: white;
   padding: 8px 12px;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
 }
 
-.sticky-control-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+/* Shine overlay for glass effect */
+.sticky-control-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.sticky-control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 24px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.sticky-control-btn:active:not(:disabled) {
+  transform: scale(0.92);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .sticky-control-btn.play-pause {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.12));
   padding: 10px 14px;
   font-size: 1.3rem;
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
-.sticky-control-btn.play-pause:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.15);
+.sticky-control-btn.play-pause:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.2));
+  box-shadow: 
+    0 10px 28px rgba(255, 255, 255, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  transform: scale(1.2);
+}
+
+.sticky-control-btn.play-pause:active:not(:disabled) {
+  transform: scale(0.9);
 }
 
 /* Responsive Design */

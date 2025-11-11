@@ -440,29 +440,38 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     >
       {/* Top Bar */}
       <div className="top-bar">
+        {/* Go Back Button - Left, spans 2 rows */}
+        <button className="go-back-btn" onClick={onClose}>Go Back</button>
+        
+        {/* Surah Name - Center */}
         <div className="surah-info">
           <span>{surahName}</span>
-          {selectedReciter && !showReciters && (
-            <div className="current-reciter">
-              <span>{selectedReciter.englishName}</span>
-              <button 
-                className="change-reciter"
-                onClick={() => {
-                  if (audioRef.current) {
-                    audioRef.current.pause();
-                  }
-                  setIsPlaying(false);
-                  setShowReciters(true);
-                  setVerses([]);
-                  setCurrentVerseIndex(0);
-                }}
-              >
-                Change Reciter
-              </button>
-            </div>
-          )}
         </div>
-        <button onClick={onClose}>Close</button>
+        
+        {/* Change Reciter Button - Right, Row 1 */}
+        {selectedReciter && !showReciters && (
+          <button 
+            className="change-reciter"
+            onClick={() => {
+              if (audioRef.current) {
+                audioRef.current.pause();
+              }
+              setIsPlaying(false);
+              setShowReciters(true);
+              setVerses([]);
+              setCurrentVerseIndex(0);
+            }}
+          >
+            Change Reciter
+          </button>
+        )}
+        
+        {/* Current Reciter - Right, Row 2 */}
+        {selectedReciter && !showReciters && (
+          <div className="current-reciter">
+            <span>{selectedReciter.englishName}</span>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}

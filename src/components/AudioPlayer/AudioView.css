@@ -1,5 +1,5 @@
 .audio-view-container {
-  font-family: var(--font-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -7,6 +7,385 @@
   min-height: calc(100vh - var(--navbar-height, 80px));
   position: relative;
   z-index: 1;
+}
+
+/* Top Bar Styling - Complete Rebuild */
+.top-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 12px 16px;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+  width: 100%;
+  min-height: auto;
+  position: relative;
+  align-items: start;
+  justify-items: stretch;
+  align-content: start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Go Back Button - MUST BE VISIBLE */
+.go-back-btn {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-width: 90px;
+  padding: 10px 14px;
+  background: rgba(255, 59, 48, 0.2);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 59, 48, 0.5);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  align-self: center;
+  justify-self: start;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: relative;
+}
+
+.go-back-btn:hover {
+  background: rgba(255, 59, 48, 0.3);
+  border-color: rgba(255, 59, 48, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 59, 48, 0.35);
+}
+
+.go-back-btn:active {
+  transform: translateY(0);
+}
+
+.go-back-btn:hover {
+  background: rgba(255, 59, 48, 0.25);
+  border-color: rgba(255, 59, 48, 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 59, 48, 0.3);
+  color: #ffffff;
+}
+
+.go-back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.2);
+}
+
+/* Surah Info - Perfectly Centered in Column 2, Row 1 */
+.surah-info {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.surah-info > span {
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Change Reciter Button - Right aligned, Row 1 */
+.change-reciter {
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 110px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(147, 112, 219, 0.25), rgba(102, 126, 234, 0.2));
+  color: #ffffff;
+  border: 1.5px solid rgba(147, 112, 219, 0.5);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  align-self: center;
+  justify-self: end;
+  height: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: relative;
+}
+
+.change-reciter:hover {
+  background: linear-gradient(135deg, rgba(147, 112, 219, 0.3), rgba(102, 126, 234, 0.25));
+  border-color: rgba(147, 112, 219, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(147, 112, 219, 0.3);
+  color: #ffffff;
+}
+
+.change-reciter:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Current Reciter - Below Change Reciter, Row 2, Column 3 */
+.current-reciter {
+  grid-column: 3;
+  grid-row: 2;
+  min-width: 110px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(106, 90, 205, 0.2));
+  border: 1.5px solid rgba(102, 126, 234, 0.4);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: center;
+  justify-self: end;
+  height: auto;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  z-index: 10;
+  position: relative;
+}
+
+.current-reciter:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(106, 90, 205, 0.25));
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.current-reciter > span {
+  font-size: 0.7rem;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: right;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+/* Responsive Top Bar */
+
+/* Desktop Large (1200px+) */
+@media (min-width: 1200px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 12px 20px;
+    padding: 18px 40px;
+  }
+
+  .surah-info > span {
+    font-size: 1.8rem;
+  }
+
+  .go-back-btn {
+    padding: 11px 18px;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+
+  .change-reciter {
+    padding: 11px 16px;
+    font-size: 0.8rem;
+    min-width: 120px;
+  }
+
+  .current-reciter {
+    padding: 9px 16px;
+    min-width: 120px;
+  }
+
+  .current-reciter > span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Desktop Medium (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 11px 18px;
+    padding: 16px 32px;
+  }
+
+  .surah-info > span {
+    font-size: 1.6rem;
+  }
+
+  .go-back-btn {
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    min-width: 95px;
+  }
+
+  .change-reciter {
+    padding: 10px 15px;
+    font-size: 0.78rem;
+    min-width: 115px;
+  }
+
+  .current-reciter {
+    padding: 8px 15px;
+    min-width: 115px;
+  }
+
+  .current-reciter > span {
+    font-size: 0.72rem;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 10px 14px;
+    padding: 14px 18px;
+  }
+
+  .surah-info > span {
+    font-size: 1.4rem;
+  }
+
+  .go-back-btn {
+    padding: 9px 12px;
+    font-size: 0.72rem;
+    min-width: 85px;
+  }
+
+  .change-reciter {
+    padding: 9px 12px;
+    font-size: 0.72rem;
+    min-width: 105px;
+  }
+
+  .current-reciter {
+    padding: 7px 12px;
+    min-width: 105px;
+  }
+
+  .current-reciter > span {
+    font-size: 0.68rem;
+  }
+}
+
+/* Mobile Large (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 8px 12px;
+    padding: 12px 14px;
+  }
+
+  .surah-info > span {
+    font-size: 1.2rem;
+  }
+
+  .go-back-btn {
+    padding: 8px 11px;
+    font-size: 0.68rem;
+    min-width: 80px;
+  }
+
+  .change-reciter {
+    padding: 8px 11px;
+    font-size: 0.68rem;
+    min-width: 100px;
+  }
+
+  .current-reciter {
+    padding: 6px 11px;
+    min-width: 100px;
+  }
+
+  .current-reciter > span {
+    font-size: 0.65rem;
+  }
+}
+
+/* Mobile Medium (380px - 480px) */
+@media (min-width: 380px) and (max-width: 480px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 6px 8px;
+    padding: 9px 10px;
+  }
+
+  .surah-info > span {
+    font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  }
+
+  .change-reciter {
+    padding: 5px 9px;
+    font-size: 0.63rem;
+  }
+
+  .current-reciter {
+    padding: 5px 9px;
+  }
+
+  .current-reciter > span {
+    font-size: clamp(0.58rem, 0.8vw, 0.65rem);
+  }
+
+  .go-back-btn,
+  .top-bar > button {
+    padding: 5px 9px;
+    font-size: 0.63rem;
+  }
+}
+
+/* Mobile Small (≤379px) */
+@media (max-width: 379px) {
+  .top-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 6px 6px;
+    padding: 8px 8px;
+  }
+
+  .surah-info > span {
+    font-size: clamp(0.88rem, 2vw, 1.05rem);
+  }
+
+  .change-reciter {
+    padding: 5px 8px;
+    font-size: 0.6rem;
+  }
+
+  .current-reciter {
+    padding: 4px 8px;
+  }
+
+  .current-reciter > span {
+    font-size: 0.55rem;
+  }
+
+  .go-back-btn,
+  .top-bar > button {
+    padding: 5px 8px;
+    font-size: 0.6rem;
+  }
 }
 
 .main-content {
@@ -203,65 +582,178 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Audio Controls */
+/* Audio Controls - Professional Styling */
 .audio-controls {
   position: fixed;
   bottom: env(safe-area-inset-bottom, 0);
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
-  padding: clamp(12px, 2vw, 20px);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: clamp(16px, 2.5vw, 24px) clamp(12px, 3vw, 32px);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(10px, 2vw, 24px);
+  gap: clamp(20px, 4vw, 32px);
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.control-btn {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  padding: clamp(10px, 1.5vw, 16px) clamp(16px, 2vw, 24px);
-  border-radius: 50px;
+/* Base button styling */
+.audio-controls button {
+  border: none;
+  outline: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: clamp(48px, 6vh, 56px);
-  min-width: clamp(48px, 6vh, 56px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Previous and Next buttons */
+.audio-controls button:nth-child(1),
+.audio-controls button:nth-child(3) {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  padding: clamp(12px, 1.8vw, 18px) clamp(18px, 2.5vw, 28px);
+  border-radius: 12px;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  min-height: clamp(48px, 8vw, 56px);
+  min-width: clamp(48px, 8vw, 56px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.control-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.audio-controls button:nth-child(1):hover,
+.audio-controls button:nth-child(3):hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
+.audio-controls button:nth-child(1):active,
+.audio-controls button:nth-child(3):active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.audio-controls button:nth-child(1):disabled,
+.audio-controls button:nth-child(3):disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Play/Pause Button - Main Control */
 .play-btn {
-  min-width: clamp(120px, 20vw, 160px);
-  background: linear-gradient(135deg, #4299e1, #3182ce);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
-  font-weight: 600;
+  padding: clamp(14px, 2vw, 20px) clamp(32px, 5vw, 48px);
+  border-radius: 14px;
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  min-height: clamp(56px, 9vw, 64px);
+  min-width: clamp(140px, 22vw, 180px);
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.play-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 14px;
+  pointer-events: none;
 }
 
 .play-btn:hover {
-  background: linear-gradient(135deg, #3182ce, #2c5282);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.prev-btn,
-.next-btn {
-  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+.play-btn:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.control-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+.play-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: linear-gradient(135deg, #ccc 0%, #aaa 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.play-btn.loading {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .audio-controls {
+    padding: clamp(12px, 2vw, 16px) clamp(8px, 2vw, 16px);
+    gap: clamp(12px, 3vw, 20px);
+  }
+
+  .audio-controls button:nth-child(1),
+  .audio-controls button:nth-child(3) {
+    padding: clamp(10px, 1.5vw, 14px) clamp(14px, 2vw, 20px);
+    min-height: clamp(44px, 7vw, 52px);
+    min-width: clamp(44px, 7vw, 52px);
+  }
+
+  .play-btn {
+    padding: clamp(12px, 1.8vw, 16px) clamp(28px, 4vw, 40px);
+    min-height: clamp(50px, 8vw, 60px);
+    min-width: clamp(120px, 20vw, 160px);
+  }
+}
+
+@media (max-width: 480px) {
+  .audio-controls {
+    padding: 10px 8px;
+    gap: 8px;
+    height: var(--controls-height, 90px);
+  }
+
+  .audio-controls button:nth-child(1),
+  .audio-controls button:nth-child(3) {
+    padding: 8px 12px;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 0.9rem;
+  }
+
+  .play-btn {
+    padding: 10px 24px;
+    min-height: 48px;
+    min-width: 110px;
+    font-size: 0.95rem;
+  }
 }
 
 .verse-display {

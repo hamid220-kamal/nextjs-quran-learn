@@ -1119,52 +1119,99 @@
     padding: 10px 14px;
     font-size: 0.9rem;
   }
-  
-  .verse-content {
-    max-width: 800px;
-  }
 }
 
 @media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-    height: auto;
-    min-height: calc(100vh - var(--navbar-height, 80px));
-  }
-
   .verse-display {
-    padding: clamp(1rem, 3vw, 1.5rem);
-    height: auto;
-    min-height: calc(100vh - var(--navbar-height, 80px) - var(--controls-height, 120px));
+    padding-top: clamp(0.75rem, 1.5vh, 1.5rem);
+    padding-bottom: clamp(0.5rem, 1vh, 1rem);
+    padding-left: clamp(0.25rem, 1.5vw, 0.5rem);
+    padding-right: clamp(0.25rem, 1.5vw, 0.5rem);
+    justify-content: flex-start;
   }
 
   .verse-content {
-    width: 100%;
-    max-width: min(800px, 98vw);
-    padding: clamp(1rem, 2vw, 1.5rem);
-    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    width: 95%;
+    max-width: 100%;
+    padding: clamp(0.75rem, 1.5vh, 1.5rem) clamp(0.4rem, 1.5vw, 0.8rem);
+    gap: clamp(0.8rem, 1.2vh, 1.5rem);
   }
 
   .verse-number {
-    margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    margin-bottom: clamp(0.5rem, 0.8vh, 0.9rem);
   }
 
   .arabic-text {
-    width: 100%;
-    margin-bottom: clamp(0.75rem, 1.5vw, 1.5rem);
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+    line-height: 1.6;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .arabic-text[data-length="short"] {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+
+  .arabic-text[data-length="medium"] {
+    font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+  }
+
+  .arabic-text[data-length="long"] {
+    font-size: clamp(1.3rem, 4vw, 2.1rem);
   }
 
   .translation-text {
-    font-size: clamp(0.9rem, 1.75vw, 1.1rem);
-    width: 100%;
+    font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+    line-height: 1.5;
     max-width: 100%;
-    line-height: 1.6;
+    padding: 0.25rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .verse-display {
+    padding-top: clamp(0.5rem, 1.2vh, 1rem);
+    padding-bottom: clamp(0.4rem, 0.8vh, 0.8rem);
+    padding-left: clamp(0.2rem, 1vw, 0.4rem);
+    padding-right: clamp(0.2rem, 1vw, 0.4rem);
+    justify-content: flex-start;
   }
 
-  .recitations-panel {
-    width: 100%;
-    max-height: 60vh;
+  .verse-content {
+    width: 97%;
+    max-width: 100%;
+    padding: clamp(0.5rem, 1vh, 1rem) clamp(0.2rem, 1vw, 0.4rem);
+    gap: clamp(0.6rem, 0.9vh, 1.2rem);
+  }
+
+  .verse-number {
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
+    margin-bottom: clamp(0.4rem, 0.6vh, 0.7rem);
+  }
+
+  .arabic-text {
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    line-height: 1.5;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .arabic-text[data-length="short"] {
+    font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+  }
+
+  .arabic-text[data-length="medium"] {
+    font-size: clamp(1.3rem, 4vw, 2rem);
+  }
+
+  .arabic-text[data-length="long"] {
+    font-size: clamp(1.1rem, 3.5vw, 1.8rem);
+  }
+
+  .translation-text {
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    line-height: 1.4;
+    max-width: 100%;
+    padding: 0.2rem 0.3rem;
   }
 }
 

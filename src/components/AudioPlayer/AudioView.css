@@ -290,6 +290,53 @@
   }
 }
 
+/* Tablet (768px - 1023px) - VERSE DISPLAY FIX */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .verse-display {
+    padding-top: clamp(1.2rem, 2vh, 2.5rem);
+    padding-bottom: clamp(0.8rem, 1.5vh, 1.5rem);
+    justify-content: flex-start;
+  }
+
+  .verse-content {
+    width: 90%;
+    max-width: 900px;
+    padding: clamp(1rem, 1.8vh, 2rem) clamp(0.6rem, 2vw, 1.5rem);
+    gap: clamp(0.8rem, 1.5vh, 2rem);
+  }
+
+  .verse-number {
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+    margin-bottom: clamp(0.7rem, 1.2vh, 1.2rem);
+  }
+
+  .arabic-text {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    line-height: 1.8;
+    padding: 0.3rem 0.6rem;
+  }
+
+  /* Responsive font sizes based on verse length */
+  .arabic-text[data-length="short"] {
+    font-size: clamp(2.2rem, 5.8vw, 3.8rem);
+  }
+
+  .arabic-text[data-length="medium"] {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+  }
+
+  .arabic-text[data-length="long"] {
+    font-size: clamp(1.5rem, 4.5vw, 3rem);
+  }
+
+  .translation-text {
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    line-height: 1.6;
+    max-width: 850px;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
 /* Mobile Large (481px - 767px) */
 @media (min-width: 481px) and (max-width: 767px) {
   .top-bar {
@@ -712,6 +759,102 @@
   }
 }
 
+/* Desktop Large (1200px+) - VERSE DISPLAY FIX */
+@media (min-width: 1200px) {
+  .verse-display {
+    padding-top: clamp(2rem, 3vh, 4rem);
+    padding-bottom: clamp(1.5rem, 2.5vh, 3rem);
+    justify-content: flex-start;
+  }
+
+  .verse-content {
+    width: 85%;
+    max-width: 1100px;
+    padding: clamp(1.5rem, 2.5vh, 3rem) clamp(1rem, 3vw, 2rem);
+    gap: clamp(1.5rem, 2vh, 3rem);
+  }
+
+  .verse-number {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    margin-bottom: clamp(1rem, 1.5vh, 1.5rem);
+  }
+
+  .arabic-text {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.9;
+    padding: 0.5rem 1rem;
+    margin-bottom: clamp(0.5rem, 1vh, 1rem);
+  }
+
+  /* Responsive font sizes based on verse length */
+  .arabic-text[data-length="short"] {
+    font-size: clamp(3rem, 7vw, 5rem);
+  }
+
+  .arabic-text[data-length="medium"] {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .arabic-text[data-length="long"] {
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  .translation-text {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    line-height: 1.7;
+    max-width: 950px;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Desktop Medium (1024px - 1199px) - VERSE DISPLAY FIX */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .verse-display {
+    padding-top: clamp(1.5rem, 2.5vh, 3rem);
+    padding-bottom: clamp(1rem, 2vh, 2rem);
+    justify-content: flex-start;
+  }
+
+  .verse-content {
+    width: 88%;
+    max-width: 1000px;
+    padding: clamp(1.2rem, 2vh, 2.5rem) clamp(0.8rem, 2.5vw, 1.8rem);
+    gap: clamp(1.2rem, 1.8vh, 2.5rem);
+  }
+
+  .verse-number {
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    margin-bottom: clamp(0.8rem, 1.3vh, 1.3rem);
+  }
+
+  .arabic-text {
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+    line-height: 1.85;
+    padding: 0.4rem 0.8rem;
+    margin-bottom: clamp(0.4rem, 0.8vh, 0.8rem);
+  }
+
+  /* Responsive font sizes based on verse length */
+  .arabic-text[data-length="short"] {
+    font-size: clamp(2.7rem, 6.5vw, 4.5rem);
+  }
+
+  .arabic-text[data-length="medium"] {
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+  }
+
+  .arabic-text[data-length="long"] {
+    font-size: clamp(1.8rem, 4.8vw, 3.6rem);
+  }
+
+  .translation-text {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    line-height: 1.65;
+    max-width: 900px;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .audio-controls {
@@ -761,30 +904,38 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 3vw, 2.5rem);
+  justify-content: flex-start;
+  padding-top: clamp(1rem, 2vh, 3rem);
+  padding-bottom: clamp(1rem, 2vh, 2.5rem);
+  padding-left: clamp(0.5rem, 3vw, 2.5rem);
+  padding-right: clamp(0.5rem, 3vw, 2.5rem);
   color: white;
   text-align: center;
   min-height: calc(100vh - var(--navbar-height, 80px) - var(--controls-height, 120px));
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
 .verse-content {
-  width: 95%;
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: clamp(1rem, 2vh, 2rem) clamp(0.5rem, 2vw, 1.5rem);
   text-align: center;
-  gap: 2rem;
+  gap: clamp(1rem, 1.5vh, 2.5rem);
   box-sizing: border-box;
   background: none;
-  min-height: 100%;
+  min-height: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .verse-number {

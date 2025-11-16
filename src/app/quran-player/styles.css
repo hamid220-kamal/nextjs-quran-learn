@@ -1,9 +1,10 @@
+/* Layout */
 .page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f8fafc;
   position: relative;
   overflow-x: hidden;
   height: auto;
@@ -11,31 +12,23 @@
 
 main {
   width: 100%;
-  padding: 80px 0 0 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   overflow-y: auto;
   height: auto;
-  background: linear-gradient(to bottom, #f8fafc 0%, #eef2f5 100%);
+  background: #f8fafc;
 }
 
-.quran-player-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  padding-bottom: 2rem;
-  height: auto;
-}
-
+/* Page Header - Hero Section */
 .page-header {
   text-align: center;
   color: white;
   margin: 0;
   position: relative;
   overflow: hidden;
-  min-height: 500px;
+  min-height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,10 +79,10 @@ main {
 }
 
 .page-title {
-  font-size: 4rem;
+  font-size: 4.5rem;
   font-weight: 900;
-  margin-bottom: 1.5rem;
-  letter-spacing: -1px;
+  margin-bottom: 1rem;
+  letter-spacing: -2px;
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 1;
@@ -97,14 +90,16 @@ main {
 }
 
 .page-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   opacity: 0.95;
   position: relative;
   z-index: 1;
   font-weight: 400;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   animation: slideInUp 0.8s ease-out 0.4s both;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 @keyframes slideInUp {
@@ -118,6 +113,16 @@ main {
   }
 }
 
+/* Main Content Wrapper */
+.main-content-wrapper {
+  flex: 1 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+/* Main Content */
 .main-content {
   flex: 1 0 auto;
   max-width: 1400px;
@@ -129,7 +134,6 @@ main {
   flex-direction: column;
   margin-bottom: 100px;
   height: auto;
-  background: linear-gradient(to bottom, #f8fafc 0%, #eef2f5 50%, #e8eff2 100%);
 }
 
 .surahs-container {
@@ -146,27 +150,219 @@ main {
   }
 }
 
-footer {
-  width: 100%;
-  margin-top: auto;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-  background: linear-gradient(135deg, #1a2a6c, #2a5298);
-  padding: 3rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+/* Search Section */
+.search-section {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+  padding: 2.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  animation: slideDown 0.6s ease-out;
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.search-wrapper:focus-within {
+  border-color: #00897B;
+  box-shadow: 0 8px 24px rgba(0, 137, 123, 0.2);
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  margin: 0 1rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.search-input {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-family: inherit;
+  background: transparent;
+  color: #1e293b;
+}
+
+.search-input::placeholder {
+  color: #cbd5e1;
+}
+
+.clear-button {
+  background: none;
+  border: none;
+  padding: 0 1rem;
+  font-size: 1.2rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-button:hover {
+  color: #64748b;
+}
+
+.search-info {
+  margin-top: 1rem;
+  text-align: center;
+  color: #475569;
+  font-size: 0.95rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Loading and No Results */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #00897B;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 2rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  text-align: center;
+  color: #64748b;
+  animation: fadeIn 0.4s ease;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.no-results h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #475569;
+}
+
+.no-results p {
+  font-size: 1rem;
+  color: #94a3b8;
+  max-width: 400px;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* Surah Section */
 .surah-section {
   margin-bottom: 4.5rem;
   padding: 2.5rem 0;
-  border-bottom: 2px solid rgba(0, 97, 100, 0.12);
   width: 100%;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .surah-section:last-child {
-  border-bottom: none;
   margin-bottom: 2rem;
+}
+
+.surah-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #004D40;
+  margin: 2.5rem 0 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #00897B;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+  animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.surah-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00897B, #009688);
+  animation: expandWidth 0.8s ease-out 0.2s forwards;
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 .slider-container {
@@ -414,62 +610,7 @@ footer {
 /* Responsive Styles */
 @media (max-width: 1024px) {
   .main-content {
-    padding: 1.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-    padding: 1rem;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .page-header {
-    padding: 2rem 1rem;
-  }
-
-  .page-title {
-    font-size: 2rem;
-  }
-}
-
-.player-section {
-  background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.no-selection {
-  text-align: center;
-  padding: 3rem;
-  color: #666;
-  font-size: 1.1rem;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .main-content {
-    grid-template-columns: 1fr;
-    padding: 2rem 1.5rem;
-  }
-  
-  .sidebar {
-    order: 2;
-  }
-  
-  .player-section {
-    order: 1;
+    padding: 2.5rem 1.5rem;
   }
 
   .page-header {
@@ -481,32 +622,7 @@ footer {
   }
 
   .page-subtitle {
-    font-size: 1.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-    padding: 1.5rem 1rem;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .page-header {
-    min-height: 350px;
-    padding: 2rem 1rem;
-  }
-
-  .page-title {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-  }
-
-  .page-subtitle {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   .surah-section-title {
@@ -518,41 +634,60 @@ footer {
   }
 
   .slider-button {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     font-size: 1.5rem;
   }
 
   .surah-card {
-    height: 240px;
-    min-width: 280px;
+    height: 260px;
+    min-width: 300px;
   }
 }
 
-@media (max-width: 640px) {
-  .quran-player-page {
-    padding: 1rem;
+@media (max-width: 768px) {
+  .search-section {
+    padding: 2rem 1rem;
   }
-  
+
+  .search-wrapper {
+    border-radius: 12px;
+  }
+
+  .search-input {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
+
   .page-header {
-    min-height: 300px;
-    padding: 1.5rem 0;
+    min-height: 350px;
+    padding: 2rem 1rem;
   }
-  
+
   .page-title {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
   }
 
   .page-subtitle {
-    font-size: 0.9rem;
+    font-size: 1rem;
+  }
+
+  .main-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .surah-section {
+    padding: 2rem 0;
   }
 
   .surah-section-title {
     font-size: 1.5rem;
+    margin: 2rem 0 1.5rem;
   }
 
   .slider-container {
     padding: 0 45px;
+    margin: 1.5rem 0;
   }
 
   .slider-button {
@@ -562,8 +697,8 @@ footer {
   }
 
   .surah-card {
-    height: 220px;
-    min-width: 250px;
+    height: 240px;
+    min-width: 280px;
   }
 
   .surah-number-badge {
@@ -578,5 +713,92 @@ footer {
 
   .surah-name-english {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .search-input::placeholder {
+    font-size: 0.9rem;
+  }
+
+  .page-header {
+    min-height: 300px;
+    padding: 1.5rem 1rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .header-content {
+    padding: 2rem 1rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .surah-section {
+    padding: 1.5rem 0;
+  }
+
+  .surah-section-title {
+    font-size: 1.3rem;
+    margin: 1.5rem 0 1rem;
+  }
+
+  .slider-container {
+    padding: 0 40px;
+    margin: 1rem 0;
+  }
+
+  .slider-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .surah-card {
+    height: 220px;
+    min-width: 250px;
+  }
+
+  .surah-number-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  .surah-name-arabic {
+    font-size: 1.3rem;
+  }
+
+  .surah-name-english {
+    font-size: 0.9rem;
+  }
+
+  .surah-ayahs {
+    font-size: 0.75rem;
+  }
+
+  .loading-container,
+  .no-results {
+    padding: 4rem 1rem;
+  }
+
+  .no-results-icon {
+    font-size: 3rem;
+  }
+
+  .no-results h3 {
+    font-size: 1.2rem;
   }
 }

@@ -369,10 +369,11 @@ main {
 
 /* Surah Section */
 .surah-section {
-  margin-bottom: 3.5rem;
-  padding: 2rem 0;
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
   width: 100%;
   animation: fadeIn 0.6s ease-out;
+  text-align: center;
 }
 
 .surah-section:last-child {
@@ -522,56 +523,54 @@ main {
 
 
 .surah-section-title {
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 800;
   color: #004D40;
-  margin: 2rem 0 1.5rem;
+  margin: 1.5rem 0 1.2rem;
   padding-bottom: 1.2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   border-bottom: 4px solid #00897B;
   letter-spacing: -0.7px;
   position: relative;
-  display: inline-block;
-  animation: slideInLeft 0.6s ease-out;
+  display: block;
+  text-align: center;
+  animation: slideInDown 0.6s ease-out;
+  width: 100%;
+  background: linear-gradient(135deg, #004D40 0%, #009688 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  box-decoration-break: clone;
 }
 
-@keyframes slideInLeft {
+@keyframes slideInDown {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
 .surah-section-title::before {
   content: '';
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #00897B, #009688);
-  animation: expandWidth 1s ease-out forwards;
 }
 
 .surah-section-title::after {
   content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(0, 137, 123, 0.3), transparent);
 }
 
-@keyframes expandWidth {
-  from {
-    width: 0;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
   }
-  to {
-    width: 100%;
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
   }
 }
 
@@ -777,6 +776,9 @@ main {
 
   .surah-section-title {
     font-size: 1.8rem;
+    margin: 1.2rem 0 1rem;
+    padding: 0.8rem 0.5rem;
+    border-bottom: 3px solid #00897B;
   }
 
   .slider-container {
@@ -832,17 +834,20 @@ main {
   }
 
   .surah-section {
-    padding: 2rem 0;
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
   }
 
   .surah-section-title {
     font-size: 1.5rem;
-    margin: 2rem 0 1.5rem;
+    margin: 1rem 0 0.8rem;
+    padding: 0.6rem 0.5rem;
+    border-bottom: 3px solid #00897B;
   }
 
   .slider-container {
     padding: 0 45px;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
   }
 
   .slider-button {
@@ -854,6 +859,10 @@ main {
   .surah-card {
     height: 240px;
     min-width: 280px;
+  }
+
+  .surahs-slider {
+    gap: 1rem;
   }
 
   .surah-number-badge {
@@ -902,12 +911,16 @@ main {
   }
 
   .surah-section {
-    padding: 1.5rem 0;
+    padding: 0.8rem 0;
+    margin-bottom: 1.2rem;
   }
 
   .surah-section-title {
     font-size: 1.3rem;
-    margin: 1.5rem 0 1rem;
+    margin: 0.8rem 0 0.6rem;
+    padding: 0.5rem 0.3rem;
+    border-bottom: 2px solid #00897B;
+    letter-spacing: -0.3px;
   }
 
   .slider-container {

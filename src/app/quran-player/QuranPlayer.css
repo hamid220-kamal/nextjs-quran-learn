@@ -1,145 +1,319 @@
 .quran-player-container {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 24px;
-  max-width: 1200px;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 24px;
-  min-height: calc(100vh - 64px);
+  padding: 32px 24px;
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .sidebar {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 77, 64, 0.08);
+  padding: 28px 24px;
   height: fit-content;
+  position: sticky;
+  top: 100px;
+  border: 1px solid rgba(0, 97, 100, 0.08);
 }
 
 .main-content {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 77, 64, 0.08);
+  padding: 32px;
+  border: 1px solid rgba(0, 97, 100, 0.08);
 }
 
 .search-bar {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  position: relative;
 }
 
 .search-bar input {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 14px 18px 14px 42px;
+  border: 2px solid #e0e7ff;
+  border-radius: 10px;
   font-size: 14px;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #00897B;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.1);
+}
+
+.search-bar::before {
+  content: '🔍';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  opacity: 0.6;
 }
 
 .surah-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+}
+
+.surah-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.surah-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.surah-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.surah-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .surah-item {
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px 12px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin-bottom: 8px;
+  border: 2px solid transparent;
 }
 
 .surah-item:hover {
-  background-color: #f8fafc;
+  background-color: #f0f9f8;
+  border-color: rgba(0, 137, 123, 0.2);
+  transform: translateX(4px);
 }
 
 .surah-item.active {
-  background-color: #e2e8f0;
+  background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+  border-color: #00897B;
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.15);
 }
 
 .surah-number {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  border-radius: 6px;
-  margin-right: 12px;
-  font-weight: 600;
+  background: linear-gradient(135deg, #004D40, #00796B);
+  border-radius: 10px;
+  margin-right: 14px;
+  font-weight: 700;
+  color: white;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
 .surah-info {
   flex: 1;
+  min-width: 0;
 }
 
 .surah-name {
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 4px;
+  color: #1e293b;
+  font-size: 14px;
 }
 
 .surah-meta {
   font-size: 12px;
   color: #64748b;
+  font-weight: 500;
 }
 
 .player-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #e0e7ff;
+}
+
+.player-header h1 {
+  font-size: 2rem;
+  color: #004D40;
+  margin: 0;
+  font-weight: 700;
+  flex: 1;
+  min-width: 200px;
 }
 
 .reciter-select {
-  min-width: 200px;
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  min-width: 240px;
+  padding: 12px 16px;
+  border: 2px solid #e0e7ff;
+  border-radius: 10px;
   font-size: 14px;
+  background: white;
+  color: #1e293b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reciter-select:hover {
+  border-color: #00897B;
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.1);
+}
+
+.reciter-select:focus {
+  outline: none;
+  border-color: #00897B;
+  box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.1);
 }
 
 .play-button {
-  padding: 8px 16px;
-  margin-left: 12px;
-  background-color: #4CAF50;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #00897B, #006064);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.2s;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.2);
+  letter-spacing: 0.3px;
 }
 
 .play-button:hover {
-  background-color: #45a049;
+  background: linear-gradient(135deg, #006064, #004D40);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 137, 123, 0.3);
+}
+
+.play-button:active {
+  transform: translateY(0);
 }
 
 .player-content {
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 .verse-display {
-  background: #f8fafc;
-  padding: 24px;
-  border-radius: 8px;
-  margin-bottom: 24px;
+  background: linear-gradient(135deg, #f0f9f8 0%, #e0f2f1 100%);
+  padding: 32px;
+  border-radius: 12px;
+  margin-bottom: 32px;
   text-align: center;
+  border: 2px solid #b2dfdb;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .verse-display h2 {
-  margin-bottom: 16px;
-  color: #1e293b;
+  margin-bottom: 20px;
+  color: #004D40;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 1024px) {
+  .quran-player-container {
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    padding: 24px 16px;
+  }
+  
+  .player-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .player-header h1 {
+    margin-bottom: 12px;
+  }
+  
+  .reciter-select,
+  .play-button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
   .quran-player-container {
     grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px 16px;
   }
   
   .sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: relative;
+    top: auto;
+    max-height: 300px;
+  }
+  
+  .main-content {
+    padding: 24px;
+  }
+  
+  .player-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .verse-display {
+    padding: 24px;
+    min-height: 150px;
+  }
+  
+  .verse-display h2 {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .quran-player-container {
+    gap: 16px;
+    padding: 16px 12px;
+  }
+  
+  .sidebar {
+    padding: 20px 16px;
+  }
+  
+  .main-content {
+    padding: 20px 16px;
+  }
+  
+  .player-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .reciter-select {
+    min-width: unset;
+    font-size: 13px;
+  }
+  
+  .play-button {
+    font-size: 13px;
+    padding: 10px 20px;
   }
 }

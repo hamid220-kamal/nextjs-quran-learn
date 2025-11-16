@@ -3,9 +3,10 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  background-color: #fff;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   position: relative;
   overflow-x: hidden;
+  height: auto;
 }
 
 main {
@@ -14,6 +15,9 @@ main {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+  overflow-y: auto;
+  height: auto;
+  background: linear-gradient(to bottom, #f8fafc 0%, #eef2f5 100%);
 }
 
 .quran-player-content {
@@ -22,38 +26,124 @@ main {
   flex-direction: column;
   flex: 1 1 auto;
   padding-bottom: 2rem;
+  height: auto;
 }
 
 .page-header {
   text-align: center;
-  padding: 3rem 0;
-  background: linear-gradient(135deg, #004D40 0%, #00796B 100%);
   color: white;
   margin: 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: none;
+}
+
+.header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+  z-index: 2;
+}
+
+.header-content {
+  position: relative;
+  z-index: 3;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .page-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  font-size: 4rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  letter-spacing: -1px;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.8s ease-out 0.2s both;
 }
 
 .page-subtitle {
-  font-size: 1.1rem;
-  opacity: 0.9;
+  font-size: 1.5rem;
+  opacity: 0.95;
+  position: relative;
+  z-index: 1;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .main-content {
   flex: 1 0 auto;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3.5rem 2rem;
   width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 160px); /* Subtract header and footer heights */
-  margin-bottom: 100px; /* Space before footer */
+  margin-bottom: 100px;
+  height: auto;
+  background: linear-gradient(to bottom, #f8fafc 0%, #eef2f5 50%, #e8eff2 100%);
+}
+
+.surahs-container {
+  width: 100%;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 footer {
@@ -63,60 +153,73 @@ footer {
   position: relative;
   z-index: 2;
   background: linear-gradient(135deg, #1a2a6c, #2a5298);
-  padding: 2rem 0;
+  padding: 3rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .surah-section {
-  margin-bottom: 2rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 4.5rem;
+  padding: 2.5rem 0;
+  border-bottom: 2px solid rgba(0, 97, 100, 0.12);
+  width: 100%;
 }
 
 .surah-section:last-child {
   border-bottom: none;
+  margin-bottom: 2rem;
 }
 
 .slider-container {
   position: relative;
-  padding: 0 50px;
-  margin: 1rem 0;
+  padding: 0 60px;
+  margin: 2rem 0;
 }
 
 .surahs-slider {
   display: flex;
-  gap: 1rem;
+  gap: 1.8rem;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 1rem 0;
-  -ms-overflow-style: none;  /* Hide scrollbar IE and Edge */
-  scrollbar-width: none;  /* Hide scrollbar Firefox */
+  padding: 2rem 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .surahs-slider::-webkit-scrollbar {
-  display: none; /* Hide scrollbar Chrome, Safari, Opera */
+  display: none;
 }
 
 .slider-button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: #004D40;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #004D40 0%, #00796B 50%, #009688 100%);
   color: white;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 10;
+  box-shadow: 0 6px 20px rgba(0, 77, 64, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  font-weight: bold;
 }
 
 .slider-button:hover {
-  background: #00796B;
+  background: linear-gradient(135deg, #00796B 0%, #009688 50%, #00BCD4 100%);
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 10px 28px rgba(0, 77, 64, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.slider-button:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .slider-button.prev {
@@ -127,19 +230,50 @@ footer {
   right: 0;
 }
 
-.surah-card {
-  flex: 0 0 300px;
-  height: 200px;
-}
-
 
 
 .surah-section-title {
-  font-size: 1.5rem;
-  color: #006064;
-  margin: 2rem 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #006064;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #004D40;
+  margin: 2.5rem 0 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 4px solid #00897B;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+  animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.surah-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00897B, #009688);
+  animation: expandWidth 0.8s ease-out 0.2s forwards;
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 .surahs-grid {
@@ -151,26 +285,42 @@ footer {
 
 .surah-card {
   position: relative;
-  height: 200px;
-  border-radius: 12px;
+  height: 280px;
+  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   color: white;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 16px 40px rgba(26, 71, 42, 0.35);
+  min-width: 320px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInScale 0.6s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .surah-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px) scale(1.08);
+  box-shadow: 0 32px 80px rgba(26, 71, 42, 0.5);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .surah-card.selected {
-  box-shadow: 0 0 0 3px #006064, 0 8px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 4px #00897B, 0 16px 40px rgba(0, 77, 64, 0.4);
+  border-color: #00897B;
+  transform: scale(1.02);
 }
 
 .surah-card-content {
@@ -179,29 +329,39 @@ footer {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 1.5rem;
+  padding: 1.8rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.45) 100%);
+  backdrop-filter: blur(1px);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.surah-card:hover .surah-card-content {
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.55) 100%);
+  backdrop-filter: blur(2px);
 }
 
 .surah-number-badge {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #006064;
-  width: 30px;
-  height: 30px;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  color: #1a472a;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 0.9rem;
+  font-weight: 900;
+  font-size: 1.4rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 3px solid #2d6a4f;
+  transition: all 0.3s ease;
 }
 
 .surah-name-arabic {
@@ -301,6 +461,7 @@ footer {
 @media (max-width: 1024px) {
   .main-content {
     grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
   }
   
   .sidebar {
@@ -310,6 +471,62 @@ footer {
   .player-section {
     order: 1;
   }
+
+  .page-header {
+    min-height: 400px;
+  }
+
+  .page-title {
+    font-size: 3rem;
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .page-header {
+    min-height: 350px;
+    padding: 2rem 1rem;
+  }
+
+  .page-title {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+  }
+
+  .surah-section-title {
+    font-size: 1.8rem;
+  }
+
+  .slider-container {
+    padding: 0 50px;
+  }
+
+  .slider-button {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .surah-card {
+    height: 240px;
+    min-width: 280px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -318,10 +535,48 @@ footer {
   }
   
   .page-header {
+    min-height: 300px;
     padding: 1.5rem 0;
   }
   
   .page-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .surah-section-title {
+    font-size: 1.5rem;
+  }
+
+  .slider-container {
+    padding: 0 45px;
+  }
+
+  .slider-button {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .surah-card {
+    height: 220px;
+    min-width: 250px;
+  }
+
+  .surah-number-badge {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .surah-name-arabic {
+    font-size: 1.5rem;
+  }
+
+  .surah-name-english {
+    font-size: 1rem;
   }
 }

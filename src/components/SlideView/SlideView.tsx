@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './SlideView.css';
 
@@ -32,6 +32,20 @@ export default function SlideView({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Hide navbar and other elements when slide view is active
+  useEffect(() => {
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      (navbar as HTMLElement).style.display = 'none';
+    }
+    
+    return () => {
+      if (navbar) {
+        (navbar as HTMLElement).style.display = '';
+      }
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchVerses() {
@@ -65,6 +79,24 @@ export default function SlideView({
     fetchVerses();
   }, [surahNumber]);
 
+  const goToNextVerse = useCallback(() => {
+    setCurrentVerseIndex(prev => {
+      if (prev < verses.length - 1) {
+        return prev + 1;
+      }
+      return prev;
+    });
+  }, [verses.length]);
+
+  const goToPreviousVerse = useCallback(() => {
+    setCurrentVerseIndex(prev => {
+      if (prev > 0) {
+        return prev - 1;
+      }
+      return prev;
+    });
+  }, [verses.length]);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
@@ -78,25 +110,14 @@ export default function SlideView({
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [verses.length]);
+  }, [currentVerseIndex, verses.length, onBack, goToNextVerse, goToPreviousVerse]);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => goToNextVerse(),
-    onSwipedRight: () => goToPreviousVerse(),
-    trackMouse: true
+    onSwipedLeft: goToNextVerse,
+    onSwipedRight: goToPreviousVerse,
+    trackMouse: true,
+    preventScrollOnSwipe: true
   });
-
-  const goToNextVerse = () => {
-    if (currentVerseIndex < verses.length - 1) {
-      setCurrentVerseIndex(prev => prev + 1);
-    }
-  };
-
-  const goToPreviousVerse = () => {
-    if (currentVerseIndex > 0) {
-      setCurrentVerseIndex(prev => prev - 1);
-    }
-  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {

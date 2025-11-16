@@ -108,19 +108,15 @@ export default function QuranPlayerPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 w-full">
-        <div className="page-header" style={{ 
-          padding: '40px 20px',
-          marginTop: '20px', 
-          textAlign: 'center',
-          backgroundColor: '#00573F',
-          color: 'white',
-          borderRadius: '8px',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h1 className="page-title">Quran Player</h1>
-          <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
+        <div className="page-header">
+          <div className="header-background" style={{ 
+            backgroundImage: 'url(/images/quran%20player%20home%20background.jpg)'
+          }}></div>
+          <div className="header-overlay"></div>
+          <div className="header-content">
+            <h1 className="page-title">Quran Player</h1>
+            <p className="page-subtitle">Listen to the Holy Quran with Mishary Rashid Alafasy</p>
+          </div>
         </div>
 
         <div className="flex-1 w-full px-4">

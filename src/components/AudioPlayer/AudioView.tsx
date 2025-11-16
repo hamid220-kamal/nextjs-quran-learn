@@ -531,14 +531,16 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
               <>
                 {/* Current Verse Display */}
                 <div className="verse-display">
-                  <div className="verse-number">
-                    Verse {verses[currentVerseIndex]?.numberInSurah} of {verses.length}
-                  </div>
-                  <div className="arabic-text">
-                    {verses[currentVerseIndex]?.text}
-                  </div>
-                  <div className="translation-text">
-                    {verses[currentVerseIndex]?.translation}
+                  <div className="verse-content">
+                    <div className="verse-number">
+                      Verse {verses[currentVerseIndex]?.numberInSurah} of {verses.length}
+                    </div>
+                    <div className="arabic-text">
+                      {verses[currentVerseIndex]?.text}
+                    </div>
+                    <div className="translation-text">
+                      {verses[currentVerseIndex]?.translation}
+                    </div>
                   </div>
                 </div>
               </>

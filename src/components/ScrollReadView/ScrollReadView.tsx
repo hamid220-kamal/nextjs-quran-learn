@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './ScrollReadView.module.css';
+import ToggleMenu from '../Controls/ToggleMenu';
 import { fetchSurahVersesWithTranslation } from '../../utils/quranApi';
 
 interface ScrollReadViewProps {
@@ -10,6 +11,10 @@ interface ScrollReadViewProps {
   totalVerses: number;
   backgroundImageUrl: string;
   onBack: () => void;
+  onShowSlideView?: (show: boolean) => void;
+  onShowScrollRead?: (show: boolean) => void;
+  onShowAudioView?: (show: boolean) => void;
+  onShowIntroduction?: (show: boolean) => void;
 }
 
 interface Verse {
@@ -23,12 +28,17 @@ export default function ScrollReadView({
   surahName,
   totalVerses,
   backgroundImageUrl,
-  onBack
+  onBack,
+  onShowSlideView,
+  onShowScrollRead,
+  onShowAudioView,
+  onShowIntroduction
 }: ScrollReadViewProps) {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerse, setCurrentVerse] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Measure the site's global navbar (if present) and set a CSS variable so
@@ -100,8 +110,52 @@ export default function ScrollReadView({
     }
   };
 
+  const handleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.share({
+        title: `Surah ${surahName}`,
+        text: `Reading Surah ${surahName}`,
+        url: url,
+      });
+    } catch (err) {
+      navigator.clipboard.writeText(url);
+    }
+  };
+
   return (
     <div className={styles.readerContainer}>
+      <ToggleMenu 
+        onFullScreen={handleFullScreen}
+        onScrollViewToggle={() => {}}
+        onSlideViewToggle={() => {
+          onBack();
+          onShowSlideView?.(true);
+        }}
+        onAudioViewToggle={() => {
+          onBack();
+          onShowAudioView?.(true);
+        }}
+        onIntroductionToggle={() => onShowIntroduction?.(true)}
+        onBookmarkToggle={() => {}}
+        onShareClick={handleShare}
+        isFullScreen={isFullscreen}
+        isScrollView={true}
+        currentView="scroll"
+        surahNumber={surahNumber}
+        verseNumber={currentVerse}
+      />
+
       <header className={styles.header}>
         <button className={styles.backButton} onClick={onBack}>← Go back</button>
         <div className={styles.surahInfo}>

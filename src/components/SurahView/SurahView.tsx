@@ -141,11 +141,15 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
       <ToggleMenu 
         onFullScreen={handleFullScreen}
         onScrollViewToggle={() => setShowScrollReadView(!showScrollReadView)}
+        onSlideViewToggle={() => setShowSlideView(true)}
+        onAudioViewToggle={() => setShowAudioView(true)}
+        onIntroductionToggle={() => setShowIntroduction(true)}
         onBookmarkToggle={handleBookmark}
         onShareClick={handleShare}
         isFullScreen={isFullScreen}
         isScrollView={showScrollReadView}
         currentView={showAudioView ? 'audio' : showScrollReadView ? 'scroll' : showSlideView ? 'slide' : 'surah'}
+        surahNumber={surah.number}
       />
 
       {showSlideView ? (
@@ -155,6 +159,10 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
           totalVerses={surah.numberOfAyahs}
           backgroundImageUrl={backgroundImage}
           onBack={() => setShowSlideView(false)}
+          onShowSlideView={setShowSlideView}
+          onShowScrollRead={setShowScrollReadView}
+          onShowAudioView={setShowAudioView}
+          onShowIntroduction={setShowIntroduction}
         />
       ) : showScrollReadView ? (
         <ScrollReadView
@@ -163,6 +171,10 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
           totalVerses={surah.numberOfAyahs}
           backgroundImageUrl={backgroundImage}
           onBack={() => setShowScrollReadView(false)}
+          onShowSlideView={setShowSlideView}
+          onShowScrollRead={setShowScrollReadView}
+          onShowAudioView={setShowAudioView}
+          onShowIntroduction={setShowIntroduction}
         />
       ) : (
         <>
@@ -222,6 +234,10 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
                 surahName={surah.name}
                 backgroundImage={backgroundImage}
                 onClose={() => setShowAudioView(false)}
+                onShowSlideView={setShowSlideView}
+                onShowScrollRead={setShowScrollReadView}
+                onShowAudioView={setShowAudioView}
+                onShowIntroduction={setShowIntroduction}
               />
             )}
           </div>

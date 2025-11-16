@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import ToggleMenu from '../Controls/ToggleMenu';
 import './SlideView.css';
 
 interface SlideViewProps {
@@ -10,6 +11,10 @@ interface SlideViewProps {
   totalVerses: number;
   backgroundImageUrl: string;
   onBack: () => void;
+  onShowSlideView?: (show: boolean) => void;
+  onShowScrollRead?: (show: boolean) => void;
+  onShowAudioView?: (show: boolean) => void;
+  onShowIntroduction?: (show: boolean) => void;
 }
 
 interface Verse {
@@ -25,7 +30,11 @@ export default function SlideView({
   surahName,
   totalVerses,
   backgroundImageUrl,
-  onBack
+  onBack,
+  onShowSlideView,
+  onShowScrollRead,
+  onShowAudioView,
+  onShowIntroduction
 }: SlideViewProps) {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
@@ -129,6 +138,19 @@ export default function SlideView({
     }
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.share({
+        title: `Surah ${surahName}`,
+        text: `Reading Surah ${surahName}`,
+        url: url,
+      });
+    } catch (err) {
+      navigator.clipboard.writeText(url);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="slide-view loading">
@@ -166,6 +188,27 @@ export default function SlideView({
       }}
       {...handlers}
     >
+      <ToggleMenu 
+        onFullScreen={toggleFullscreen}
+        onScrollViewToggle={() => {
+          onBack();
+          onShowScrollRead?.(true);
+        }}
+        onSlideViewToggle={() => {}}
+        onAudioViewToggle={() => {
+          onBack();
+          onShowAudioView?.(true);
+        }}
+        onIntroductionToggle={() => onShowIntroduction?.(true)}
+        onBookmarkToggle={() => {}}
+        onShareClick={handleShare}
+        isFullScreen={isFullscreen}
+        isScrollView={false}
+        currentView="slide"
+        surahNumber={surahNumber}
+        verseNumber={currentVerse?.number}
+      />
+
       <div className="slide-header">
         <button onClick={onBack} className="back-button">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

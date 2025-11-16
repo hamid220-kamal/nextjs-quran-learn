@@ -71,56 +71,25 @@
   text-align: left;
 }
 
-.menuContent button:hover {
+.menuContent button:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(2px);
+}
+
+.menuContent button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.menuContent button.active {
+  background: rgba(0, 137, 123, 0.3);
+  border-left: 3px solid #00897B;
 }
 
 .menuContent button svg {
   font-size: 1.1rem;
   opacity: 0.9;
-}
-
-.backgroundControl {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  color: white;
-  border-radius: 8px;
-}
-
-.controlLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-.rangeInput {
-  width: 100%;
-  margin-top: 0.5rem;
-  height: 4px;
-  -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  outline: none;
-}
-
-.rangeInput::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: white;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.rangeInput::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
 }
 
 @media (max-width: 768px) {

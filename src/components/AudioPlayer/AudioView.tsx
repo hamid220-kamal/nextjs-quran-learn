@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import ToggleMenu from '../Controls/ToggleMenu';
 import './AudioView.css';
 
 interface AudioViewProps {
@@ -7,6 +8,10 @@ interface AudioViewProps {
   surahName: string;
   backgroundImage: string;
   onClose: () => void;
+  onShowSlideView?: (show: boolean) => void;
+  onShowScrollRead?: (show: boolean) => void;
+  onShowAudioView?: (show: boolean) => void;
+  onShowIntroduction?: (show: boolean) => void;
 }
 
 interface Verse {
@@ -25,7 +30,16 @@ interface Reciter {
   language: string;
 }
 
-export default function AudioView({ surahNumber, surahName, backgroundImage, onClose }: AudioViewProps) {
+export default function AudioView({ 
+  surahNumber, 
+  surahName, 
+  backgroundImage, 
+  onClose,
+  onShowSlideView,
+  onShowScrollRead,
+  onShowAudioView,
+  onShowIntroduction
+}: AudioViewProps) {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [currentVerse, setCurrentVerse] = useState<Verse | null>(null);
@@ -38,6 +52,7 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
   const [reciters, setReciters] = useState<Reciter[]>([]);
   const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playPromiseRef = useRef<Promise<void> | null>(null);
 
@@ -394,6 +409,29 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
     }
   };
 
+  const handleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.share({
+        title: `Surah ${surahName}`,
+        text: `Listening to Surah ${surahName}`,
+        url: url,
+      });
+    } catch (err) {
+      navigator.clipboard.writeText(url);
+    }
+  };
+
   // Initialize audio and handle verse changes
   useEffect(() => {
     // Set initial verse when verses are loaded
@@ -438,6 +476,27 @@ export default function AudioView({ surahNumber, surahName, backgroundImage, onC
         flexDirection: 'column'
       }}
     >
+      <ToggleMenu 
+        onFullScreen={handleFullScreen}
+        onScrollViewToggle={() => {
+          onClose();
+          onShowScrollRead?.(true);
+        }}
+        onSlideViewToggle={() => {
+          onClose();
+          onShowSlideView?.(true);
+        }}
+        onAudioViewToggle={() => {}}
+        onIntroductionToggle={() => onShowIntroduction?.(true)}
+        onBookmarkToggle={() => {}}
+        onShareClick={handleShare}
+        isFullScreen={isFullscreen}
+        isScrollView={false}
+        currentView="audio"
+        surahNumber={surahNumber}
+        verseNumber={currentVerseIndex + 1}
+      />
+
       {/* Top Bar */}
       <div className="top-bar">
         {/* Go Back Button - Left, spans 2 rows */}

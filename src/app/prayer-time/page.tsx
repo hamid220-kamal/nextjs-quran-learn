@@ -1,86 +1,131 @@
 import PrayerTimesClient from './PrayerTimesClient';
 import { PrayerTimesResponse } from './types';
-import styles from './PrayerTime.css';
+import styles from './PrayerTime.module.css';
+
+const ALADHAN_API_BASE = 'https://api.aladhan.com/v1/timings';
+const CALCULATION_METHOD = '4'; // Umm Al-Qura
+const SCHOOL = '0'; // Shafi'i school
 
 async function getPrayerTimes(params: {
   lat?: string;
   lon?: string;
   city?: string;
   country?: string;
+  date?: string;
 }): Promise<PrayerTimesResponse> {
-  const { lat, lon, city, country } = params;
+  const { lat, lon, city, country, date } = params;
   
   try {
-    // Build API URL based on available parameters
-    let apiUrl = 'https://api.aladhan.com/v1/timings?';
+    // Get today's date in DD-MM-YYYY format for API
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const dateString = `${day}-${month}-${year}`;
+    
+    let apiUrl: string;
     
     if (lat && lon) {
-      apiUrl += `latitude=${lat}&longitude=${lon}`;
+      // Use coordinates endpoint
+      apiUrl = `https://api.aladhan.com/v1/timings/${dateString}?latitude=${lat}&longitude=${lon}&method=${CALCULATION_METHOD}`;
     } else {
-      const defaultCity = city || 'Mecca';
-      const defaultCountry = country || 'Saudi Arabia';
-      apiUrl += `city=${encodeURIComponent(defaultCity)}&country=${encodeURIComponent(defaultCountry)}`;
+      // Use city-based endpoint
+      const cityName = city || 'Mecca';
+      const countryName = country || 'Saudi Arabia';
+      apiUrl = `https://api.aladhan.com/v1/timingsByCity/${dateString}?city=${encodeURIComponent(cityName)}&country=${encodeURIComponent(countryName)}&method=${CALCULATION_METHOD}`;
     }
     
-    // Add calculation method and other parameters
-    apiUrl += '&method=3&school=0&midnightMode=1';
-    
-    console.log('Fetching from:', apiUrl);
+    console.log('Fetching prayer times from:', apiUrl);
     
     const response = await fetch(apiUrl, {
       next: { revalidate: 300 }, // Revalidate every 5 minutes
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Learn-Quran-App/1.0',
       },
     });
     
     if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`);
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data: PrayerTimesResponse = await response.json();
     
     if (data.code !== 200) {
-      throw new Error(data.status || 'Failed to fetch prayer times');
+      console.error('API returned error code:', data.code, data.status);
+      throw new Error(data.status || 'Failed to fetch prayer times from API');
     }
     
     return data;
   } catch (error) {
     console.error('Error fetching prayer times:', error);
+    if (error instanceof Error) {
+      throw new Error(`Unable to load prayer times: ${error.message}`);
+    }
     throw new Error('Unable to load prayer times. Please check your connection and try again.');
   }
 }
 
 interface PrayerTimesPageProps {
-  searchParams: Promise<{ [key: string]: string | undefined }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function PrayerTimesPage({ searchParams }: PrayerTimesPageProps) {
   const params = await searchParams;
+  
+  // Extract string values safely
+  const getParamValue = (value: string | string[] | undefined): string | undefined => {
+    return typeof value === 'string' ? value : undefined;
+  };
+  
   let prayerTimes: PrayerTimesResponse | null = null;
   let error: string | null = null;
+  let location: string = 'Mecca, Saudi Arabia';
 
   try {
+    const lat = getParamValue(params.lat);
+    const lon = getParamValue(params.lon);
+    const city = getParamValue(params.city);
+    const country = getParamValue(params.country);
+    
     prayerTimes = await getPrayerTimes({
-      lat: params.lat,
-      lon: params.lon,
-      city: params.city,
-      country: params.country,
+      lat,
+      lon,
+      city,
+      country,
     });
+    
+    // Set location for display
+    if (lat && lon) {
+      location = `${lat}, ${lon}`;
+    } else if (city && country) {
+      location = `${city}, ${country}`;
+    } else if (prayerTimes?.data?.meta) {
+      const { latitude, longitude, timezone } = prayerTimes.data.meta;
+      location = `${latitude.toFixed(4)}, ${longitude.toFixed(4)} (${timezone})`;
+    }
   } catch (err) {
     error = err instanceof Error ? err.message : 'An unknown error occurred';
+    console.error('Prayer times page error:', error);
   }
 
   return (
-    <div className={styles.container}>
+    <main className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Prayer Times</h1>
         <p className={styles.subtitle}>
           Today's prayer schedule based on your location
         </p>
-        {prayerTimes?.data?.date?.hijri && (
-          <div className={styles.hijriDate}>
-            {prayerTimes.data.date.hijri.date} • {prayerTimes.data.date.readable}
+        {prayerTimes?.data?.date && (
+          <div className={styles.dateContainer}>
+            <div className={styles.gregorianDate}>
+              {prayerTimes.data.date.readable}
+            </div>
+            {prayerTimes.data.date.hijri && (
+              <div className={styles.hijriDate}>
+                {prayerTimes.data.date.hijri.date} AH • {prayerTimes.data.date.hijri.month.ar}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -89,10 +134,13 @@ export default async function PrayerTimesPage({ searchParams }: PrayerTimesPageP
         initialPrayerTimes={prayerTimes}
         initialError={error}
         initialCoords={{
-          lat: params.lat,
-          lon: params.lon
+          lat: getParamValue(params.lat),
+          lon: getParamValue(params.lon),
+          city: getParamValue(params.city),
+          country: getParamValue(params.country),
         }}
+        initialLocation={location}
       />
-    </div>
+    </main>
   );
 }

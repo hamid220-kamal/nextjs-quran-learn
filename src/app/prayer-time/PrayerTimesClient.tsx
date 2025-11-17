@@ -1,25 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PrayerTimesResponse, Prayer, Coordinates } from './types';
-import styles from './PrayerTime.css';
+import styles from './PrayerTime.module.css';
 
 interface PrayerTimesClientProps {
   initialPrayerTimes: PrayerTimesResponse | null;
   initialError: string | null;
   initialCoords: Coordinates;
+  initialLocation?: string;
 }
 
 export default function PrayerTimesClient({
   initialPrayerTimes,
   initialError,
   initialCoords,
+  initialLocation = 'Mecca, Saudi Arabia',
 }: PrayerTimesClientProps) {
   const [prayerTimes, setPrayerTimes] = useState(initialPrayerTimes);
   const [error, setError] = useState(initialError);
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [nextPrayer, setNextPrayer] = useState<{ prayer: Prayer; time: Date } | null>(null);
+  const [location, setLocation] = useState(initialLocation);
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderMinutes, setReminderMinutes] = useState(15);
 
   const prayers: Prayer[] = [
     { key: 'Fajr', name: 'Fajr', arabic: 'الفجر', index: 1 },
@@ -74,7 +79,7 @@ export default function PrayerTimesClient({
     }
 
     setNextPrayer(nextPrayerFound);
-  }, [prayerTimes, currentTime]);
+  }, [prayerTimes, currentTime, prayers]);
 
   const getCountdownText = (nextPrayerTime: Date): string => {
     const now = currentTime;
@@ -95,9 +100,47 @@ export default function PrayerTimesClient({
     }
   };
 
-  const handleGeolocation = async () => {
+  // Check for reminders
+  useEffect(() => {
+    if (!reminderEnabled || !nextPrayer || !prayerTimes) return;
+
+    const checkReminder = () => {
+      const now = currentTime.getTime();
+      const prayerTime = nextPrayer.time.getTime();
+      const reminderTime = prayerTime - (reminderMinutes * 60 * 1000);
+
+      if (now >= reminderTime && now < reminderTime + 1000) {
+        // Show notification
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          new Notification(`🕌 ${nextPrayer.prayer.name} Prayer`, {
+            body: `${nextPrayer.prayer.name} prayer is coming in ${reminderMinutes} minutes (${nextPrayer.time.toLocaleTimeString()})`,
+            tag: 'prayer-reminder',
+            requireInteraction: false,
+            badge: '/kfgqpc-uthmanic-script-hafs-regular/favicon.ico',
+          });
+        }
+      }
+    };
+
+    checkReminder();
+  }, [currentTime, nextPrayer, reminderEnabled, reminderMinutes, prayerTimes]);
+
+  const requestNotificationPermission = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'granted') {
+        setReminderEnabled(true);
+      } else if (Notification.permission !== 'denied') {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          setReminderEnabled(true);
+        }
+      }
+    }
+  }, []);
+
+  const handleGeolocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError('📍 Geolocation is not supported by your browser');
       return;
     }
 
@@ -108,59 +151,74 @@ export default function PrayerTimesClient({
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           timeout: 10000,
-          maximumAge: 300000, // 5 minutes
+          maximumAge: 0,
+          enableHighAccuracy: false,
         });
       });
 
-      const { latitude, longitude } = position.coords;
+      const { latitude, longitude, accuracy } = position.coords;
       
-      // Update URL with new coordinates without page reload
+      console.log(`Location obtained: ${latitude}, ${longitude} (accuracy: ${accuracy}m)`);
+      
+      // Update URL with new coordinates
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('lat', latitude.toString());
-      newUrl.searchParams.set('lon', longitude.toString());
+      newUrl.searchParams.set('lat', latitude.toFixed(6));
+      newUrl.searchParams.set('lon', longitude.toFixed(6));
       newUrl.searchParams.delete('city');
       newUrl.searchParams.delete('country');
       window.history.replaceState({}, '', newUrl.toString());
 
-      // Fetch updated prayer times directly from Aladhan API
-      const apiUrl = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=3&school=0`;
+      // Fetch updated prayer times from Aladhan API
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      const dateString = `${day}-${month}-${year}`;
+      
+      const apiUrl = `https://api.aladhan.com/v1/timings/${dateString}?latitude=${latitude.toFixed(6)}&longitude=${longitude.toFixed(6)}&method=2&school=0`;
       
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch prayer times: ${response.status}`);
+        throw new Error(`API error: ${response.status}`);
       }
       
-      const data = await response.json();
+      const data: PrayerTimesResponse = await response.json();
       
       if (data.code !== 200) {
         throw new Error(data.status || 'Failed to fetch prayer times');
       }
       
       setPrayerTimes(data);
+      
+      // Update location display
+      if (data.data.meta) {
+        const { timezone } = data.data.meta;
+        setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)} (${timezone})`);
+      }
     } catch (err: any) {
       console.error('Geolocation error:', err);
-      if (err.code === err.PERMISSION_DENIED) {
-        setError('Location access denied. Please enable location permissions in your browser settings.');
-      } else if (err.code === err.TIMEOUT) {
-        setError('Location request timed out. Please try again.');
-      } else if (err.code === err.POSITION_UNAVAILABLE) {
-        setError('Location information unavailable. Please check your connection and try again.');
+      if (err.code === 1) { // PERMISSION_DENIED
+        setError('📍 Location access denied. Please enable location permissions in your browser settings.');
+      } else if (err.code === 3) { // TIMEOUT
+        setError('📍 Location request timed out. Please try again.');
+      } else if (err.code === 2) { // POSITION_UNAVAILABLE
+        setError('📍 Location information is currently unavailable. Please check your connection.');
       } else {
-        setError(err.message || 'Failed to update prayer times. Please try again.');
+        setError(`Unable to get location: ${err.message || 'Unknown error'}`);
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   if (error) {
     return (
       <>
         <div className={styles.errorMessage} role="alert">
-          <strong>Unable to load prayer times</strong>
+          <strong>⚠️ Unable to load prayer times</strong>
           <br />
-          {error}
+          <p style={{ margin: '0.5rem 0 0' }}>{error}</p>
         </div>
         <div className={styles.controls}>
           <button
@@ -171,7 +229,7 @@ export default function PrayerTimesClient({
           >
             {loading ? (
               <>
-                <div className={styles.loadingSpinner} style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }} />
+                <span className={styles.loadingSpinner} style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }} />
                 Getting Location...
               </>
             ) : (
@@ -196,7 +254,14 @@ export default function PrayerTimesClient({
     <>
       {!initialCoords.lat && !initialCoords.lon && (
         <div className={styles.infoMessage}>
-          <p>📍 Showing prayer times for default location. Use the button below to get accurate times for your current location.</p>
+          <p>📍 <strong>Showing prayer times for:</strong> {location}</p>
+          <p style={{ marginTop: '0.5rem', marginBottom: '0' }}>Enable location to get accurate times for your current location.</p>
+        </div>
+      )}
+
+      {(initialCoords.lat || initialCoords.lon) && (
+        <div className={styles.locationMessage}>
+          <p>📍 <strong>Your location:</strong> {location}</p>
         </div>
       )}
 
@@ -252,23 +317,57 @@ export default function PrayerTimesClient({
         >
           {loading ? (
             <>
-              <div className={styles.loadingSpinner} style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }} />
+              <span className={styles.loadingSpinner} style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }} />
               Getting Location...
             </>
           ) : (
             '📍 Use My Current Location'
           )}
         </button>
+        <button
+          className={`${styles.reminderButton} ${reminderEnabled ? styles.reminderActive : ''}`}
+          onClick={requestNotificationPermission}
+          title={reminderEnabled ? 'Prayer reminders enabled' : 'Enable prayer reminders'}
+          aria-label="Enable prayer time reminders"
+        >
+          {reminderEnabled ? '🔔 Reminders ON' : '🔕 Enable Reminders'}
+        </button>
       </div>
+
+      {reminderEnabled && (
+        <div className={styles.reminderSettings}>
+          <label htmlFor="reminder-minutes">
+            Remind me 
+            <input
+              id="reminder-minutes"
+              type="number"
+              min="1"
+              max="60"
+              value={reminderMinutes}
+              onChange={(e) => setReminderMinutes(Math.max(1, Math.min(60, parseInt(e.target.value) || 15)))}
+              className={styles.reminderInput}
+              aria-label="Minutes before prayer for notification"
+            />
+            minutes before prayer
+          </label>
+        </div>
+      )}
 
       {prayerTimes.data.meta && (
         <div className={styles.methodInfo}>
           <p className={styles.methodText}>
-            🕋 Calculation Method: <strong>{prayerTimes.data.meta.method?.name || 'Muslim World League (MWL)'}</strong>
-            {prayerTimes.data.meta.latitude && prayerTimes.data.meta.longitude && (
-              <> • Location: {prayerTimes.data.meta.latitude.toFixed(2)}, {prayerTimes.data.meta.longitude.toFixed(2)}</>
-            )}
+            🕋 <strong>Calculation Method:</strong> {prayerTimes.data.meta.method?.name || 'Muslim World League (MWL)'}
           </p>
+          {prayerTimes.data.meta.timezone && (
+            <p className={styles.methodText}>
+              ⏰ <strong>Timezone:</strong> {prayerTimes.data.meta.timezone}
+            </p>
+          )}
+          {prayerTimes.data.meta.latitude && prayerTimes.data.meta.longitude && (
+            <p className={styles.methodText}>
+              📍 <strong>Coordinates:</strong> {prayerTimes.data.meta.latitude.toFixed(4)}°, {prayerTimes.data.meta.longitude.toFixed(4)}°
+            </p>
+          )}
         </div>
       )}
     </>

@@ -137,15 +137,9 @@ export default function ScrollReadView({
     <div className={styles.readerContainer}>
       <ToggleMenu 
         onFullScreen={handleFullScreen}
-        onScrollViewToggle={() => {}}
-        onSlideViewToggle={() => {
-          onBack();
-          onShowSlideView?.(true);
-        }}
-        onAudioViewToggle={() => {
-          onBack();
-          onShowAudioView?.(true);
-        }}
+        onScrollViewToggle={() => onShowScrollRead?.(false)}
+        onSlideViewToggle={() => onShowSlideView?.(true)}
+        onAudioViewToggle={() => onShowAudioView?.(true)}
         onIntroductionToggle={() => onShowIntroduction?.(true)}
         onBookmarkToggle={() => {}}
         onShareClick={handleShare}

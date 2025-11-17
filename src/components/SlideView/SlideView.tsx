@@ -192,12 +192,12 @@ export default function SlideView({
         onFullScreen={toggleFullscreen}
         onScrollViewToggle={() => {
           onBack();
-          onShowScrollRead?.(true);
+          setTimeout(() => onShowScrollRead?.(true), 100);
         }}
         onSlideViewToggle={() => {}}
         onAudioViewToggle={() => {
           onBack();
-          onShowAudioView?.(true);
+          setTimeout(() => onShowAudioView?.(true), 100);
         }}
         onIntroductionToggle={() => onShowIntroduction?.(true)}
         onBookmarkToggle={() => {}}

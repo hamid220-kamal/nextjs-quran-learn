@@ -99,11 +99,13 @@ const ToggleMenu: React.FC<ToggleMenuProps> = ({
             <FaExpand /> {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
           </button>
           
-          {currentView !== 'audio' && (
-            <button onClick={onScrollViewToggle} title="Toggle scroll view">
-              <FaScroll /> {isScrollView ? 'Single View' : 'Scroll View'}
-            </button>
-          )}
+          <button 
+            onClick={onScrollViewToggle} 
+            title="Toggle scroll view"
+            disabled={currentView === 'scroll'}
+          >
+            <FaScroll /> Scroll View
+          </button>
           
           <button 
             onClick={onSlideViewToggle} 

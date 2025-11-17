@@ -480,11 +480,11 @@ export default function AudioView({
         onFullScreen={handleFullScreen}
         onScrollViewToggle={() => {
           onClose();
-          onShowScrollRead?.(true);
+          setTimeout(() => onShowScrollRead?.(true), 100);
         }}
         onSlideViewToggle={() => {
           onClose();
-          onShowSlideView?.(true);
+          setTimeout(() => onShowSlideView?.(true), 100);
         }}
         onAudioViewToggle={() => {}}
         onIntroductionToggle={() => onShowIntroduction?.(true)}

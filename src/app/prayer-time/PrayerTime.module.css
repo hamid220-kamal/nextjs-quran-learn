@@ -386,6 +386,43 @@
   backdrop-filter: blur(10px);
 }
 
+.locationSearchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.locationInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.locationInputGroup input {
+  padding: 0.75rem;
+  border: 2px solid #c8e6c9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1b5e20;
+  background-color: #f1f8e9;
+  transition: all 0.3s ease;
+}
+
+.locationInputGroup input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+  background-color: white;
+}
+
+.locationInputGroup input:disabled {
+  background-color: #e8f5e9;
+  color: #9ccc65;
+  cursor: not-allowed;
+}
+
 .reminderPanelTitle {
   color: #3c4043;
   font-size: 1.5rem;

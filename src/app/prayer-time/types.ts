@@ -99,3 +99,24 @@ export interface PrayerTimesResponse {
   status: string;
   data: PrayerTimesData;
 }
+
+export interface Reminder {
+  id: string;
+  prayerKey: string;
+  minutesBefore: number;
+  enabled: boolean;
+  lastTriggered?: number;
+}
+
+export interface PrayerReminder {
+  prayer: Prayer;
+  scheduledTime: Date;
+  reminderTime: Date;
+  triggered: boolean;
+}
+
+export interface AudioSettings {
+  enabled: boolean;
+  volume: number;
+  playAzanAtPrayerTime: boolean;
+}

@@ -30,6 +30,20 @@
   margin-bottom: 0.5rem;
 }
 
+.dateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.gregorianDate {
+  font-size: 1.1rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
 .hijriDate {
   font-size: 1rem;
   color: #2d5a3d;
@@ -37,7 +51,6 @@
   padding: 0.5rem 1rem;
   border-radius: 50px;
   display: inline-block;
-  margin-top: 0.5rem;
   font-weight: 500;
 }
 
@@ -201,6 +214,61 @@
   transform: none;
 }
 
+.reminderButton {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(237, 137, 54, 0.3);
+  font-size: 1rem;
+}
+
+.reminderButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px -1px rgba(237, 137, 54, 0.4);
+}
+
+.reminderButton.reminderActive {
+  background: linear-gradient(135deg, #9f7aea 0%, #6b46c1 100%);
+  box-shadow: 0 4px 6px -1px rgba(159, 122, 234, 0.3);
+}
+
+.reminderSettings {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid #9f7aea;
+}
+
+.reminderSettings label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.reminderInput {
+  width: 50px;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+  color: #9f7aea;
+}
+
 .errorMessage {
   background: #fed7d7;
   color: #c53030;
@@ -221,6 +289,26 @@
   margin-bottom: 2rem;
   border: 1px solid #81e6d9;
   font-weight: 500;
+}
+
+.infoMessage p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.locationMessage {
+  background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+  color: #22543d;
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid #68d391;
+  font-weight: 600;
+}
+
+.locationMessage p {
+  margin: 0;
 }
 
 .methodInfo {

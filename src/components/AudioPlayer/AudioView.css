@@ -1,4 +1,4 @@
-.audio-view-container {
+﻿.audio-view-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-size: cover;
   background-position: center;
@@ -549,16 +549,17 @@
   right: 0;
   bottom: var(--controls-height, 100px);
   width: 100%;
-  height: calc(100vh - var(--navbar-height, 80px) - var(--controls-height, 100px));
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  height: calc(100vh - var(--navbar-height, 80px) - var(--controls-height, 100px)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-  padding: 1rem 0;
+  padding: 0.5rem 1rem 0 1rem !important;
   margin: 0;
   background: transparent;
   z-index: 1;
@@ -756,40 +757,27 @@
   }
 }
 
-.verse-display {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 3vw, 2.5rem);
-  color: white;
-  text-align: center;
-  min-height: calc(100vh - var(--navbar-height, 80px) - var(--controls-height, 120px));
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-}
+
 
 .verse-content {
   width: 95%;
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 2rem 1rem;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 0.5rem 1rem !important;
   text-align: center;
-  gap: 2rem;
+  gap: 1rem !important;
   box-sizing: border-box;
   background: none;
-  min-height: 100%;
+  min-height: auto;
 }
 
 .verse-number {
   font-size: clamp(0.875rem, 1.5vw, 1.2rem);
-  margin-bottom: clamp(1.5rem, 3vw, 3rem);
+  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
   color: rgba(255, 255, 255, 0.8);
   letter-spacing: 0.5px;
   font-weight: 500;
@@ -1026,8 +1014,8 @@
   .verse-content {
     padding: 0;
     gap: 0.5rem;
-    min-height: 100%;
-    justify-content: center;
+    min-height: auto;
+    justify-content: flex-start;
   }
 
   .verse-number {

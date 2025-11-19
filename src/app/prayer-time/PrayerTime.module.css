@@ -1,0 +1,1053 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: #3c4043;
+}
+
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(26, 115, 232, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(52, 168, 83, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(142, 68, 173, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #1976d2 0%, #26a69a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #80868b;
+  opacity: 0.95;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.dateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.gregorianDate {
+  font-size: 1.1rem;
+  color: #3c4043;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.hijriDate {
+  font-size: 1rem;
+  color: #1a73e8;
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.08) 0%, rgba(38, 166, 154, 0.08) 100%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: inline-block;
+  font-weight: 600;
+  border: 2px solid rgba(26, 115, 232, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.prayerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 100%;
+  margin: 2rem auto 0;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prayerCard {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+}
+
+.prayerCard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(26, 115, 232, 0.08) 50%, transparent 70%);
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.prayerCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 32px rgba(26, 115, 232, 0.16);
+  border-color: rgba(26, 115, 232, 0.3);
+}
+
+.prayerCard.active {
+  background: linear-gradient(135deg, #1976d2 0%, #26a69a 100%);
+  border-color: #1976d2;
+  box-shadow: 0 8px 32px rgba(26, 115, 232, 0.2);
+  animation: activeCardPulse 2s infinite;
+  color: white;
+}
+
+@keyframes activeCardPulse {
+  0%, 100% { box-shadow: 0 8px 32px rgba(26, 115, 232, 0.2); }
+  50% { box-shadow: 0 12px 48px rgba(26, 115, 232, 0.3); }
+}
+
+.prayerInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.prayerBadge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1976d2 0%, #26a69a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.12);
+  border: 2px solid rgba(26, 115, 232, 0.1);
+}
+
+.prayerCard.active .prayerBadge {
+  background: linear-gradient(135deg, #26a69a 0%, #1976d2 100%);
+  color: white;
+  box-shadow: 0 8px 16px rgba(26, 115, 232, 0.2);
+}
+
+.prayerNames {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.prayerName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3c4043;
+  letter-spacing: 0.5px;
+}
+
+.prayerCard.active .prayerName {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.prayerNameArabic {
+  font-family: 'KFGQPC Uthmanic Script', 'Arial', sans-serif;
+  font-size: 1.5rem;
+  color: #80868b;
+  font-weight: 600;
+  direction: rtl;
+  letter-spacing: 0.5px;
+}
+
+.prayerCard.active .prayerNameArabic {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.prayerTimeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
+}
+
+.prayerTime {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 800;
+  color: #1a73e8;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.prayerCard.active .prayerTime {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.countdown {
+  font-size: 0.9rem;
+  color: #80868b;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.prayerCard.active .countdown {
+  color: rgba(255, 255, 255, 0.9);
+  animation: none;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s ease-out 0.4s both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.geolocateButton {
+  background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.12);
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.geolocateButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.geolocateButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(26, 115, 232, 0.16);
+}
+
+.geolocateButton:hover::before {
+  left: 100%;
+}
+
+.geolocateButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.reminderButton {
+  background: linear-gradient(135deg, #34a853 0%, #2e7d32 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(52, 168, 83, 0.12);
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.reminderButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.reminderButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.16);
+}
+
+.reminderButton:hover::before {
+  left: 100%;
+}
+
+.reminderButton.reminderActive {
+  background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+  box-shadow: 0 4px 16px rgba(142, 68, 173, 0.12);
+}
+
+.reminderPanel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.12);
+  border: 2px solid rgba(26, 115, 232, 0.1);
+  position: relative;
+  z-index: 1;
+  animation: slideDown 0.5s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+.locationSearchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.locationInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.locationInputGroup input {
+  padding: 0.75rem;
+  border: 2px solid #c8e6c9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1b5e20;
+  background-color: #f1f8e9;
+  transition: all 0.3s ease;
+}
+
+.locationInputGroup input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+  background-color: white;
+}
+
+.locationInputGroup input:disabled {
+  background-color: #e8f5e9;
+  color: #9ccc65;
+  cursor: not-allowed;
+}
+
+.reminderPanelTitle {
+  color: #3c4043;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.audioSettingsGroup {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid rgba(26, 115, 232, 0.1);
+}
+
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #80868b;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.volumeSlider {
+  width: 100%;
+  height: 8px;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #dadce0 0%, #f1f3f4 100%);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+  cursor: pointer;
+  box-shadow: 0 4px 12px -2px rgba(26, 115, 232, 0.3);
+  border: 2px solid white;
+  transition: all 0.2s;
+}
+
+.volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px -2px rgba(26, 115, 232, 0.4);
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+  cursor: pointer;
+  box-shadow: 0 4px 12px -2px rgba(26, 115, 232, 0.3);
+  border: 2px solid white;
+  transition: all 0.2s;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #80868b;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.5rem 0;
+}
+
+.checkboxLabel:hover {
+  color: #3c4043;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #1a73e8;
+}
+
+.remindersGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.reminderItem {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.08) 0%, rgba(38, 166, 154, 0.08) 100%);
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 2px solid rgba(26, 115, 232, 0.2);
+  transition: all 0.3s;
+}
+
+.reminderItem:hover {
+  border-color: rgba(26, 115, 232, 0.4);
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(38, 166, 154, 0.12) 100%);
+}
+
+.reminderTimeInput {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.minuteInput {
+  width: 60px;
+  padding: 0.5rem;
+  border: 2px solid rgba(26, 115, 232, 0.3);
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  color: #1a73e8;
+  background: rgba(26, 115, 232, 0.1);
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.minuteInput:hover {
+  border-color: rgba(26, 115, 232, 0.6);
+  background: rgba(26, 115, 232, 0.15);
+}
+
+.minuteInput:focus {
+  outline: none;
+  border-color: #1a73e8;
+  background: rgba(26, 115, 232, 0.2);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.errorMessage {
+  background: linear-gradient(135deg, rgba(234, 67, 53, 0.08) 0%, rgba(229, 57, 53, 0.08) 100%);
+  color: #d32f2f;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(234, 67, 53, 0.2);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.infoMessage {
+  background: linear-gradient(135deg, rgba(26, 115, 232, 0.08) 0%, rgba(25, 118, 210, 0.08) 100%);
+  color: #1a73e8;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(26, 115, 232, 0.2);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.infoMessage p {
+  margin: 0;
+  line-height: 1.6;
+  color: #3c4043;
+}
+
+.locationMessage {
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.08) 0%, rgba(56, 142, 60, 0.08) 100%);
+  color: #2e7d32;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(52, 168, 83, 0.2);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.locationMessage p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.methodInfo {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.12);
+  border: 2px solid rgba(26, 115, 232, 0.1);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.methodText {
+  color: #80868b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.methodText strong {
+  color: #1a73e8;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #80868b;
+  font-size: 1.1rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(26, 115, 232, 0.2);
+  border-top: 4px solid #1a73e8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.currentPrayerIndicator {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.08) 100%);
+  color: #f57c00;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(245, 158, 11, 0.2);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  animation: slideDown 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .prayerGrid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+  
+  .title {
+    font-size: 2.25rem;
+  }
+  
+  .controls {
+    gap: 0.75rem;
+  }
+  
+  .geolocateButton,
+  .reminderButton {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem 0.75rem;
+  }
+  
+  .header {
+    margin-bottom: 2rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .prayerGrid {
+    gap: 1rem;
+  }
+  
+  .prayerCard {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .prayerBadge {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+  }
+  
+  .prayerName {
+    font-size: 1.15rem;
+  }
+  
+  .prayerNameArabic {
+    font-size: 1.4rem;
+  }
+  
+  .prayerTime {
+    font-size: 1.5rem;
+  }
+  
+  .controls {
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+  }
+  
+  .geolocateButton,
+  .reminderButton {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 140px;
+    max-width: none;
+  }
+  
+  .reminderPanel {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .reminderPanelTitle {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .reminderItem {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0.75rem;
+    min-height: 100vh;
+  }
+  
+  .header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .dateContainer {
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .gregorianDate {
+    font-size: 1rem;
+  }
+  
+  .hijriDate {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .prayerGrid {
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+  }
+  
+  .prayerCard {
+    padding: 1.25rem;
+    border-radius: 16px;
+    gap: 0.75rem;
+  }
+  
+  .prayerInfo {
+    gap: 0.75rem;
+  }
+  
+  .prayerBadge {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+  
+  .prayerName {
+    font-size: 1.1rem;
+  }
+  
+  .prayerNameArabic {
+    font-size: 1.3rem;
+  }
+  
+  .prayerTime {
+    font-size: 1.35rem;
+  }
+  
+  .countdown {
+    font-size: 0.85rem;
+  }
+  
+  .controls {
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0 0.5rem;
+  }
+  
+  .geolocateButton,
+  .reminderButton {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    border-radius: 40px;
+    flex: 1;
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .reminderPanel {
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .reminderPanelTitle {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+  }
+  
+  .settingLabel {
+    font-size: 0.95rem;
+  }
+  
+  .checkboxLabel {
+    font-size: 0.9rem;
+  }
+  
+  .reminderItem {
+    padding: 0.875rem;
+    border-radius: 12px;
+  }
+  
+  .reminderTimeInput {
+    gap: 0.5rem;
+  }
+  
+  .minuteInput {
+    width: 55px;
+    font-size: 0.9rem;
+  }
+  
+  .errorMessage,
+  .infoMessage,
+  .locationMessage,
+  .currentPrayerIndicator {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+  }
+  
+  .errorMessage p,
+  .infoMessage p {
+    line-height: 1.5;
+  }
+  
+  .methodInfo {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+  
+  .methodText {
+    font-size: 0.9rem;
+  }
+  
+  .loading {
+    padding: 2rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .header {
+    margin-bottom: 1.25rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .dateContainer {
+    gap: 0.375rem;
+    margin-top: 0.75rem;
+  }
+  
+  .gregorianDate {
+    font-size: 0.95rem;
+  }
+  
+  .hijriDate {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.875rem;
+  }
+  
+  .prayerGrid {
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  
+  .prayerCard {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .prayerInfo {
+    gap: 0.65rem;
+  }
+  
+  .prayerBadge {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+  
+  .prayerName {
+    font-size: 1rem;
+  }
+  
+  .prayerNameArabic {
+    font-size: 1.2rem;
+  }
+  
+  .prayerTime {
+    font-size: 1.25rem;
+  }
+  
+  .countdown {
+    font-size: 0.8rem;
+  }
+  
+  .controls {
+    gap: 0.375rem;
+    margin-top: 1.75rem;
+    padding: 0;
+  }
+  
+  .geolocateButton,
+  .reminderButton {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+  
+  .reminderPanel {
+    padding: 1rem;
+    margin-top: 1.25rem;
+  }
+  
+  .reminderPanelTitle {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .settingLabel {
+    font-size: 0.9rem;
+    gap: 0.5rem;
+  }
+  
+  .checkboxLabel {
+    font-size: 0.85rem;
+    padding: 0.25rem 0;
+  }
+  
+  .reminderItem {
+    padding: 0.75rem;
+  }
+  
+  .minuteInput {
+    width: 50px;
+    font-size: 0.85rem;
+  }
+  
+  .methodInfo {
+    margin-top: 1.25rem;
+    padding: 1rem;
+  }
+  
+  .methodText {
+    font-size: 0.85rem;
+    margin: 0.35rem 0;
+  }
+}

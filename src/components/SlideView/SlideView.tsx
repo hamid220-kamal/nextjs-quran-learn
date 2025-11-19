@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import ToggleMenu from '../Controls/ToggleMenu';
 import './SlideView.css';
 
 interface SlideViewProps {
@@ -10,6 +11,10 @@ interface SlideViewProps {
   totalVerses: number;
   backgroundImageUrl: string;
   onBack: () => void;
+  onShowSlideView?: (show: boolean) => void;
+  onShowScrollRead?: (show: boolean) => void;
+  onShowAudioView?: (show: boolean) => void;
+  onShowIntroduction?: (show: boolean) => void;
 }
 
 interface Verse {
@@ -25,13 +30,31 @@ export default function SlideView({
   surahName,
   totalVerses,
   backgroundImageUrl,
-  onBack
+  onBack,
+  onShowSlideView,
+  onShowScrollRead,
+  onShowAudioView,
+  onShowIntroduction
 }: SlideViewProps) {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Hide navbar and other elements when slide view is active
+  useEffect(() => {
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      (navbar as HTMLElement).style.display = 'none';
+    }
+    
+    return () => {
+      if (navbar) {
+        (navbar as HTMLElement).style.display = '';
+      }
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchVerses() {
@@ -65,6 +88,24 @@ export default function SlideView({
     fetchVerses();
   }, [surahNumber]);
 
+  const goToNextVerse = useCallback(() => {
+    setCurrentVerseIndex(prev => {
+      if (prev < verses.length - 1) {
+        return prev + 1;
+      }
+      return prev;
+    });
+  }, [verses.length]);
+
+  const goToPreviousVerse = useCallback(() => {
+    setCurrentVerseIndex(prev => {
+      if (prev > 0) {
+        return prev - 1;
+      }
+      return prev;
+    });
+  }, [verses.length]);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
@@ -78,25 +119,14 @@ export default function SlideView({
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [verses.length]);
+  }, [currentVerseIndex, verses.length, onBack, goToNextVerse, goToPreviousVerse]);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => goToNextVerse(),
-    onSwipedRight: () => goToPreviousVerse(),
-    trackMouse: true
+    onSwipedLeft: goToNextVerse,
+    onSwipedRight: goToPreviousVerse,
+    trackMouse: true,
+    preventScrollOnSwipe: true
   });
-
-  const goToNextVerse = () => {
-    if (currentVerseIndex < verses.length - 1) {
-      setCurrentVerseIndex(prev => prev + 1);
-    }
-  };
-
-  const goToPreviousVerse = () => {
-    if (currentVerseIndex > 0) {
-      setCurrentVerseIndex(prev => prev - 1);
-    }
-  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -105,6 +135,19 @@ export default function SlideView({
     } else {
       document.exitFullscreen();
       setIsFullscreen(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.share({
+        title: `Surah ${surahName}`,
+        text: `Reading Surah ${surahName}`,
+        url: url,
+      });
+    } catch (err) {
+      navigator.clipboard.writeText(url);
     }
   };
 
@@ -145,6 +188,27 @@ export default function SlideView({
       }}
       {...handlers}
     >
+      <ToggleMenu 
+        onFullScreen={toggleFullscreen}
+        onScrollViewToggle={() => {
+          onBack();
+          setTimeout(() => onShowScrollRead?.(true), 100);
+        }}
+        onSlideViewToggle={() => {}}
+        onAudioViewToggle={() => {
+          onBack();
+          setTimeout(() => onShowAudioView?.(true), 100);
+        }}
+        onIntroductionToggle={() => onShowIntroduction?.(true)}
+        onBookmarkToggle={() => {}}
+        onShareClick={handleShare}
+        isFullScreen={isFullscreen}
+        isScrollView={false}
+        currentView="slide"
+        surahNumber={surahNumber}
+        verseNumber={currentVerse?.number}
+      />
+
       <div className="slide-header">
         <button onClick={onBack} className="back-button">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

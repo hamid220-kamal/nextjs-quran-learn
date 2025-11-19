@@ -140,12 +140,36 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
     >
       <ToggleMenu 
         onFullScreen={handleFullScreen}
-        onScrollViewToggle={() => setShowScrollReadView(!showScrollReadView)}
+        onScrollViewToggle={() => {
+          if (showScrollReadView) {
+            setShowScrollReadView(false);
+          } else {
+            setShowSlideView(false);
+            setShowAudioView(false);
+            setShowScrollReadView(true);
+          }
+        }}
+        onSlideViewToggle={() => {
+          if (!showSlideView) {
+            setShowScrollReadView(false);
+            setShowAudioView(false);
+            setShowSlideView(true);
+          }
+        }}
+        onAudioViewToggle={() => {
+          if (!showAudioView) {
+            setShowScrollReadView(false);
+            setShowSlideView(false);
+            setShowAudioView(true);
+          }
+        }}
+        onIntroductionToggle={() => setShowIntroduction(true)}
         onBookmarkToggle={handleBookmark}
         onShareClick={handleShare}
         isFullScreen={isFullScreen}
         isScrollView={showScrollReadView}
         currentView={showAudioView ? 'audio' : showScrollReadView ? 'scroll' : showSlideView ? 'slide' : 'surah'}
+        surahNumber={surah.number}
       />
 
       {showSlideView ? (
@@ -155,6 +179,16 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
           totalVerses={surah.numberOfAyahs}
           backgroundImageUrl={backgroundImage}
           onBack={() => setShowSlideView(false)}
+          onShowSlideView={() => {}}
+          onShowScrollRead={() => {
+            setShowSlideView(false);
+            setShowScrollReadView(true);
+          }}
+          onShowAudioView={() => {
+            setShowSlideView(false);
+            setShowAudioView(true);
+          }}
+          onShowIntroduction={setShowIntroduction}
         />
       ) : showScrollReadView ? (
         <ScrollReadView
@@ -163,6 +197,16 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
           totalVerses={surah.numberOfAyahs}
           backgroundImageUrl={backgroundImage}
           onBack={() => setShowScrollReadView(false)}
+          onShowSlideView={() => {
+            setShowScrollReadView(false);
+            setShowSlideView(true);
+          }}
+          onShowScrollRead={() => {}}
+          onShowAudioView={() => {
+            setShowScrollReadView(false);
+            setShowAudioView(true);
+          }}
+          onShowIntroduction={setShowIntroduction}
         />
       ) : (
         <>
@@ -222,6 +266,16 @@ export default function SurahView({ surah, onBack, backgroundImage }: SurahViewP
                 surahName={surah.name}
                 backgroundImage={backgroundImage}
                 onClose={() => setShowAudioView(false)}
+                onShowSlideView={() => {
+                  setShowAudioView(false);
+                  setShowSlideView(true);
+                }}
+                onShowScrollRead={() => {
+                  setShowAudioView(false);
+                  setShowScrollReadView(true);
+                }}
+                onShowAudioView={() => {}}
+                onShowIntroduction={setShowIntroduction}
               />
             )}
           </div>

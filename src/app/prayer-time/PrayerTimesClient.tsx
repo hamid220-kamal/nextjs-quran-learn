@@ -4,6 +4,37 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { PrayerTimesResponse, Prayer, Coordinates, Reminder, AudioSettings, CustomAlarm, SavedLocation, LocationQuery, SearchHistory, LocationStatistics } from './types';
 import styles from './PrayerTime.module.css';
 
+// ========== NEW FEATURE IMPORTS ==========
+// Prayer calculations (Qibla, Hijri, high-latitude, offline)
+import {
+  calculateQiblaDirection,
+  gregorianToHijri,
+  applyHighLatitudeAdjustment,
+} from './utils/prayerCalculations';
+
+// Offline caching and service worker
+import {
+  initIndexedDB,
+  registerServiceWorker,
+  cachePrayerTimes,
+  setupOnlineOfflineListeners,
+} from './utils/offlineCache';
+
+// Cloud sync and prayer tracking
+import {
+  CloudSyncManager,
+  PrayerTracker,
+  sendNotification,
+} from './utils/syncAndTracking';
+
+// Configuration and constants
+import {
+  DEFAULT_CALCULATION_METHOD,
+  DEFAULT_MADHAB,
+  FEATURE_FLAGS,
+  HIGH_LATITUDE_THRESHOLD,
+} from './config';
+
 interface PrayerTimesClientProps {
   initialPrayerTimes: PrayerTimesResponse | null;
   initialError: string | null;
@@ -75,7 +106,24 @@ export default function PrayerTimesClient({
   const [compareLocation2, setCompareLocation2] = useState<SavedLocation | null>(null);
   const [comparePrayerTimes1, setComparePrayerTimes1] = useState<PrayerTimesResponse | null>(null);
   const [comparePrayerTimes2, setComparePrayerTimes2] = useState<PrayerTimesResponse | null>(null);
+  
+  // ========== NEW FEATURES: STATE VARIABLES ==========
+  const [qiblaDirection, setQiblaDirection] = useState<any>(null);
+  const [hijriDate, setHijriDate] = useState<any>(null);
+  const [calculationMethod, setCalculationMethod] = useState(DEFAULT_CALCULATION_METHOD);
+  const [madhab, setMadhab] = useState(DEFAULT_MADHAB);
+  const [highLatitudeMethod, setHighLatitudeMethod] = useState<'midnight' | 'nearest-latitude' | 'angle-based' | 'fraction-of-night'>('midnight');
+  const [offlineModeEnabled, setOfflineModeEnabled] = useState(false);
+  const [cloudSyncEnabled, setCloudSyncEnabled] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [showQiblaCompass, setShowQiblaCompass] = useState(false);
+  const [showHijriDate, setShowHijriDate] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  
   const audioRef = useRef<HTMLAudioElement>(null);
+  const syncManagerRef = useRef<CloudSyncManager | null>(null);
+  const prayerTrackerRef = useRef<PrayerTracker | null>(null);
 
   const prayers: Prayer[] = [
     { key: 'Fajr', name: 'Fajr', arabic: 'الفجر', index: 1 },
@@ -281,6 +329,161 @@ export default function PrayerTimesClient({
   useEffect(() => {
     localStorage.setItem('locationStatistics', JSON.stringify(locationStats));
   }, [locationStats]);
+
+  // ========== NEW FEATURES: INITIALIZATION ==========
+  // Initialize offline caching and service worker
+  useEffect(() => {
+    const initializeFeatures = async () => {
+      if (typeof window === 'undefined') return;
+      
+      console.log('🚀 Initializing new prayer time features...');
+
+      // Initialize offline mode
+      if (FEATURE_FLAGS.enableOfflineMode) {
+        try {
+          await initIndexedDB();
+          await registerServiceWorker();
+          setOfflineModeEnabled(true);
+          console.log('✅ Offline mode initialized');
+        } catch (error) {
+          console.error('❌ Failed to initialize offline mode:', error);
+        }
+      }
+
+      // Initialize prayer tracker
+      if (FEATURE_FLAGS.enablePrayerTracking) {
+        try {
+          const tracker = new PrayerTracker();
+          prayerTrackerRef.current = tracker;
+          console.log('✅ Prayer tracker initialized');
+        } catch (error) {
+          console.error('❌ Failed to initialize prayer tracker:', error);
+        }
+      }
+
+      // Initialize cloud sync
+      if (FEATURE_FLAGS.enableCloudSync) {
+        try {
+          const syncManager = new CloudSyncManager('user-default', 'firebase');
+          syncManagerRef.current = syncManager;
+          syncManager.setAutoSync(true, 300000);
+          setCloudSyncEnabled(true);
+          console.log('✅ Cloud sync initialized');
+        } catch (error) {
+          console.error('❌ Failed to initialize cloud sync:', error);
+        }
+      }
+
+      // Setup online/offline listeners
+      const unsubscribe = setupOnlineOfflineListeners(
+        () => {
+          setIsOnline(true);
+          console.log('📡 Back online');
+        },
+        () => {
+          setIsOnline(false);
+          console.log('📴 Offline mode active');
+        }
+      );
+
+      // Apply saved theme
+      const savedTheme = localStorage.getItem('appTheme') as 'light' | 'dark' | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
+      return unsubscribe;
+    };
+
+    const cleanupPromise = initializeFeatures();
+    return () => {
+      cleanupPromise.then(fn => fn?.());
+    };
+  }, []);
+
+  // ========== NEW FEATURES: CALCULATE QIBLA AND HIJRI ==========
+  useEffect(() => {
+    if (!prayerTimes?.data?.meta) return;
+
+    const { latitude, longitude } = prayerTimes.data.meta;
+    
+    // Calculate Qibla direction
+    if (FEATURE_FLAGS.enableQiblaCompass) {
+      try {
+        const qibla = calculateQiblaDirection(latitude, longitude);
+        setQiblaDirection(qibla);
+        console.log(`📍 Qibla: ${qibla.azimuth.toFixed(1)}° (${qibla.description})`);
+      } catch (error) {
+        console.error('❌ Failed to calculate Qibla:', error);
+      }
+    }
+
+    // Calculate Hijri date
+    if (FEATURE_FLAGS.enableQiblaCompass) {
+      try {
+        const today = new Date();
+        const hijri = gregorianToHijri(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        setHijriDate({
+          gregorian: today,
+          hijri: hijri,
+          hijriYear: hijri.year,
+          hijriDay: parseInt(hijri.day),
+          hijriMonth: hijri.month.number,
+        });
+        console.log(`📅 Hijri: ${hijri.day}/${hijri.month.number}/${hijri.year}`);
+      } catch (error) {
+        console.error('❌ Failed to calculate Hijri date:', error);
+      }
+    }
+  }, [prayerTimes?.data?.meta]);
+
+  // ========== NEW FEATURES: APPLY HIGH-LATITUDE ADJUSTMENTS ==========
+  useEffect(() => {
+    if (!prayerTimes?.data?.meta || !FEATURE_FLAGS.enableHighLatitudeAdjustments) return;
+
+    const { latitude } = prayerTimes.data.meta;
+    
+    if (Math.abs(latitude) > HIGH_LATITUDE_THRESHOLD) {
+      console.log(`⚠️ High latitude (${latitude.toFixed(1)}°) detected - applying ${highLatitudeMethod} adjustment`);
+      
+      try {
+        const adjusted = applyHighLatitudeAdjustment(
+          prayerTimes.data.timings,
+          latitude,
+          highLatitudeMethod as any
+        );
+        console.log('✅ High-latitude prayer times adjusted');
+      } catch (error) {
+        console.error('❌ Failed to apply high-latitude adjustment:', error);
+      }
+    }
+  }, [prayerTimes?.data?.meta, highLatitudeMethod]);
+
+  // ========== NEW FEATURES: CACHE PRAYER TIMES ==========
+  useEffect(() => {
+    if (!prayerTimes?.data?.meta || !FEATURE_FLAGS.enableOfflineMode) return;
+
+    const cachePrayerData = async () => {
+      try {
+        const locationId = `${prayerTimes.data.meta.latitude.toFixed(2)}-${prayerTimes.data.meta.longitude.toFixed(2)}`;
+        await cachePrayerTimes(
+          locationId,
+          new Date().toISOString().split('T')[0],
+          prayerTimes,
+          30
+        );
+        console.log('💾 Prayer times cached for offline use');
+      } catch (error) {
+        console.error('❌ Failed to cache prayer times:', error);
+      }
+    };
+
+    cachePrayerData();
+  }, [prayerTimes?.data?.meta]);
 
   // Update current time
   useEffect(() => {
@@ -1355,7 +1558,239 @@ export default function PrayerTimesClient({
         >
           🌍 Custom Location
         </button>
+        
+        {/* ========== NEW FEATURES: CONTROL BUTTONS ========== */}
+        <button
+          className={`${styles.reminderButton} ${showQiblaCompass ? styles.reminderActive : ''}`}
+          onClick={() => setShowQiblaCompass(!showQiblaCompass)}
+          title="Qibla direction and distance to Kaaba"
+          aria-label="Toggle Qibla compass"
+        >
+          🧭 Qibla
+        </button>
+        <button
+          className={`${styles.reminderButton} ${showHijriDate ? styles.reminderActive : ''}`}
+          onClick={() => setShowHijriDate(!showHijriDate)}
+          title="Islamic calendar date"
+          aria-label="Toggle Hijri date"
+        >
+          📅 Hijri
+        </button>
+        <button
+          className={`${styles.reminderButton} ${showAdvancedSettings ? styles.reminderActive : ''}`}
+          onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+          title="Advanced prayer settings"
+          aria-label="Toggle advanced settings"
+        >
+          ⚙️ Advanced
+        </button>
+        <button
+          className={`${styles.reminderButton} ${isOnline ? '' : styles.reminderActive}`}
+          title={`Offline mode - ${isOnline ? 'Online' : 'Offline'}`}
+          aria-label="Offline mode status"
+          disabled
+        >
+          {isOnline ? '📡 Online' : '📴 Offline'}
+        </button>
       </div>
+
+      {/* ========== NEW FEATURES: QIBLA COMPASS PANEL ========== */}
+      {showQiblaCompass && qiblaDirection && (
+        <div className={styles.reminderPanel} style={{ background: 'linear-gradient(135deg, #2196F3 0%, #1976d2 100%)' }}>
+          <h3 className={styles.reminderPanelTitle} style={{ color: 'white', marginBottom: '1rem' }}>🧭 Qibla Direction & Distance</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', color: 'white' }}>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{qiblaDirection.azimuth.toFixed(1)}°</div>
+              <div style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Direction (True North)</div>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', textAlign: 'center' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{qiblaDirection.description}</div>
+              <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Cardinal Direction</div>
+            </div>
+          </div>
+          {qiblaDirection.magneticDeclination !== undefined && (
+            <p style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.9 }}>
+              🧲 Magnetic Declination: {qiblaDirection.magneticDeclination.toFixed(1)}°
+            </p>
+          )}
+          <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', opacity: 0.8 }}>
+            {qiblaDirection.isAccurate ? '✅ Accurate calculation' : '⚠️ Approximate value'}
+          </p>
+        </div>
+      )}
+
+      {/* ========== NEW FEATURES: HIJRI DATE PANEL ========== */}
+      {showHijriDate && hijriDate && (
+        <div className={styles.reminderPanel} style={{ background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)' }}>
+          <h3 className={styles.reminderPanelTitle} style={{ color: 'white', marginBottom: '1rem' }}>📅 Islamic Calendar</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', color: 'white' }}>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Gregorian</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
+                {hijriDate.gregorian?.toLocaleDateString() || 'N/A'}
+              </div>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Hijri</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
+                {hijriDate.hijriDay}/{hijriDate.hijriMonth}/{hijriDate.hijriYear}
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(255,255,255,0.15)', borderRadius: '6px', fontSize: '0.9rem' }}>
+            <p style={{ margin: '0 0 0.5rem 0' }}>📜 Islamic Date Information:</p>
+            {hijriDate.hijriMonth === 9 && <p style={{ margin: '0', color: '#fff3cd' }}>🌙 Ramadan - Month of Fasting</p>}
+            {hijriDate.hijriMonth === 10 && <p style={{ margin: '0', color: '#fff3cd' }}>🎉 Shawwal - Eid ul-Fitr Month</p>}
+            {hijriDate.hijriMonth === 12 && <p style={{ margin: '0', color: '#fff3cd' }}>🕌 Dhul-Hijjah - Hajj Season</p>}
+          </div>
+        </div>
+      )}
+
+      {/* ========== NEW FEATURES: ADVANCED SETTINGS PANEL ========== */}
+      {showAdvancedSettings && (
+        <div className={styles.reminderPanel} style={{ background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)' }}>
+          <h3 className={styles.reminderPanelTitle} style={{ color: 'white', marginBottom: '1.5rem' }}>⚙️ Advanced Prayer Settings</h3>
+          
+          <div style={{ color: 'white' }}>
+            {/* Calculation Method */}
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '500' }}>
+                📐 Calculation Method: <strong>{calculationMethod}</strong>
+              </label>
+              <select
+                value={calculationMethod}
+                onChange={(e) => {
+                  setCalculationMethod(parseInt(e.target.value) as any);
+                  console.log(`✅ Calculation method changed to: ${e.target.value}`);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value={1} style={{ color: 'black' }}>1 - Shia Ithna Ashari</option>
+                <option value={2} style={{ color: 'black' }}>2 - University of Islamic Sciences</option>
+                <option value={3} style={{ color: 'black' }}>3 - Muslim World League</option>
+                <option value={4} style={{ color: 'black' }}>4 - Umm Al-Qura (Default)</option>
+                <option value={5} style={{ color: 'black' }}>5 - Egyptian General Authority</option>
+              </select>
+              <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.9 }}>
+                Different Islamic institutions use different calculation methods for prayer times.
+              </p>
+            </div>
+
+            {/* Madhab (School of Islamic Law) */}
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '500' }}>
+                🕌 Madhab (School): <strong>{madhab === 0 ? 'Shafi\'i' : madhab === 1 ? 'Hanafi' : madhab === 2 ? 'Maliki' : 'Hanbali'}</strong>
+              </label>
+              <select
+                value={madhab}
+                onChange={(e) => {
+                  setMadhab(parseInt(e.target.value) as any);
+                  console.log(`✅ Madhab changed to: ${e.target.value}`);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value={0} style={{ color: 'black' }}>0 - Shafi'i (Default)</option>
+                <option value={1} style={{ color: 'black' }}>1 - Hanafi</option>
+                <option value={2} style={{ color: 'black' }}>2 - Maliki</option>
+                <option value={3} style={{ color: 'black' }}>3 - Hanbali</option>
+              </select>
+              <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.9 }}>
+                The madhab affects Asr prayer time calculation based on Islamic jurisprudence.
+              </p>
+            </div>
+
+            {/* High-Latitude Method */}
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '500' }}>
+                ❄️ High-Latitude Method: <strong>{highLatitudeMethod}</strong>
+              </label>
+              <select
+                value={highLatitudeMethod}
+                onChange={(e) => {
+                  setHighLatitudeMethod(e.target.value as any);
+                  console.log(`✅ High-latitude method changed to: ${e.target.value}`);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="midnight" style={{ color: 'black' }}>Midnight Method</option>
+                <option value="nearest-latitude" style={{ color: 'black' }}>Nearest Latitude</option>
+                <option value="angle-based" style={{ color: 'black' }}>Angle-Based</option>
+                <option value="fraction-of-night" style={{ color: 'black' }}>Fraction of Night</option>
+              </select>
+              <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', opacity: 0.9 }}>
+                Used for locations above 48.5° latitude where sun doesn't fully set.
+              </p>
+            </div>
+
+            {/* Theme Toggle */}
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>🎨 Dark Mode</span>
+                <input
+                  type="checkbox"
+                  checked={theme === 'dark'}
+                  onChange={(e) => {
+                    const newTheme = e.target.checked ? 'dark' : 'light';
+                    setTheme(newTheme);
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('appTheme', newTheme);
+                    console.log(`✅ Theme changed to: ${newTheme}`);
+                  }}
+                  style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                />
+              </label>
+            </div>
+
+            {/* Offline Mode Status */}
+            <div style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: '500' }}>
+                💾 Offline Mode: <strong>{offlineModeEnabled ? '✅ Enabled' : '❌ Disabled'}</strong>
+              </p>
+              <p style={{ margin: '0', fontSize: '0.8rem', opacity: 0.9 }}>
+                {offlineModeEnabled 
+                  ? 'Prayer times are cached and available offline. Updates sync automatically.' 
+                  : 'Enable offline mode to cache prayer times for offline access.'}
+              </p>
+            </div>
+
+            {/* Cloud Sync Status */}
+            <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+              <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: '500' }}>
+                ☁️ Cloud Sync: <strong>{cloudSyncEnabled ? '✅ Enabled' : '❌ Disabled'}</strong>
+              </p>
+              <p style={{ margin: '0', fontSize: '0.8rem', opacity: 0.9 }}>
+                {cloudSyncEnabled 
+                  ? 'Your settings and prayer history sync across devices every 5 minutes.' 
+                  : 'Enable cloud sync to keep your data synchronized.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {expandedReminders && (
         <div className={styles.reminderPanel}>

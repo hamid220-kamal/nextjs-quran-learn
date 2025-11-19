@@ -1,6 +1,5 @@
-import PrayerTimesClient from './PrayerTimesClient';
+import PrayerTimePageFunctional from './PrayerTimePageFunctional';
 import { PrayerTimesResponse } from './types';
-import styles from './PrayerTime.module.css';
 
 const ALADHAN_API_BASE = 'https://api.aladhan.com/v1/timings';
 const CALCULATION_METHOD = '4'; // Umm Al-Qura
@@ -110,37 +109,16 @@ export default async function PrayerTimesPage({ searchParams }: PrayerTimesPageP
   }
 
   return (
-    <main className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Prayer Times</h1>
-        <p className={styles.subtitle}>
-          Today's prayer schedule based on your location
-        </p>
-        {prayerTimes?.data?.date && (
-          <div className={styles.dateContainer}>
-            <div className={styles.gregorianDate}>
-              {prayerTimes.data.date.readable}
-            </div>
-            {prayerTimes.data.date.hijri && (
-              <div className={styles.hijriDate}>
-                {prayerTimes.data.date.hijri.date} AH • {prayerTimes.data.date.hijri.month.ar}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      
-      <PrayerTimesClient 
-        initialPrayerTimes={prayerTimes}
-        initialError={error}
-        initialCoords={{
-          lat: getParamValue(params.lat),
-          lon: getParamValue(params.lon),
-          city: getParamValue(params.city),
-          country: getParamValue(params.country),
-        }}
-        initialLocation={location}
-      />
-    </main>
+    <PrayerTimePageFunctional 
+      initialPrayerTimes={prayerTimes}
+      initialError={error}
+      initialCoords={{
+        lat: getParamValue(params.lat),
+        lon: getParamValue(params.lon),
+        city: getParamValue(params.city),
+        country: getParamValue(params.country),
+      }}
+      initialLocation={location}
+    />
   );
 }

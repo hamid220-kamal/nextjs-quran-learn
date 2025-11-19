@@ -9,6 +9,52 @@ import {
   gregorianToHijri,
 } from './utils/prayerCalculations';
 
+// Import prayer tracking utilities
+import {
+  markPrayerCompleted,
+  markPrayerMissed,
+  undoPrayerStatus,
+  getTodayPrayerRecord,
+  getTodayDate,
+  getComprehensiveStats,
+  formatStreakDisplay,
+  getCompletionRate,
+  getWeeklySummary,
+} from './utils/prayerTracking';
+
+// Import IndexedDB utilities for audio persistence
+import {
+  saveAudioFile,
+  getAudioFileURL,
+  getAllAudioMetadata,
+  deleteAudioFile,
+  initializeIndexedDB,
+} from './utils/indexedDB';
+
+// Import localStorage utilities
+import {
+  loadAlarms,
+  saveAlarms,
+  addAlarm as storageAddAlarm,
+  updateAlarm as storageUpdateAlarm,
+  deleteAlarm as storageDeleteAlarm,
+  toggleAlarm as storageToggleAlarm,
+  loadReminderSettings,
+  saveReminderSettings,
+  loadThemePreference,
+  saveThemePreference,
+  loadPrayerStats,
+  savePrayerStats,
+  loadNotificationHistory,
+  addNotification as storageAddNotification,
+  loadFavoriteLocations,
+  saveFavoriteLocations,
+  validateAlarm,
+  validateReminderMinutes,
+  initializeStorage,
+  STORAGE_KEYS,
+} from './utils/localStorage';
+
 interface PrayerTimePageProps {
   initialPrayerTimes: PrayerTimesResponse | null;
   initialError: string | null;
@@ -29,6 +75,8 @@ interface CustomAlarm {
   enabled: boolean;
   sound: 'adhan' | 'bell' | 'fajr-azan' | 'all-azan' | 'eid-takbeer' | 'eid-adha' | 'hajj-takbeer' | 'islamic-lori' | 'zil-hajj' | 'custom';
   customAudioUrl?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 interface QiblaInfo {
@@ -68,6 +116,7 @@ export default function PrayerTimePageFunctional({
   const [lastTriggeredAlarm, setLastTriggeredAlarm] = useState<{ name: string; time: string } | null>(null);
   const [activeAlarmId, setActiveAlarmId] = useState<string | null>(null);
   const [snoozeMinutes, setSnoozeMinutes] = useState(5);
+  const [snoozedUntilTimestamp, setSnoozedUntilTimestamp] = useState<number | null>(null); // Tracks when snooze ends (ms)
 
   // Available audio files from public folder
   const audioFiles = [
@@ -80,13 +129,17 @@ export default function PrayerTimePageFunctional({
     { id: 'zil-hajj', name: '🌙 Zil Hajj Takbeer', path: '/prayer time audio/Zil hajj takbeer.mp3' },
   ];
 
-  const [uploadedAudio, setUploadedAudio] = useState<{ name: string; url: string }[]>([]);
+  const [uploadedAudio, setUploadedAudio] = useState<{ id: string; name: string; url: string }[]>([]);
   const [customAudioFile, setCustomAudioFile] = useState<File | null>(null);
+  const [loadingAudio, setLoadingAudio] = useState(false);
+  const [audioUploadError, setAudioUploadError] = useState<string | null>(null);
 
   // ========== AUDIO & NOTIFICATIONS ==========
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [volume, setVolume] = useState(70);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
 
   // ========== QIBLA & HIJRI ==========
   const [qiblaInfo, setQiblaInfo] = useState<QiblaInfo | null>(null);
@@ -97,6 +150,11 @@ export default function PrayerTimePageFunctional({
     thisMonth: 0,
     total: 0,
   });
+
+  const [todayPrayerRecord, setTodayPrayerRecord] = useState(getTodayPrayerRecord());
+  const [comprehensiveStats, setComprehensiveStats] = useState(getComprehensiveStats());
+  const [weeklyData, setWeeklyData] = useState(getWeeklySummary());
+  const [showPrayerTracking, setShowPrayerTracking] = useState(false);
 
   // ========== UI STATE ==========
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -109,6 +167,8 @@ export default function PrayerTimePageFunctional({
   const triggeredAlarmsRef = useRef<Set<string>>(new Set());
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const activeAudioInstancesRef = useRef<HTMLAudioElement[]>([]);
+  const snoozedAlarmIdRef = useRef<string | null>(null); // Track which alarm is snoozed
 
   // ========== INITIALIZATION & TIME UPDATE ==========
   useEffect(() => {
@@ -118,6 +178,55 @@ export default function PrayerTimePageFunctional({
 
     return () => clearInterval(timer);
   }, []);
+
+  // ========== LOAD DATA FROM LOCALSTORAGE & INDEXEDDB ON MOUNT ==========
+  useEffect(() => {
+    if (typeof window === 'undefined') return; // Skip on SSR
+    
+    console.log('📦 Loading data from localStorage and IndexedDB...');
+    initializeStorage();
+    initializeIndexedDB().catch(err => console.error('IndexedDB init error:', err));
+    
+    // Load custom alarms
+    const savedAlarms = loadAlarms();
+    if (savedAlarms.length > 0) {
+      setCustomAlarms(savedAlarms);
+      console.log(`✅ Loaded ${savedAlarms.length} custom alarms`);
+    }
+    
+    // Load reminder settings
+    const savedReminders = loadReminderSettings();
+    setReminders(new Map(Object.entries(savedReminders)));
+    
+    // Load theme preference
+    const savedTheme = loadThemePreference();
+    setTheme(savedTheme);
+    
+    // Load prayer stats
+    const savedStats = loadPrayerStats();
+    setPrayerStats(savedStats);
+    
+    // Load uploaded audio files from IndexedDB
+    loadStoredAudioFiles();
+    
+    // Initialize online/offline listeners
+    const handleOnline = () => {
+      setIsOnline(true);
+      console.log('🌐 Back online!');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      console.log('📴 Went offline');
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []); // Only run on mount
 
   // ========== CALCULATE NEXT PRAYER ==========
   useEffect(() => {
@@ -215,6 +324,36 @@ export default function PrayerTimePageFunctional({
           const alarmTimeStr = `${alarm.hour.toString().padStart(2, '0')}:${alarm.minute.toString().padStart(2, '0')}`;
           const alarmId = `alarm-${alarm.id}`;
           
+          // Check if THIS specific alarm is currently snoozed
+          const now = currentTime.getTime();
+          const isSnoozed = snoozedAlarmIdRef.current === alarm.id && snoozedUntilTimestamp && now < snoozedUntilTimestamp;
+          
+          if (isSnoozed) {
+            console.log(`⏳ Alarm ${alarm.name} is snoozed until ${new Date(snoozedUntilTimestamp).toLocaleTimeString()}`);
+            continue; // Alarm is snoozed, skip triggering
+          }
+          
+          // Check if snooze just ended for this alarm - trigger it immediately
+          if (snoozedAlarmIdRef.current === alarm.id && snoozedUntilTimestamp && now >= snoozedUntilTimestamp) {
+            console.log(`🔔 *** SNOOZED ALARM RE-TRIGGERED *** ${alarm.name}`);
+            triggeredAlarmsRef.current.add(alarmId);
+            setLastTriggeredAlarm({ name: alarm.name, time: alarmTimeStr });
+            setActiveAlarmId(alarm.id);
+            setSnoozedUntilTimestamp(null); // Clear snooze
+            snoozedAlarmIdRef.current = null;
+            
+            // Play audio
+            playAudio(alarm.sound, alarm.name);
+            const t1 = setTimeout(() => playAudio(alarm.sound, alarm.name), 2000);
+            audioTimeoutsRef.current.push(t1);
+            const t2 = setTimeout(() => playAudio(alarm.sound, alarm.name), 4000);
+            audioTimeoutsRef.current.push(t2);
+            
+            sendNotification('⏰ Alarm Triggered!', `${alarm.name}`, true);
+            console.warn(`🔊 ALARM SOUND PLAYING: ${alarm.name} (${alarm.sound})`);
+            continue;
+          }
+          
           // Check if alarm hasn't been triggered yet
           if (triggeredAlarmsRef.current.has(alarmId)) {
             continue; // Already triggered
@@ -235,6 +374,8 @@ export default function PrayerTimePageFunctional({
             triggeredAlarmsRef.current.add(alarmId);
             setLastTriggeredAlarm({ name: alarm.name, time: alarmTimeStr });
             setActiveAlarmId(alarm.id);
+            setSnoozedUntilTimestamp(null); // Clear snooze when alarm triggers
+            snoozedAlarmIdRef.current = null; // Clear snoozed alarm ref
             
             // Play audio multiple times for better reliability
             playAudio(alarm.sound, alarm.name);
@@ -253,7 +394,7 @@ export default function PrayerTimePageFunctional({
       }
 
       // Check prayer reminders
-      if (prayerTimes?.data?.timings && audioEnabled) {
+      if (prayerTimes?.data?.timings && remindersEnabled && audioEnabled) {
         const timings = prayerTimes.data.timings;
         const remindersArray = Array.from(reminders.entries());
 
@@ -265,26 +406,59 @@ export default function PrayerTimePageFunctional({
           const prayerTime = new Date(now);
           prayerTime.setHours(hour, minute, 0, 0);
 
+          // Calculate reminder time
           const reminderTime = new Date(prayerTime.getTime() - minutesBefore * 60000);
-          const reminderTimeStr = `${reminderTime.getHours().toString().padStart(2, '0')}:${reminderTime.getMinutes().toString().padStart(2, '0')}`;
-          const reminderId = `reminder-${prayer}`;
+          const reminderHour = reminderTime.getHours();
+          const reminderMinute = reminderTime.getMinutes();
+          const reminderTimeStr = `${reminderHour.toString().padStart(2, '0')}:${reminderMinute.toString().padStart(2, '0')}`;
+          const reminderId = `reminder-${prayer}-${minutesBefore}`;
 
           // Check if reminder should trigger
-          if (
-            currentTimeStr === reminderTimeStr &&
-            !triggeredAlarmsRef.current.has(reminderId)
-          ) {
-            console.log(`🔔 REMINDER TRIGGERED: ${prayer} Prayer (${minutesBefore} min before)`);
+          // Use hour and minute comparison (more reliable than exact timestamp)
+          const currentHour = now.getHours();
+          const currentMinute = now.getMinutes();
+          const isReminderTime = currentHour === reminderHour && currentMinute === reminderMinute;
+          
+          if (isReminderTime && !triggeredAlarmsRef.current.has(reminderId)) {
+            console.log(`✅ ✅ ✅ REMINDER TRIGGERED: ${prayer} Prayer at ${reminderTimeStr} (${minutesBefore} min before) ✅ ✅ ✅`);
+            console.log(`🎯 Current time: ${currentTimeStr}, Reminder time: ${reminderTimeStr}`);
             triggeredAlarmsRef.current.add(reminderId);
+            
+            // Play alarm sound for reminder
+            console.log(`🔊 Playing alarm sound: bell`);
             playAudio('bell', prayer);
-            sendNotification(`🕌 ${prayer} Prayer Reminder`, `Prayer in ${minutesBefore} minutes`, true);
+            
+            // Send push notification with alarm action
+            const notificationBody = minutesBefore === 0 
+              ? `Time for ${prayer} Prayer - 🕌` 
+              : `${prayer} Prayer in ${minutesBefore} minute${minutesBefore !== 1 ? 's' : ''} ⏰`;
+            
+            console.log(`📢 📢 Calling sendNotification: "${prayer} Reminder" - "${notificationBody}"`);
+            sendNotification(`🕌 ${prayer} Reminder`, notificationBody, true);
+            
+            // Log for debugging
+            console.log(`📢 Notification sent: "${prayer} Reminder" - "${notificationBody}"`);
+            
+            // Additional alert for mobile
+            if ('vibrate' in navigator) {
+              try {
+                // Vibrate pattern: 200ms vibrate, 100ms pause, 200ms vibrate
+                console.log('📳 Vibrating device...');
+                navigator.vibrate([200, 100, 200]);
+              } catch (e) {
+                console.log('⚠️ Vibration not supported');
+              }
+            }
+          } else if (isReminderTime && triggeredAlarmsRef.current.has(reminderId)) {
+            // Log that reminder already triggered (for debugging)
+            console.log(`⏭️ Reminder already triggered for ${prayer} Prayer at ${reminderTimeStr}`);
           }
         }
       }
     };
 
     checkAlerts();
-  }, [currentTime, reminders, customAlarms, audioEnabled, prayerTimes]);
+  }, [currentTime, reminders, customAlarms, audioEnabled, remindersEnabled, prayerTimes, snoozedUntilTimestamp]);
 
   // ========== RESET TRIGGERED ALARMS AT MIDNIGHT ==========
   useEffect(() => {
@@ -293,6 +467,16 @@ export default function PrayerTimePageFunctional({
       triggeredAlarmsRef.current.clear();
       audioTimeoutsRef.current.forEach(t => clearTimeout(t));
       audioTimeoutsRef.current = [];
+      // Clear all audio instances
+      activeAudioInstancesRef.current.forEach(audio => {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+        } catch (e) {}
+      });
+      activeAudioInstancesRef.current = [];
+      setSnoozedUntilTimestamp(null); // Clear snooze at midnight
+      snoozedAlarmIdRef.current = null; // Clear snoozed alarm ref
     }
   }, [currentTime]);
 
@@ -300,7 +484,18 @@ export default function PrayerTimePageFunctional({
   const stopAlarm = () => {
     console.log('🛑 Stopping all alarms...');
     
-    // Stop all audio
+    // Stop all active audio instances
+    activeAudioInstancesRef.current.forEach(audio => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch (e) {
+        console.error('Error stopping audio:', e);
+      }
+    });
+    activeAudioInstancesRef.current = [];
+    
+    // Stop main audio ref
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current.currentTime = 0;
@@ -333,20 +528,24 @@ export default function PrayerTimePageFunctional({
     // Calculate snooze time
     const snoozeTime = minutes * 60 * 1000; // Convert to milliseconds
     const now = new Date();
-    const snoozeUntil = new Date(now.getTime() + snoozeTime);
+    const snoozeUntilTimestamp = now.getTime() + snoozeTime;
+    const snoozeUntil = new Date(snoozeUntilTimestamp);
     const snoozeHour = snoozeUntil.getHours();
     const snoozeMinute = snoozeUntil.getMinutes();
+    const snoozeTimeStr = `${snoozeHour.toString().padStart(2, '0')}:${snoozeMinute.toString().padStart(2, '0')}`;
     
-    console.log(`⏰ Alarm will ring again at ${snoozeHour.toString().padStart(2, '0')}:${snoozeMinute.toString().padStart(2, '0')}`);
+    // Mark this specific alarm as snoozed
+    snoozedAlarmIdRef.current = activeAlarmId;
+    setSnoozedUntilTimestamp(snoozeUntilTimestamp);
     
-    // Remove from triggered set so it can trigger again at snooze time
-    const alarmIdKey = `alarm-${activeAlarmId}`;
-    triggeredAlarmsRef.current.delete(alarmIdKey);
+    console.log(`⏰ Alarm will ring again at ${snoozeTimeStr}`);
+    
+    // DON'T clear from triggered set - we'll check snooze status instead
     
     // Send notification
     sendNotification(
       '😴 Snoozed',
-      `Alarm will ring again at ${snoozeHour.toString().padStart(2, '0')}:${snoozeMinute.toString().padStart(2, '0')}`,
+      `Alarm will ring again at ${snoozeTimeStr}`,
       false
     );
   };
@@ -356,8 +555,11 @@ export default function PrayerTimePageFunctional({
       
       let audioUrl = '';
       
-      // Determine audio URL based on sound type
-      if (soundType === 'fajr-azan') {
+      // Check if it's a custom uploaded audio file
+      const customAudio = uploadedAudio.find(a => a.id === soundType);
+      if (customAudio && customAudio.url) {
+        audioUrl = customAudio.url;
+      } else if (soundType === 'fajr-azan') {
         audioUrl = '/prayer time audio/fajr azan.mp3';
       } else if (soundType === 'all-azan') {
         audioUrl = '/prayer time audio/all prayer time azan.mp3';
@@ -372,33 +574,32 @@ export default function PrayerTimePageFunctional({
       } else if (soundType === 'zil-hajj') {
         audioUrl = '/prayer time audio/Zil hajj takbeer.mp3';
       } else if (soundType === 'bell') {
-        // Generate bell sound using Web Audio API
+        // Generate LOUD bell sound using Web Audio API
         try {
           const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
           const now = audioContext.currentTime;
           
-          const oscillator1 = audioContext.createOscillator();
-          const oscillator2 = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
+          // Create multiple oscillators for louder bell effect
+          const frequencies = [800, 1200, 600, 900];
+          for (let i = 0; i < frequencies.length; i++) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-          oscillator1.connect(gainNode);
-          oscillator2.connect(gainNode);
-          gainNode.connect(audioContext.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-          oscillator1.frequency.value = 800;
-          oscillator2.frequency.value = 1200;
-          oscillator1.type = 'sine';
-          oscillator2.type = 'sine';
+            oscillator.frequency.value = frequencies[i];
+            oscillator.type = 'sine';
 
-          gainNode.gain.setValueAtTime(0.5, now);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+            // LOUDER VOLUME: 0.5 increased to 0.9 per oscillator
+            gainNode.gain.setValueAtTime(0.9, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
-          oscillator1.start(now);
-          oscillator2.start(now);
-          oscillator1.stop(now + 0.8);
-          oscillator2.stop(now + 0.8);
+            oscillator.start(now);
+            oscillator.stop(now + 0.8);
+          }
 
-          console.log('🔔 Bell sound generated');
+          console.log('🔔 LOUD Bell sound generated');
           setIsPlaying(true);
           setTimeout(() => setIsPlaying(false), 900);
           return;
@@ -410,9 +611,9 @@ export default function PrayerTimePageFunctional({
         // Use uploaded custom audio
         const reader = new FileReader();
         reader.onload = (e) => {
-          const customAudio = new Audio(e.target?.result as string);
-          customAudio.volume = Math.min(1, volume / 100);
-          customAudio.play().catch(err => console.error('❌ Custom audio play error:', err));
+          const customAudioElement = new Audio(e.target?.result as string);
+          customAudioElement.volume = Math.min(1, volume / 100);
+          customAudioElement.play().catch(err => console.error('❌ Custom audio play error:', err));
           setIsPlaying(true);
           setTimeout(() => setIsPlaying(false), 5000);
         };
@@ -425,6 +626,7 @@ export default function PrayerTimePageFunctional({
         const audio = new Audio(audioUrl);
         audio.volume = Math.min(1, volume / 100);
         currentAudioRef.current = audio; // Store reference for stopping
+        activeAudioInstancesRef.current.push(audio); // Track all instances
         
         audio.oncanplay = () => {
           console.log(`✅ Audio ready: ${soundType}`);
@@ -461,43 +663,204 @@ export default function PrayerTimePageFunctional({
   // ========== NOTIFICATION ==========
   const sendNotification = (title: string, body: string, isAlarm = false) => {
     try {
-      // Browser notification
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          const options: NotificationOptions = {
-            body,
-            icon: '/favicon.ico',
-            tag: isAlarm ? 'alarm-notification' : 'reminder-notification',
-            requireInteraction: isAlarm, // Keep alarm notifications visible
-            badge: '/favicon.ico',
-          };
-          new Notification(title, options);
-        } else if (Notification.permission !== 'denied') {
-          // Request permission if not denied
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              new Notification(title, {
-                body,
-                icon: '/favicon.ico',
-                tag: isAlarm ? 'alarm-notification' : 'reminder-notification',
-                requireInteraction: isAlarm,
-              });
+      console.log(`📢 [NOTIFICATION REQUEST] "${title}" - "${body}"`);
+      
+      // Play loud alarm sound for notification
+      const playNotificationSound = () => {
+        try {
+          console.log('🔊 Playing notification sound...');
+          // Use the loudest alarm sound available
+          const alarmAudio = new Audio('/prayer time audio/all prayer time azan.mp3');
+          alarmAudio.volume = 1.0; // Maximum volume
+          alarmAudio.play().catch(err => {
+            console.warn('⚠️ Azan sound failed, trying bell sound:', err);
+            // Fallback to synthetic loud bell
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // Create multiple oscillators for a louder bell sound
+            for (let i = 0; i < 3; i++) {
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              
+              oscillator.frequency.value = 800 + (i * 400);
+              oscillator.type = 'sine';
+              
+              gainNode.gain.setValueAtTime(0.9, now + (i * 0.2));
+              gainNode.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.2) + 1.0);
+              
+              oscillator.start(now + (i * 0.2));
+              oscillator.stop(now + (i * 0.2) + 1.0);
             }
           });
+        } catch (soundError) {
+          console.warn('⚠️ Sound play error:', soundError);
         }
+      };
+
+      // Check if Notification API is available
+      if (!('Notification' in window)) {
+        console.warn('⚠️ Notification API not supported in this browser');
+        playNotificationSound();
+        alert(`${title}\n\n${body}`);
+        return;
       }
 
-      // Console alert for debugging
-      console.log(`📢 NOTIFICATION: ${title} - ${body}`);
+      console.log(`📍 Notification permission status: ${Notification.permission}`);
+
+      // Case 1: Permission already granted - SHOW NOTIFICATION IMMEDIATELY
+      if (Notification.permission === 'granted') {
+        console.log('✅ Permission granted - showing notification...');
+        try {
+          const options: NotificationOptions = {
+            body: body,
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
+            tag: `notif-${Date.now()}-${Math.random()}`, // Unique tag to prevent deduplication
+            requireInteraction: true, // Keep notification visible
+            dir: 'ltr',
+            silent: false, // Enable system notification sound
+            data: {
+              timestamp: new Date().toISOString(),
+              type: isAlarm ? 'alarm' : 'reminder',
+            },
+          };
+
+          // Show notification via Notification API
+          const notification = new Notification(title, options);
+          console.log('✅ Notification object created');
+          
+          // Play loud notification sound
+          playNotificationSound();
+          
+          // Add click handler to focus app
+          notification.addEventListener('click', () => {
+            console.log(`👆 Notification clicked: ${title}`);
+            window.focus();
+            notification.close();
+          });
+          
+          // Add error handler
+          notification.addEventListener('error', (err) => {
+            console.error('❌ Notification error event:', err);
+          });
+          
+          // Add close handler
+          notification.addEventListener('close', () => {
+            console.log(`❌ Notification closed: ${title}`);
+          });
+          
+          // Add show handler
+          notification.addEventListener('show', () => {
+            console.log(`📺 Notification shown on screen: ${title}`);
+          });
+          
+          console.log(`✅ ✅ ✅ NOTIFICATION SUCCESSFULLY SHOWN: "${title}" ✅ ✅ ✅`);
+        } catch (notificationError) {
+          console.error('❌ Error creating notification:', notificationError);
+          // Fallback: play sound and alert
+          playNotificationSound();
+          alert(`${title}\n\n${body}`);
+        }
+      } 
+      // Case 2: Permission not yet determined - REQUEST PERMISSION
+      else if (Notification.permission === 'default') {
+        console.log('⚠️ Permission not determined - requesting from user...');
+        Notification.requestPermission().then(permission => {
+          console.log(`📍 Permission request result: ${permission}`);
+          setNotificationPermission(permission);
+          
+          if (permission === 'granted') {
+            console.log('✅ Permission granted after request - showing notification...');
+            try {
+              const options: NotificationOptions = {
+                body,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: `notif-${Date.now()}-${Math.random()}`,
+                requireInteraction: true,
+                dir: 'ltr',
+                silent: false,
+                data: {
+                  timestamp: new Date().toISOString(),
+                  type: isAlarm ? 'alarm' : 'reminder',
+                },
+              };
+              
+              const notification = new Notification(title, options);
+              console.log('✅ Notification object created after permission request');
+              playNotificationSound();
+              
+              notification.addEventListener('click', () => {
+                console.log(`👆 Notification clicked: ${title}`);
+                window.focus();
+                notification.close();
+              });
+              
+              notification.addEventListener('error', (err) => {
+                console.error('❌ Notification error:', err);
+              });
+              
+              console.log(`✅ ✅ ✅ NOTIFICATION SHOWN AFTER PERMISSION: "${title}" ✅ ✅ ✅`);
+            } catch (err) {
+              console.error('❌ Error showing notification after permission:', err);
+              playNotificationSound();
+              alert(`${title}\n\n${body}`);
+            }
+          } else {
+            console.warn('❌ Notification permission denied by user');
+            playNotificationSound();
+            alert(`${title}\n\n${body}`);
+          }
+        }).catch(err => {
+          console.error('❌ Error requesting notification permission:', err);
+        });
+      } 
+      // Case 3: Permission explicitly denied
+      else if (Notification.permission === 'denied') {
+        console.warn('❌ Notifications are blocked by user - using alert and sound instead');
+        playNotificationSound();
+        alert(`${title}\n\n${body}`);
+      }
+
     } catch (err) {
-      console.error('Notification error:', err);
+      console.error('❌ ❌ ❌ CRITICAL ERROR IN sendNotification:', err);
+      // Last resort: play sound and alert
+      try {
+        const audio = new Audio('/prayer time audio/all prayer time azan.mp3');
+        audio.volume = 1.0;
+        audio.play().catch(() => {});
+      } catch (e) {
+        console.error('❌ Error playing fallback sound:', e);
+      }
     }
   };
 
   // ========== REQUEST NOTIFICATION PERMISSION ==========
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+      
+      // Register service worker for better notification support
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('✅ Service Worker registered for notifications');
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed (this is optional):', error);
+          });
+      }
+      
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          setNotificationPermission(permission);
+          console.log(`🔔 Notification permission: ${permission}`);
+        });
+      }
     }
   }, []);
 
@@ -513,22 +876,78 @@ export default function PrayerTimePageFunctional({
       minute,
       enabled: true,
       sound: newAlarmSound,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
 
-    setCustomAlarms([...customAlarms, newAlarm]);
+    // Validate alarm before saving
+    const validation = validateAlarm(newAlarm);
+    if (!validation.valid) {
+      sendNotification('❌ Invalid Alarm', validation.errors[0]);
+      return;
+    }
+
+    // Update state
+    const updatedAlarms = [...customAlarms, newAlarm];
+    setCustomAlarms(updatedAlarms);
+    
+    // Auto-save to localStorage
+    saveAlarms(updatedAlarms);
+    
+    // Reset form
     setNewAlarmName('');
     setNewAlarmTime('00:00');
+    
+    // Show success notification
+    sendNotification('✅ Alarm Created', `${newAlarmName} at ${newAlarmTime}`);
+    console.log(`✅ Alarm saved: ${newAlarmName}`);
   };
 
   const deleteAlarm = (id: string) => {
-    setCustomAlarms(customAlarms.filter(alarm => alarm.id !== id));
+    const alarm = customAlarms.find(a => a.id === id);
+    const updatedAlarms = customAlarms.filter(alarm => alarm.id !== id);
+    
+    // Update state
+    setCustomAlarms(updatedAlarms);
+    
+    // Auto-save to localStorage
+    saveAlarms(updatedAlarms);
+    
+    // Clean up refs
     triggeredAlarmsRef.current.delete(`alarm-${id}`);
+    
+    // Show notification
+    sendNotification('🗑️ Alarm Deleted', alarm?.name || 'Unknown');
+    console.log(`✅ Alarm deleted: ${alarm?.name}`);
   };
 
   const toggleAlarm = (id: string) => {
-    setCustomAlarms(customAlarms.map(alarm =>
-      alarm.id === id ? { ...alarm, enabled: !alarm.enabled } : alarm
-    ));
+    const updatedAlarms = customAlarms.map(alarm => {
+      if (alarm.id === id) {
+        return { 
+          ...alarm, 
+          enabled: !alarm.enabled,
+          updatedAt: Date.now(),
+          createdAt: alarm.createdAt || Date.now(),
+        };
+      }
+      return {
+        ...alarm,
+        createdAt: alarm.createdAt || Date.now(),
+      };
+    });
+    
+    // Update state
+    setCustomAlarms(updatedAlarms);
+    
+    // Auto-save to localStorage
+    saveAlarms(updatedAlarms);
+    
+    // Show notification
+    const alarm = updatedAlarms.find(a => a.id === id);
+    const status = alarm?.enabled ? '🔔 Enabled' : '🔕 Disabled';
+    sendNotification(status, alarm?.name || 'Unknown');
+    console.log(`✅ Alarm toggled: ${alarm?.name} - ${status}`);
   };
 
   const testAlarm = (id: string) => {
@@ -544,21 +963,132 @@ export default function PrayerTimePageFunctional({
     const newReminders = new Map(reminders);
     newReminders.set(prayer, Math.max(0, minutes));
     setReminders(newReminders);
+    
+    // Auto-save to localStorage
+    const remindersObj = Object.fromEntries(newReminders);
+    saveReminderSettings(remindersObj);
+    
+    console.log(`✅ Reminder updated: ${prayer} - ${minutes} min`);
   };
 
-  // ========== ONLINE/OFFLINE ==========
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+  // ========== LOAD STORED AUDIO FILES FROM INDEXEDDB ==========
+  const loadStoredAudioFiles = async () => {
+    try {
+      setLoadingAudio(true);
+      const metadata = await getAllAudioMetadata();
+      
+      if (metadata && metadata.length > 0) {
+        const audioList = await Promise.all(
+          metadata.map(async (meta) => {
+            try {
+              const url = await getAudioFileURL(meta.id);
+              return { id: meta.id, name: meta.name, url };
+            } catch (err) {
+              console.error(`Failed to get URL for ${meta.name}:`, err);
+              return null;
+            }
+          })
+        );
+        
+        const validAudio = audioList.filter(a => a !== null) as { id: string; name: string; url: string }[];
+        setUploadedAudio(validAudio);
+        console.log(`✅ Loaded ${validAudio.length} audio files from IndexedDB`);
+      }
+    } catch (error) {
+      console.error('Error loading audio files:', error);
+    } finally {
+      setLoadingAudio(false);
+    }
+  };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+  // ========== HANDLE AUDIO FILE UPLOAD TO INDEXEDDB ==========
+  const handleAudioUpload = async (file: File) => {
+    try {
+      setAudioUploadError(null);
+      setLoadingAudio(true);
+      
+      console.log(`📁 Upload attempt: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(2)}KB)`);
+      
+      // Save to IndexedDB - returns AudioMetadata with id
+      const metadata = await saveAudioFile(file);
+      
+      if (metadata && metadata.id) {
+        // Get URL for the stored file
+        const url = await getAudioFileURL(metadata.id);
+        
+        if (url) {
+          // Update UI with new file
+          setUploadedAudio(prev => [...prev, { id: metadata.id, name: metadata.name, url }]);
+          setCustomAudioFile(file);
+          
+          sendNotification('✅ MP3 Uploaded', `${metadata.name} saved successfully (${(metadata.size / 1024).toFixed(2)}KB)`);
+          console.log(`✅ Audio file uploaded: ${metadata.name} (ID: ${metadata.id})`);
+        } else {
+          throw new Error('Could not retrieve uploaded file URL');
+        }
+      }
+    } catch (error: any) {
+      const errMsg = error?.message || 'Failed to upload MP3 file';
+      setAudioUploadError(errMsg);
+      sendNotification('❌ Upload Failed', errMsg);
+      console.error('❌ Error uploading audio:', error);
+    } finally {
+      setLoadingAudio(false);
+    }
+  };
 
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  // ========== DELETE AUDIO FILE FROM INDEXEDDB ==========
+  const handleDeleteAudio = async (id: string, name: string) => {
+    try {
+      await deleteAudioFile(id);
+      setUploadedAudio(prev => prev.filter(a => a.id !== id));
+      sendNotification('✅ Audio Deleted', `${name} has been removed`);
+      console.log(`✅ Audio deleted: ${name}`);
+    } catch (error) {
+      sendNotification('❌ Delete Failed', 'Could not delete audio file');
+      console.error('Error deleting audio:', error);
+    }
+  };
+
+  // ========== PRAYER TRACKING MANAGEMENT ==========
+  const handleMarkPrayerCompleted = (prayer: string) => {
+    markPrayerCompleted(prayer);
+    const updated = getTodayPrayerRecord();
+    setTodayPrayerRecord(updated);
+    const stats = getComprehensiveStats();
+    setComprehensiveStats(stats);
+    const stats2 = loadPrayerStats();
+    setPrayerStats(stats2);
+    setWeeklyData(getWeeklySummary());
+    sendNotification('✅ Prayer Completed', `${prayer} marked as completed`);
+    console.log(`✅ Prayer marked: ${prayer}`);
+  };
+
+  const handleMarkPrayerMissed = (prayer: string) => {
+    markPrayerMissed(prayer);
+    const updated = getTodayPrayerRecord();
+    setTodayPrayerRecord(updated);
+    const stats = getComprehensiveStats();
+    setComprehensiveStats(stats);
+    const stats2 = loadPrayerStats();
+    setPrayerStats(stats2);
+    setWeeklyData(getWeeklySummary());
+    sendNotification('⏭️ Prayer Marked Missed', `${prayer} marked as missed`);
+    console.log(`⏭️ Prayer missed: ${prayer}`);
+  };
+
+  const handleUndoPrayer = (prayer: string) => {
+    undoPrayerStatus(prayer);
+    const updated = getTodayPrayerRecord();
+    setTodayPrayerRecord(updated);
+    const stats = getComprehensiveStats();
+    setComprehensiveStats(stats);
+    const stats2 = loadPrayerStats();
+    setPrayerStats(stats2);
+    setWeeklyData(getWeeklySummary());
+    sendNotification('↩️ Prayer Status Undone', `${prayer} reset to pending`);
+    console.log(`↩️ Prayer undone: ${prayer}`);
+  };
 
   // ========== RENDERING ==========
   if (error) {
@@ -726,7 +1256,12 @@ export default function PrayerTimePageFunctional({
             {isOnline ? '✅ Online' : '❌ Offline'}
           </span>
           <button
-            onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+            onClick={() => {
+              const newTheme = theme === 'light' ? 'dark' : 'light';
+              setTheme(newTheme);
+              saveThemePreference(newTheme);
+              console.log(`✅ Theme changed to ${newTheme}`);
+            }}
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
               border: 'none',
@@ -790,6 +1325,155 @@ export default function PrayerTimePageFunctional({
       {/* REMINDERS SECTION */}
       <section style={{ marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>🔔 Prayer Reminders</h2>
+        
+        {/* Reminders Controls */}
+        <div style={{
+          background: theme === 'light' ? '#fff' : '#2a2a2a',
+          padding: '1.5rem',
+          borderRadius: '8px',
+          border: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}`,
+          marginBottom: '1.5rem',
+          display: 'flex',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Enable/Disable Toggle */}
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={remindersEnabled}
+                onChange={(e) => setRemindersEnabled(e.target.checked)}
+                style={{ width: '20px', height: '20px' }}
+              />
+              <span style={{ fontWeight: 'bold' }}>
+                {remindersEnabled ? '✅ Reminders Enabled' : '❌ Reminders Disabled'}
+              </span>
+            </label>
+            
+            {/* Notification Permission Status */}
+            <div style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              background: notificationPermission === 'granted' 
+                ? '#4caf50' 
+                : notificationPermission === 'denied'
+                ? '#f44336'
+                : '#ff9800',
+              color: 'white',
+              fontSize: '0.85rem',
+              fontWeight: 'bold',
+            }}>
+              {notificationPermission === 'granted' && '✅ Notifications Enabled'}
+              {notificationPermission === 'denied' && '❌ Notifications Blocked'}
+              {notificationPermission === 'default' && '⚠️ Notifications Need Permission'}
+            </div>
+          </div>
+          
+          {/* Request Permission Button */}
+          {notificationPermission !== 'granted' && (
+            <button
+              onClick={() => {
+                if ('Notification' in window) {
+                  Notification.requestPermission().then(permission => {
+                    setNotificationPermission(permission);
+                    if (permission === 'granted') {
+                      sendNotification('✅ Notifications Enabled', 'You will now receive prayer reminders');
+                    }
+                  });
+                }
+              }}
+              style={{
+                background: '#2196f3',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+              }}
+            >
+              🔔 Enable Notifications
+            </button>
+          )}
+          
+          {/* Test Notification Button */}
+          {notificationPermission === 'granted' && (
+            <>
+              <button
+                onClick={() => {
+                  console.log('🧪 TEST NOTIFICATION BUTTON CLICKED');
+                  sendNotification('🧪 Test Notification', 'This is a test prayer reminder notification');
+                }}
+                style={{
+                  background: '#ff9800',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                }}
+              >
+                🧪 Test Notification
+              </button>
+              
+              {/* Direct notification test button - bypasses sendNotification function */}
+              <button
+                onClick={() => {
+                  console.log('🚀 DIRECT NOTIFICATION TEST - No sendNotification function');
+                  try {
+                    const directNotif = new Notification('🚀 DIRECT TEST', {
+                      body: 'This is a DIRECT notification test - bypassing sendNotification',
+                      icon: '/favicon.ico',
+                      badge: '/favicon.ico',
+                      requireInteraction: true,
+                      tag: `direct-test-${Date.now()}`,
+                    });
+                    
+                    directNotif.addEventListener('show', () => {
+                      console.log('✅ DIRECT NOTIFICATION SHOWED ON SCREEN!');
+                    });
+                    
+                    directNotif.addEventListener('click', () => {
+                      console.log('👆 DIRECT NOTIFICATION CLICKED');
+                      directNotif.close();
+                    });
+                    
+                    console.log('✅ Direct notification object created');
+                    
+                    // Play sound
+                    const audio = new Audio('/prayer time audio/all prayer time azan.mp3');
+                    audio.volume = 1.0;
+                    audio.play();
+                  } catch (err) {
+                    console.error('❌ Direct notification error:', err);
+                    alert(`Direct test failed: ${err.message}`);
+                  }
+                }}
+                style={{
+                  background: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  marginLeft: '0.5rem',
+                }}
+              >
+                🚀 Direct Test
+              </button>
+            </>
+          )}
+        </div>
+        
+        {/* Reminder Settings */}
         <div style={{
           background: theme === 'light' ? '#fff' : '#2a2a2a',
           padding: '1.5rem',
@@ -806,20 +1490,25 @@ export default function PrayerTimePageFunctional({
               marginBottom: '1rem',
             }}>
               <span style={{ fontSize: '1rem', fontWeight: '500' }}>{prayer}</span>
-              <input
-                type="number"
-                value={minutes}
-                onChange={(e) => updateReminder(prayer, parseInt(e.target.value) || 0)}
-                style={{
-                  width: '80px',
-                  padding: '0.5rem',
-                  borderRadius: '4px',
-                  border: `1px solid ${theme === 'light' ? '#ccc' : '#666'}`,
-                  background: theme === 'light' ? '#fff' : '#1a1a1a',
-                  color: theme === 'light' ? '#000' : '#fff',
-                }}
-              />
-              <span style={{ fontSize: '0.9rem', color: '#666' }}>minutes before</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={minutes}
+                  onChange={(e) => updateReminder(prayer, parseInt(e.target.value) || 0)}
+                  disabled={!remindersEnabled}
+                  style={{
+                    width: '80px',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: `1px solid ${theme === 'light' ? '#ccc' : '#666'}`,
+                    background: theme === 'light' ? '#fff' : '#1a1a1a',
+                    color: theme === 'light' ? '#000' : '#fff',
+                    opacity: remindersEnabled ? 1 : 0.6,
+                    cursor: remindersEnabled ? 'text' : 'not-allowed',
+                  }}
+                />
+                <span style={{ fontSize: '0.9rem', color: '#666', minWidth: '120px' }}>minutes before</span>
+              </div>
             </div>
           ))}
         </div>
@@ -891,7 +1580,16 @@ export default function PrayerTimePageFunctional({
             />
             <select
               value={newAlarmSound}
-              onChange={(e) => setNewAlarmSound(e.target.value as any)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === 'upload-custom') {
+                  // Trigger file input
+                  const fileInput = document.getElementById('alarm-audio-upload') as HTMLInputElement;
+                  fileInput?.click();
+                } else {
+                  setNewAlarmSound(value as any);
+                }
+              }}
               style={{
                 padding: '0.75rem',
                 borderRadius: '4px',
@@ -908,7 +1606,35 @@ export default function PrayerTimePageFunctional({
               <option value="islamic-lori">🎵 Islamic Lori</option>
               <option value="zil-hajj">🌙 Zil Hajj Takbeer</option>
               <option value="bell">🔔 Bell (Synthetic)</option>
+              {uploadedAudio.length > 0 && (
+                <optgroup label="📤 Custom Audio Files">
+                  {uploadedAudio.map((audio) => (
+                    <option key={audio.id} value={audio.id}>
+                      📤 {audio.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              <option value="upload-custom" style={{ fontWeight: 'bold' }}>
+                ➕ Upload New MP3...
+              </option>
             </select>
+            {/* Hidden file input - triggered from dropdown */}
+            <input
+              id="alarm-audio-upload"
+              type="file"
+              accept=".mp3"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  console.log(`📁 File selected: ${file.name}`);
+                  handleAudioUpload(file);
+                  (e.target as HTMLInputElement).value = '';
+                }
+              }}
+              disabled={loadingAudio}
+              style={{ display: 'none' }}
+            />
             <button
               onClick={addAlarm}
               style={{
@@ -924,6 +1650,33 @@ export default function PrayerTimePageFunctional({
               ✅ Add Alarm
             </button>
           </div>
+          {audioUploadError && (
+            <div style={{ 
+              background: '#f44336', 
+              color: 'white', 
+              padding: '0.75rem', 
+              borderRadius: '4px', 
+              marginTop: '0.75rem',
+              fontSize: '0.9rem',
+              border: '2px solid #d32f2f'
+            }}>
+              ❌ {audioUploadError}
+            </div>
+          )}
+          {loadingAudio && (
+            <div style={{ 
+              background: '#2196f3', 
+              color: 'white', 
+              padding: '0.75rem', 
+              borderRadius: '4px', 
+              marginTop: '0.75rem',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+            }}>
+              ⏳ Uploading MP3 file...
+            </div>
+          )}
         </div>
 
         {/* List Alarms */}
@@ -963,6 +1716,9 @@ export default function PrayerTimePageFunctional({
                   {alarm.sound === 'zil-hajj' && '🌙 Zil Hajj'}
                   {alarm.sound === 'bell' && '🔔 Bell'}
                   {alarm.sound === 'custom' && '📤 Custom'}
+                  {uploadedAudio.find(a => a.id === alarm.sound) && (
+                    <>📤 {uploadedAudio.find(a => a.id === alarm.sound)?.name}</>
+                  )}
                 </div>
                 <button
                   onClick={() => toggleAlarm(alarm.id)}
@@ -1020,247 +1776,6 @@ export default function PrayerTimePageFunctional({
             No custom alarms yet. Add one to get started!
           </div>
         )}
-      </section>
-
-      {/* AUDIO CONTROLS */}
-      <section style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>🔊 Audio Settings & Library</h2>
-        
-        {/* Audio Enable */}
-        <div style={{
-          background: theme === 'light' ? '#fff' : '#2a2a2a',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          border: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}`,
-          marginBottom: '1rem',
-        }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={audioEnabled}
-                onChange={(e) => setAudioEnabled(e.target.checked)}
-                style={{ width: '20px', height: '20px' }}
-              />
-              <span style={{ fontWeight: 'bold' }}>Enable Audio Notifications</span>
-            </label>
-          </div>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Volume: {volume}%
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              onChange={(e) => setVolume(parseInt(e.target.value))}
-              style={{ width: '100%' }}
-            />
-          </div>
-        </div>
-
-        {/* Available Audio Files */}
-        <div style={{
-          background: theme === 'light' ? '#fff' : '#2a2a2a',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          border: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}`,
-          marginBottom: '1rem',
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>📚 Available Audio Files</h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-          }}>
-            {audioFiles.map(audio => (
-              <button
-                key={audio.id}
-                onClick={() => {
-                  const newAudio = new Audio(audio.path);
-                  newAudio.volume = volume / 100;
-                  newAudio.play().catch(err => console.error('Play error:', err));
-                  setIsPlaying(true);
-                  setTimeout(() => setIsPlaying(false), 5000);
-                  console.log(`▶️ Playing: ${audio.name}`);
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s',
-                }}
-                onMouseEnter={(e) => {
-                  (e.target as HTMLButtonElement).style.transform = 'translateY(-2px)';
-                  (e.target as HTMLButtonElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
-                  (e.target as HTMLButtonElement).style.boxShadow = 'none';
-                }}
-              >
-                {audio.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Upload Custom Audio */}
-        <div style={{
-          background: theme === 'light' ? '#fff' : '#2a2a2a',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          border: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}`,
-          marginBottom: '1rem',
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>📤 Upload Custom MP3 Audio</h3>
-          <div style={{ marginBottom: '1rem' }}>
-            <input
-              type="file"
-              accept=".mp3,audio/mpeg"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setCustomAudioFile(file);
-                  const url = URL.createObjectURL(file);
-                  setUploadedAudio([...uploadedAudio, { name: file.name, url }]);
-                  console.log(`✅ Uploaded: ${file.name}`);
-                  (e.target as HTMLInputElement).value = '';
-                }
-              }}
-              style={{
-                padding: '0.75rem',
-                borderRadius: '4px',
-                border: `2px dashed ${theme === 'light' ? '#ccc' : '#666'}`,
-                background: theme === 'light' ? '#f9f9f9' : '#1a1a1a',
-                width: '100%',
-                cursor: 'pointer',
-              }}
-            />
-          </div>
-          <p style={{ fontSize: '0.9rem', color: '#666', margin: '0.5rem 0' }}>
-            💡 Upload your own MP3 files and use them as alarm sounds
-          </p>
-          
-          {/* Show uploaded files */}
-          {uploadedAudio.length > 0 && (
-            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}` }}>
-              <h4 style={{ margin: '0 0 0.5rem 0' }}>Your Uploaded Files:</h4>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1rem',
-              }}>
-                {uploadedAudio.map((file, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      const customAudio = new Audio(file.url);
-                      customAudio.volume = volume / 100;
-                      customAudio.play().catch(err => console.error('Play error:', err));
-                      setIsPlaying(true);
-                      setTimeout(() => setIsPlaying(false), 5000);
-                      console.log(`▶️ Playing: ${file.name}`);
-                    }}
-                    style={{
-                      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.75rem',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      transition: 'all 0.3s',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.target as HTMLButtonElement).style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
-                    }}
-                  >
-                    🎵 {file.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Test Audio */}
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}>
-          <button
-            onClick={testAudio}
-            style={{
-              background: '#2196f3',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-          >
-            🧪 Test Current Sound
-          </button>
-          {isPlaying && <span style={{ color: '#ff9800', fontWeight: 'bold' }}>🎵 Playing...</span>}
-          {isPlaying && (
-            <button
-              onClick={stopAlarm}
-              style={{
-                background: '#f44336',
-                color: 'white',
-                border: 'none',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-              }}
-            >
-              ⏹️ Stop
-            </button>
-          )}
-        </div>
-
-        {/* Custom Snooze Settings */}
-        <div style={{
-          background: theme === 'light' ? '#fff' : '#2a2a2a',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          border: `1px solid ${theme === 'light' ? '#e0e0e0' : '#444'}`,
-          marginTop: '1rem',
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>😴 Snooze Settings</h3>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Default Snooze Duration: {snoozeMinutes} minutes
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="60"
-              value={snoozeMinutes}
-              onChange={(e) => setSnoozeMinutes(parseInt(e.target.value))}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <p style={{ fontSize: '0.9rem', color: '#666', margin: '0.5rem 0' }}>
-            💡 When alarm triggers, use the snooze buttons to postpone for 5, 10, or 15 minutes. You can customize the default here.
-          </p>
-        </div>
-
-        <audio ref={audioRef} />
       </section>
 
       {/* QIBLA SECTION */}
@@ -1343,21 +1858,150 @@ export default function PrayerTimePageFunctional({
         </section>
       )}
 
-      {/* PRAYER STATISTICS */}
+      {/* PRAYER STATISTICS & TRACKING */}
       <section style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>📊 Prayer Statistics</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '1.3rem', margin: 0 }}>📊 Prayer Tracking</h2>
+          <button
+            onClick={() => setShowPrayerTracking(!showPrayerTracking)}
+            style={{
+              padding: '0.5rem 1rem',
+              background: showPrayerTracking ? '#2196f3' : '#666',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+            }}>
+            {showPrayerTracking ? '▼ Hide Details' : '▶ Show Details'}
+          </button>
+        </div>
+
+        {/* Today's Prayer Tracking */}
+        {showPrayerTracking && (
+          <div style={{
+            background: theme === 'light' ? '#f9f9f9' : '#333',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            marginBottom: '1.5rem',
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.1rem' }}>Today's Prayers - {getTodayDate()}</h3>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
+            }}>
+              {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((prayer) => {
+                const status = todayPrayerRecord[prayer as keyof typeof todayPrayerRecord] || 'pending';
+                const getStatusColor = (s: string) => {
+                  switch (s) {
+                    case 'completed': return '#4caf50';
+                    case 'missed': return '#f44336';
+                    case 'pending': return '#ff9800';
+                    default: return '#666';
+                  }
+                };
+                const getStatusEmoji = (s: string) => {
+                  switch (s) {
+                    case 'completed': return '✅';
+                    case 'missed': return '⏭️';
+                    case 'pending': return '⏳';
+                    default: return '❓';
+                  }
+                };
+
+                return (
+                  <div
+                    key={prayer}
+                    style={{
+                      background: getStatusColor(status),
+                      color: 'white',
+                      padding: '1rem',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                    }}>
+                    <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      {getStatusEmoji(status)} {prayer}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', marginBottom: '0.8rem', opacity: 0.9 }}>
+                      {status === 'completed'
+                        ? 'Completed'
+                        : status === 'missed'
+                          ? 'Missed'
+                          : 'Pending'}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                      {status !== 'completed' && (
+                        <button
+                          onClick={() => handleMarkPrayerCompleted(prayer)}
+                          style={{
+                            padding: '0.5rem',
+                            background: 'rgba(255,255,255,0.2)',
+                            color: 'white',
+                            border: '1px solid white',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold',
+                          }}>
+                          ✅ Mark Done
+                        </button>
+                      )}
+                      {status !== 'missed' && (
+                        <button
+                          onClick={() => handleMarkPrayerMissed(prayer)}
+                          style={{
+                            padding: '0.5rem',
+                            background: 'rgba(255,255,255,0.2)',
+                            color: 'white',
+                            border: '1px solid white',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold',
+                          }}>
+                          ⏭️ Mark Missed
+                        </button>
+                      )}
+                      {status !== 'pending' && (
+                        <button
+                          onClick={() => handleUndoPrayer(prayer)}
+                          style={{
+                            padding: '0.5rem',
+                            background: 'rgba(255,255,255,0.15)',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.5)',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                          }}>
+                          ↩️ Undo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Statistics Summary */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
           gap: '1rem',
         }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-            color: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            textAlign: 'center',
-          }}>
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+              color: 'white',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              textAlign: 'center',
+              cursor: 'pointer',
+            }}
+            onClick={() => setShowPrayerTracking(!showPrayerTracking)}>
             <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Today</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{prayerStats.today}</div>
             <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>Prayers Completed</div>
@@ -1370,7 +2014,7 @@ export default function PrayerTimePageFunctional({
             borderRadius: '8px',
             textAlign: 'center',
           }}>
-            <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Current Streak</div>
+            <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>🔥 Current Streak</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{prayerStats.streak}</div>
             <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>Days Completed</div>
           </div>
@@ -1423,3 +2067,4 @@ export default function PrayerTimePageFunctional({
     </div>
   );
 }
+

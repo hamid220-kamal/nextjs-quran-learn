@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar/Navbar';
 import Footer from '@/components/Footer';
+import { getOrganizationSchema, getWebsiteSchema } from '@/lib/seoSchemas';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -85,6 +86,20 @@ export default function RootLayout({
           rel="icon" 
           href="/favicon.ico" 
           type="image/x-icon" 
+        />
+
+        {/* ✅ JSON-LD Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getOrganizationSchema()),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getWebsiteSchema()),
+          }}
         />
       </head>
       <body>

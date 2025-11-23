@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import Navbar from '../../components/Navbar/Navbar';
 import './Tajweed.css';
 
@@ -51,7 +51,12 @@ export default function Page() {
               <button className="btn btn-outline">Learn More About Tajweed</button>
             </div>
             <div className="intro-image">
-              <img src="/tajweed-quran-page.jpg" alt="Quran page with Tajweed markings" />
+              <Image
+                src="/tajweed-quran-page.jpg"
+                alt="Quran page with Tajweed color-coded markings"
+                width={500}
+                height={700}
+              />
             </div>
           </div>
         </section>
@@ -67,7 +72,7 @@ export default function Page() {
                 <h3>Real-time Voice Analysis</h3>
                 <p>Our AI technology analyzes your recitation in real-time, identifying errors and providing immediate feedback.</p>
               </div>
-              
+
               <div className="feature-card">
                 <div className="feature-icon">
                   <i className="fas fa-user-graduate"></i>
@@ -75,7 +80,7 @@ export default function Page() {
                 <h3>Expert-Led Lessons</h3>
                 <p>Learn from qualified Quran teachers with ijazah (certification) in Quranic recitation.</p>
               </div>
-              
+
               <div className="feature-card">
                 <div className="feature-icon">
                   <i className="fas fa-chart-line"></i>
@@ -83,7 +88,7 @@ export default function Page() {
                 <h3>Progress Tracking</h3>
                 <p>Track your improvement over time with detailed analytics and personalized dashboards.</p>
               </div>
-              
+
               <div className="feature-card">
                 <div className="feature-icon">
                   <i className="fas fa-book-reader"></i>
@@ -119,7 +124,12 @@ export default function Page() {
                 <p>Proper pronunciation begins with identifying the exact point where each letter should be articulated.</p>
               </div>
               <div className="rule-visual">
-                <img src="/makharij-diagram.jpg" alt="Diagram showing points of articulation" />
+                <Image
+                  src="/makharij-diagram.jpg"
+                  alt="Anatomical diagram showing Arabic letter articulation points"
+                  width={600}
+                  height={500}
+                />
                 <div className="legend">
                   <span className="legend-item"><span className="color-dot halq"></span> Throat (Al-Halq)</span>
                   <span className="legend-item"><span className="color-dot lisan"></span> Tongue (Al-Lisaan)</span>
@@ -134,7 +144,7 @@ export default function Page() {
           <div className="container">
             <h2 className="section-title">Learning Path</h2>
             <p className="section-subtitle">Progress through structured levels to master Tajweed</p>
-            
+
             <div className="levels-timeline">
               <div className="level">
                 <div className="level-icon">1</div>
@@ -148,7 +158,7 @@ export default function Page() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="level">
                 <div className="level-icon">2</div>
                 <div className="level-content">
@@ -161,7 +171,7 @@ export default function Page() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="level">
                 <div className="level-icon">3</div>
                 <div className="level-content">
@@ -174,7 +184,7 @@ export default function Page() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="level">
                 <div className="level-icon">4</div>
                 <div className="level-content">

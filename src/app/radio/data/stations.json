@@ -1,0 +1,173 @@
+[
+  {
+    "id": "ahmed-al-ajmy",
+    "title": "Ahmed ibn Ali al-Ajmy",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/10/200.jpg",
+    "reciters": ["10"],
+    "surahs": "all"
+  },
+  {
+    "id": "abdullah-ali-jabir",
+    "title": "Abdullah Ali Jabir",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/11/200.jpg",
+    "reciters": ["11"],
+    "surahs": "all"
+  },
+  {
+    "id": "bandar-baleela",
+    "title": "Bandar Baleela",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/13/200.jpg",
+    "reciters": ["13"],
+    "surahs": "all"
+  },
+  {
+    "id": "maher-al-muaiqly",
+    "title": "Maher al-Muaiqly",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/16/200.jpg",
+    "reciters": ["16"],
+    "surahs": "all"
+  },
+  {
+    "id": "abdulbaset-murattal",
+    "title": "AbdulBaset AbdulSamad",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/2/200.jpg",
+    "reciters": ["2"],
+    "surahs": "all"
+  },
+  {
+    "id": "abdulbaset-mujawwad",
+    "title": "AbdulBaset AbdulSamad",
+    "subtitle": "Mujawwad",
+    "tags": ["Mujawwad"],
+    "imageUrl": "https://static.quran.com/images/reciters/1/200.jpg",
+    "reciters": ["1"],
+    "surahs": "all"
+  },
+  {
+    "id": "hussary-murattal",
+    "title": "Mahmoud Khalil Al-Hussary",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/6/200.jpg",
+    "reciters": ["6"],
+    "surahs": "all"
+  },
+  {
+    "id": "mishary-rashid",
+    "title": "Mishari Rashid al-`Afasy",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/7/200.jpg",
+    "reciters": ["7"],
+    "surahs": "all"
+  },
+  {
+    "id": "sudais",
+    "title": "Abdur-Rahman as-Sudais",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/3/200.jpg",
+    "reciters": ["3"],
+    "surahs": "all"
+  },
+  {
+    "id": "minshawi-murattal",
+    "title": "Mohamed Siddiq al-Minshawi",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/9/200.jpg",
+    "reciters": ["9"],
+    "surahs": "all"
+  },
+  {
+    "id": "shatri",
+    "title": "Abu Bakr al-Shatri",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/4/200.jpg",
+    "reciters": ["4"],
+    "surahs": "all"
+  },
+  {
+    "id": "shuraym",
+    "title": "Sa'ud ash-Shuraym",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/10/200.jpg",
+    "reciters": ["10"],
+    "surahs": "all"
+  },
+  {
+    "id": "khalifah-tunaiji",
+    "title": "Khalifah Al Tunaiji",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/14/200.jpg",
+    "reciters": ["14"],
+    "surahs": "all"
+  },
+  {
+    "id": "saad-ghamdi",
+    "title": "Saad al-Ghamdi",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/18/200.jpg",
+    "reciters": ["18"],
+    "surahs": "all"
+  },
+  {
+    "id": "hani-rifai",
+    "title": "Hani ar-Rifai",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/5/200.jpg",
+    "reciters": ["5"],
+    "surahs": "all"
+  },
+  {
+    "id": "abdullah-basfar",
+    "title": "Abdullah Hamad Basfar",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/19/200.jpg",
+    "reciters": ["19"],
+    "surahs": "all"
+  },
+  {
+    "id": "hussary-muallim",
+    "title": "Mahmoud Khalil Al-Hussary",
+    "subtitle": "Muallim",
+    "tags": ["Muallim"],
+    "imageUrl": "https://static.quran.com/images/reciters/12/200.jpg",
+    "reciters": ["12"],
+    "surahs": "all"
+  },
+  {
+    "id": "minshawi-muallim",
+    "title": "Mohamed Siddiq al-Minshawi",
+    "subtitle": "Muallim",
+    "tags": ["Muallim"],
+    "imageUrl": "https://static.quran.com/images/reciters/8/200.jpg",
+    "reciters": ["8"],
+    "surahs": "all"
+  },
+  {
+    "id": "yasser-dussary",
+    "title": "Yasser Ad Dussary",
+    "subtitle": "Murattal",
+    "tags": ["Murattal"],
+    "imageUrl": "https://static.quran.com/images/reciters/20/200.jpg",
+    "reciters": ["20"],
+    "surahs": "all"
+  }
+]

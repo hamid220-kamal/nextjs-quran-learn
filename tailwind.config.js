@@ -3,10 +3,15 @@ module.exports = {
   content: [
     './src/app/**/*.{js,ts,jsx,tsx}',
     './src/pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}'
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './public/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
+      aspectRatio: {
+        square: '1 / 1',
+        video: '16 / 9',
+      },
       // Extended color palette for better SEO color contrast
       colors: {
         primary: '#1a73e8',

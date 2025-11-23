@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import Navbar from '../../components/Navbar/Navbar';
 import './Courses.css';
 
@@ -43,7 +43,12 @@ const CoursesPage = () => {
               {/* Course cards would be mapped here from API data */}
               <div className="course-card">
                 <div className="course-image">
-                  <img src="/tajweed-course.jpg" alt="Tajweed Course" />
+                  <Image
+                    src="/tajweed-course.jpg"
+                    alt="Tajweed Fundamentals Course Cover"
+                    width={400}
+                    height={250}
+                  />
                   <span className="course-level">Beginner</span>
                 </div>
                 <div className="course-content">
@@ -56,10 +61,15 @@ const CoursesPage = () => {
                   <button className="btn btn-primary">Enroll Now</button>
                 </div>
               </div>
-              
+
               <div className="course-card">
                 <div className="course-image">
-                  <img src="/memorization-course.jpg" alt="Memorization Course" />
+                  <Image
+                    src="/memorization-course.jpg"
+                    alt="Quran Memorization Course Cover - Juz Amma"
+                    width={400}
+                    height={250}
+                  />
                   <span className="course-level">Intermediate</span>
                 </div>
                 <div className="course-content">
@@ -72,10 +82,15 @@ const CoursesPage = () => {
                   <button className="btn btn-primary">Enroll Now</button>
                 </div>
               </div>
-              
+
               <div className="course-card">
                 <div className="course-image">
-                  <img src="/tafsir-course.jpg" alt="Tafsir Course" />
+                  <Image
+                    src="/tafsir-course.jpg"
+                    alt="Tafsir Course Cover - Understanding Surah Al-Baqarah"
+                    width={400}
+                    height={250}
+                  />
                   <span className="course-level">Advanced</span>
                 </div>
                 <div className="course-content">

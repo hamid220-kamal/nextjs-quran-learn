@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import './Navbar.css';
 
@@ -11,7 +12,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isAudioOpen, setIsAudioOpen] = useState(false);
-  
+
   const pathname = usePathname();
   const featuresRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
@@ -69,7 +70,7 @@ export default function Navbar() {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isMenuOpen ? 'menu-open' : ''}`}>
       <div className="navbar-container">
         {/* Mobile Menu Toggle */}
-        <button 
+        <button
           className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
           onClick={toggleMenu}
           aria-label="Toggle menu"
@@ -84,12 +85,13 @@ export default function Navbar() {
         {/* Logo */}
         <div className="navbar-logo">
           <Link href="/" onClick={closeMenu}>
-            <img 
-              src="https://cdn-icons-png.flaticon.com/512/2787/2787958.png" 
-              alt="Quran Learning Logo" 
+            <Image
+              src="https://cdn-icons-png.flaticon.com/512/2787/2787958.png"
+              alt="Quran Learning Logo"
               className="logo"
               width={40}
               height={40}
+              priority
             />
             <div className="logo-text">
               <span className="logo-main">QuranicLearn</span>
@@ -97,13 +99,13 @@ export default function Navbar() {
             </div>
           </Link>
         </div>
-        
+
         {/* Navigation Menu */}
         <div id="mobile-nav" className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
           {/* Mobile menu header with logo and close button */}
           <div className="menu-header">
             <div className="menu-logo">
-              <img 
+              <Image
                 src="https://cdn-icons-png.flaticon.com/512/2787/2787958.png"
                 alt="Quran Learning Logo"
                 className="logo menu-logo-image"
@@ -118,41 +120,41 @@ export default function Navbar() {
             <button className="menu-close" onClick={closeMenu} aria-label="Close menu">✕</button>
           </div>
 
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`nav-link ${isActive('/') ? 'active' : ''}`}
             onClick={closeMenu}
           >
             <i className="fas fa-home"></i> Home
           </Link>
-          
-          <Link 
-            href="/about" 
+
+          <Link
+            href="/about"
             className={`nav-link ${isActive('/about') ? 'active' : ''}`}
             onClick={closeMenu}
           >
-            <i className="fas fa-star"></i> About Us 
+            <i className="fas fa-star"></i> About Us
           </Link>
-          
-          <Link 
-            href="/quran" 
+
+          <Link
+            href="/quran"
             className={`nav-link ${isActive('/quran') ? 'active' : ''}`}
             onClick={closeMenu}
           >
             <i className="fas fa-quran"></i> Quran
           </Link>
-          
-          <Link 
-            href="/courses" 
+
+          <Link
+            href="/courses"
             className={`nav-link ${isActive('/courses') ? 'active' : ''}`}
             onClick={closeMenu}
           >
             <i className="fas fa-book"></i> Courses
           </Link>
-          
+
           {/* More Features Dropdown */}
           <div className="nav-dropdown" ref={featuresRef}>
-            <button 
+            <button
               className={`nav-link dropdown-toggle ${isFeaturesOpen ? 'active' : ''}`}
               onClick={toggleFeatures}
               aria-expanded={isFeaturesOpen}
@@ -184,10 +186,13 @@ export default function Navbar() {
               <Link href="/quran-player" className="dropdown-item" onClick={closeMenu}>
                 <i className="fas fa-play-circle"></i> Quran Player
               </Link>
+              <Link href="/radio" className="dropdown-item" onClick={closeMenu}>
+                <i className="fas fa-broadcast-tower"></i> Quran Radio
+              </Link>
 
               {/* Nested Audio Dropdown */}
               <div className="nav-dropdown nested" ref={audioRef}>
-                <button 
+                <button
                   className={`dropdown-item dropdown-toggle ${isAudioOpen ? 'active' : ''}`}
                   onClick={toggleAudio}
                   aria-expanded={isAudioOpen}
@@ -218,7 +223,7 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
-        
+
         {/* Auth Buttons - Desktop */}
         <div className="navbar-auth-desktop">
           <Link href="/login" className="btn btn-login">

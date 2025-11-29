@@ -26,6 +26,32 @@ module.exports = {
         'clamp-2xl': 'clamp(1.5rem, 4vw, 2.25rem)',
         'clamp-3xl': 'clamp(2rem, 5vw, 3rem)',
       },
+      keyframes: {
+        'music-bar': {
+          '0%, 100%': { height: '20%' },
+          '50%': { height: '100%' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+        'slideDown': {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'fadeIn': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'music-bar-1': 'music-bar 1s ease-in-out infinite',
+        'music-bar-2': 'music-bar 1.2s ease-in-out infinite 0.1s',
+        'music-bar-3': 'music-bar 0.8s ease-in-out infinite 0.2s',
+        'pulse-slow': 'pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'slideDown': 'slideDown 0.3s ease-out forwards',
+        'fadeIn': 'fadeIn 0.5s ease-out forwards',
+      },
     },
   },
   plugins: [],

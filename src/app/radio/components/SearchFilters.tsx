@@ -39,94 +39,99 @@ export default function SearchFilters({
     };
 
     return (
-        <div className="space-y-3">
-            {/* Search Bar */}
-            <div className="relative">
-                <div className="flex items-center gap-3 bg-white rounded-lg border border-gray-200 p-2 hover:border-gray-300 transition-colors">
-                    <svg className="w-5 h-5 text-gray-400 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        <div className="space-y-4">
+            {/* Search Bar & Toggle */}
+            <div className="flex gap-3">
+                <div className="relative flex-1 group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                     <input
                         type="text"
-                        placeholder="Search reciters, stations..."
-                        className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none text-sm py-2"
+                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+                        placeholder="Search stations, reciters, or tags..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${showFilters
-                            ? 'bg-gray-900 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                            </svg>
-                            {showFilters ? 'Hide' : 'Filters'}
-                        </div>
-                    </button>
                 </div>
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`px-4 py-2.5 rounded-xl font-medium text-sm transition-all border shadow-sm flex items-center gap-2 ${showFilters
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                        }`}
+                >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    Filters
+                    {(selectedTags.length > 0 || filterType !== 'all' || sortBy !== 'name') && (
+                        <span className="flex h-2 w-2 rounded-full bg-blue-500"></span>
+                    )}
+                </button>
             </div>
 
-            {/* Advanced Filters */}
+            {/* Expanded Filters */}
             {showFilters && (
-                <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-5 animate-slideDown">
-                    {/* Type Filter */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-700 mb-2">Station Type</h3>
-                        <div className="flex gap-2">
-                            {(['all', 'live', 'recorded'] as FilterType[]).map((type) => (
-                                <button
-                                    key={type}
-                                    onClick={() => onFilterChange(type)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filterType === type
-                                        ? 'bg-gray-900 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                                </button>
-                            ))}
+                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-lg space-y-6 animate-in slide-in-from-top-2 duration-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Type Filter */}
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {(['all', 'live', 'recorded'] as FilterType[]).map((type) => (
+                                    <button
+                                        key={type}
+                                        onClick={() => onFilterChange(type)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filterType === type
+                                            ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Sort Options */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-700 mb-2">Sort By</h3>
-                        <div className="flex gap-2">
-                            {([
-                                { value: 'name', label: 'Name' },
-                                { value: 'recent', label: 'Recently Added' },
-                                { value: 'popular', label: 'Popular' },
-                            ] as const).map(({ value, label }) => (
-                                <button
-                                    key={value}
-                                    onClick={() => onSortChange(value)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === value
-                                        ? 'bg-gray-900 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
+                        {/* Sort Options */}
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sort By</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {([
+                                    { value: 'name', label: 'Name' },
+                                    { value: 'recent', label: 'Newest' },
+                                    { value: 'popular', label: 'Popular' },
+                                ] as const).map(({ value, label }) => (
+                                    <button
+                                        key={value}
+                                        onClick={() => onSortChange(value)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === value
+                                            ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* Tags Filter */}
                     {availableTags.length > 0 && (
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-700 mb-2">Categories</h3>
+                        <div className="space-y-3 pt-4 border-t border-gray-100">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tags</h3>
                             <div className="flex flex-wrap gap-2">
                                 {availableTags.map((tag) => (
                                     <button
                                         key={tag}
                                         onClick={() => toggleTag(tag)}
-                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${selectedTags.includes(tag)
-                                            ? 'bg-gray-900 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${selectedTags.includes(tag)
+                                            ? 'bg-gray-900 text-white shadow-sm'
+                                            : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {tag}
@@ -138,16 +143,21 @@ export default function SearchFilters({
 
                     {/* Clear Filters */}
                     {(selectedTags.length > 0 || filterType !== 'all' || sortBy !== 'name') && (
-                        <button
-                            onClick={() => {
-                                onTagsChange([]);
-                                onFilterChange('all');
-                                onSortChange('name');
-                            }}
-                            className="w-full py-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                        >
-                            Clear All Filters
-                        </button>
+                        <div className="pt-2 flex justify-end">
+                            <button
+                                onClick={() => {
+                                    onTagsChange([]);
+                                    onFilterChange('all');
+                                    onSortChange('name');
+                                }}
+                                className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Clear filters
+                            </button>
+                        </div>
                     )}
                 </div>
             )}

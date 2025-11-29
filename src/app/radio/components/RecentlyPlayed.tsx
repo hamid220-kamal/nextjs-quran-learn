@@ -40,44 +40,48 @@ export default function RecentlyPlayed({ currentStationId }: RecentlyPlayedProps
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
-                    Recently Played
+            <div className="flex items-center justify-between px-1">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <span className="text-xl">🕒</span> Jump Back In
                 </h2>
                 <button
                     onClick={clearAll}
-                    className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+                    className="text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
                 >
-                    Clear All
+                    Clear History
                 </button>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory">
-                {recentStations.map((station, index) => (
+            <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory">
+                {recentStations.map((station) => (
                     <Link
                         key={`${station.id}-${station.playedAt}`}
                         href={`/radio/${station.id}`}
-                        className="flex-shrink-0 w-40 snap-start stagger-item"
-                        style={{ animationDelay: `${index * 0.05}s` }}
+                        className="flex-shrink-0 w-36 snap-start group"
                     >
-                        <div className="group cursor-pointer">
-                            <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100 transition-shadow hover:shadow-md">
+                        <div className="space-y-2">
+                            <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-100 shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1">
                                 <img
                                     src={station.imageUrl}
                                     alt={station.title}
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200" />
-                                <div className="absolute bottom-2 right-2 bg-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md">
-                                    <svg className="w-4 h-4 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                        <svg className="w-4 h-4 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="mt-2">
-                                <h3 className="text-sm font-semibold text-gray-900 line-clamp-1">{station.title}</h3>
-                                <p className="text-xs text-gray-500 line-clamp-1">{station.subtitle}</p>
-                                <p className="text-xs text-gray-400 mt-0.5">
+
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                                    {station.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 line-clamp-1">
                                     {formatTimestamp(station.playedAt)}
                                 </p>
                             </div>

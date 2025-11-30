@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 
-export type SortOption = 'name' | 'recent' | 'popular';
+export type SortOption = 'name' | 'recent' | 'popular' | 'rating' | 'trending';
 export type FilterType = 'all' | 'live' | 'recorded';
+export type LanguageFilter = 'all' | 'arabic' | 'english';
 
 interface SearchFiltersProps {
     searchQuery: string;
@@ -15,6 +16,8 @@ interface SearchFiltersProps {
     selectedTags: string[];
     onTagsChange: (tags: string[]) => void;
     availableTags: string[];
+    language?: LanguageFilter;
+    onLanguageChange?: (language: LanguageFilter) => void;
 }
 
 export default function SearchFilters({
@@ -27,8 +30,11 @@ export default function SearchFilters({
     selectedTags,
     onTagsChange,
     availableTags,
+    language = 'all',
+    onLanguageChange,
 }: SearchFiltersProps) {
     const [showFilters, setShowFilters] = useState(false);
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     const toggleTag = (tag: string) => {
         if (selectedTags.includes(tag)) {
@@ -104,6 +110,8 @@ export default function SearchFilters({
                                     { value: 'name', label: 'Name' },
                                     { value: 'recent', label: 'Newest' },
                                     { value: 'popular', label: 'Popular' },
+                                    { value: 'rating', label: 'Rating' },
+                                    { value: 'trending', label: 'Trending' },
                                 ] as const).map(({ value, label }) => (
                                     <button
                                         key={value}
@@ -112,6 +120,48 @@ export default function SearchFilters({
                                             ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20'
                                             : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                                             }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Language Filter */}
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Language</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {([
+                                    { value: 'all', label: 'All Languages' },
+                                    { value: 'arabic', label: 'Arabic' },
+                                    { value: 'english', label: 'English' },
+                                ] as const).map(({ value, label }) => (
+                                    <button
+                                        key={value}
+                                        onClick={() => onLanguageChange?.(value as LanguageFilter)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${language === value
+                                            ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Quality/Speed Filter */}
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Format</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {([
+                                    { value: 'audio', label: '🎵 Audio' },
+                                    { value: 'video', label: '📹 Video' },
+                                    { value: 'podcast', label: '🎙️ Podcast' },
+                                ] as const).map(({ value, label }) => (
+                                    <button
+                                        key={value}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all bg-gray-50 text-gray-600 hover:bg-gray-100`}
                                     >
                                         {label}
                                     </button>
@@ -142,13 +192,14 @@ export default function SearchFilters({
                     )}
 
                     {/* Clear Filters */}
-                    {(selectedTags.length > 0 || filterType !== 'all' || sortBy !== 'name') && (
+                    {(selectedTags.length > 0 || filterType !== 'all' || sortBy !== 'name' || language !== 'all') && (
                         <div className="pt-2 flex justify-end">
                             <button
                                 onClick={() => {
                                     onTagsChange([]);
                                     onFilterChange('all');
                                     onSortChange('name');
+                                    onLanguageChange?.('all');
                                 }}
                                 className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
                             >

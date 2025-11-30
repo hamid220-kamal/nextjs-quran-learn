@@ -267,72 +267,7 @@ export default function RadioPageQuranClone() {
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200"></div>
 
-        {/* Footer Section - EXACT QURAN.COM */}
-        <footer className="bg-white py-8 px-4 sm:px-6 lg:px-8">
-          <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-              {/* Column 1 - About */}
-              <div>
-                <h3 className="font-bold text-gray-900 mb-3 text-sm">Quran.com</h3>
-                <p className="text-sm text-gray-600 leading-relaxed mb-3">
-                  Read, Listen, Search, and Reflect on the Quran
-                </p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Quran.com is a trusted platform used by millions worldwide to read, search, listen to, and reflect on the Quran. It provides translations, recitations, word-by-word translation, and tools for deeper study, making the Quran accessible to everyone.
-                </p>
-              </div>
-
-              {/* Column 2 - Navigate */}
-              <div>
-                <h3 className="font-bold text-gray-900 mb-3 text-sm">Navigate</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href="/" className="text-blue-600 hover:underline">Home</Link></li>
-                  <li><Link href="/radio" className="text-blue-600 hover:underline">Quran Radio</Link></li>
-                  <li><Link href="/reciters" className="text-blue-600 hover:underline">Reciters</Link></li>
-                  <li><Link href="/about-us" className="text-blue-600 hover:underline">About Us</Link></li>
-                  <li><Link href="/developers" className="text-blue-600 hover:underline">Developers</Link></li>
-                </ul>
-              </div>
-
-              {/* Column 3 - Our Projects */}
-              <div>
-                <h3 className="font-bold text-gray-900 mb-3 text-sm">Our Projects</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href="https://quran.com" className="text-blue-600 hover:underline" target="_blank">Quran.com</Link></li>
-                  <li><Link href="https://quranandroid.com" className="text-blue-600 hover:underline" target="_blank">Quran For Android</Link></li>
-                  <li><Link href="https://quranios.com" className="text-blue-600 hover:underline" target="_blank">Quran iOS</Link></li>
-                  <li><Link href="https://quranreflect.com" className="text-blue-600 hover:underline" target="_blank">QuranReflect</Link></li>
-                </ul>
-              </div>
-
-              {/* Column 4 - Popular Links */}
-              <div>
-                <h3 className="font-bold text-gray-900 mb-3 text-sm">Popular Links</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href="/surahs/1" className="text-blue-600 hover:underline">Ayatul Kursi</Link></li>
-                  <li><Link href="/surahs/36" className="text-blue-600 hover:underline">Yaseen</Link></li>
-                  <li><Link href="/surahs/55" className="text-blue-600 hover:underline">Ar-Rahman</Link></li>
-                  <li><Link href="/surahs/67" className="text-blue-600 hover:underline">Al Mulk</Link></li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Bottom Footer Bar */}
-            <div className="border-t border-gray-200 pt-6">
-              <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600 gap-4">
-                <div className="flex gap-6 text-sm">
-                  <Link href="/sitemap" className="text-blue-600 hover:underline">Sitemap</Link>
-                  <Link href="/privacy" className="text-blue-600 hover:underline">Privacy</Link>
-                  <Link href="/terms" className="text-blue-600 hover:underline">Terms and Conditions</Link>
-                </div>
-                <div className="text-sm text-gray-600">© 2025 Quran.com. All Rights Reserved.</div>
-              </div>
-            </div>
-          </div>
-        </footer>
       </main>
     </div>
   );

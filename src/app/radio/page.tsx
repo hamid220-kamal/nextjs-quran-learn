@@ -1,9 +1,8 @@
 'use client';
 
 // Exact Quran.com Radio page - PIXEL PERFECT MATCH
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 interface Station {
   id: string;
@@ -23,8 +22,6 @@ interface Reciter {
 
 // Main Page Component
 export default function RadioPageQuranClone() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   // Curated Stations Data - matching Quran.com EXACTLY
   const curatedStations: Station[] = [
     {
@@ -84,7 +81,7 @@ export default function RadioPageQuranClone() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="w-full bg-white">
       <style suppressHydrationWarning>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
@@ -93,115 +90,22 @@ export default function RadioPageQuranClone() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-        /* Exact Quran.com styling */
-        .quran-header {
-          background: #ffffff;
-          border-bottom: 1px solid #e5e7eb;
-          position: sticky;
-          top: 0;
-          z-index: 50;
-        }
-        .header-content {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 12px 24px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: 56px;
-        }
-        .header-left {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-        .header-logo {
-          font-size: 18px;
-          font-weight: 700;
-          color: #111827;
-          text-decoration: none;
-          cursor: pointer;
-        }
-        .header-right {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .header-btn {
-          padding: 6px 12px;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          color: #2563eb;
-          transition: color 0.2s;
-        }
-        .header-btn:hover {
-          color: #1d4ed8;
-        }
-        .icon-btn {
-          padding: 8px;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #4b5563;
-          transition: background-color 0.2s;
-          border-radius: 4px;
-        }
-        .icon-btn:hover {
-          background-color: #f3f4f6;
-        }
       `}</style>
-        {/* Header - EXACT QURAN.COM MATCH */}
-        <header className="quran-header">
-          <div className="header-content">
-            <div className="header-left">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="icon-btn">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-              <Link href="/" className="header-logo">
-                Quran.com
-              </Link>
-            </div>
-            
-            <div className="header-right">
-              <button className="header-btn">Sign in</button>
-              <button className="icon-btn">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-              <button className="icon-btn">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </header>
 
-      <main>
-        {/* Curated Stations Section - EXACT QURAN.COM FULL WIDTH */}
-        <section className="bg-gradient-to-r from-teal-500 to-teal-600 py-6 px-0">
+      {/* Curated Stations Section - EXACT QURAN.COM FULL WIDTH */}
+      <section className="bg-gradient-to-r from-teal-500 to-teal-600 py-10 px-0">
           <div className="w-full">
             <h2 className="text-white font-bold mb-4 px-4 sm:px-6 md:px-8 lg:px-12" style={{ fontSize: '18px' }}>Curated Stations</h2>
 
-            {/* Horizontal Scroll - Responsive Grid Layout */}
-            <div className="flex gap-3 sm:gap-4 overflow-x-auto hide-scrollbar px-4 sm:px-6 md:px-8 lg:px-12 pb-4">
+            {/* Horizontal Scroll - Responsive Grid Layout with generous spacing */}
+            <div className="flex gap-8 sm:gap-10 md:gap-12 overflow-x-auto hide-scrollbar px-4 sm:px-6 md:px-8 lg:px-12 pb-4">
               {curatedStations.map((station) => (
                 <button
                   key={station.id}
                   onClick={() => {
                     /* Station selected */
                   }}
-                  className="group cursor-pointer flex-shrink-0 transition-all duration-300"
+                  className="group cursor-pointer flex-shrink-0 transition-all duration-300 px-3"
                   style={{ width: 'calc(25% - 9px)', minWidth: '250px', maxWidth: '310px' }}
                 >
                   {/* Card Container */}
@@ -241,20 +145,20 @@ export default function RadioPageQuranClone() {
         </section>
 
         {/* Reciter Stations Section - EXACT QURAN.COM GRID */}
-        <section className="py-8 px-4 sm:px-6 lg:px-8">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 mt-12">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Reciter Stations</h2>
+            <h2 className="text-base font-bold text-gray-900 mb-8">Reciter Stations</h2>
 
-            {/* Grid of Reciter Stations - Exact responsive grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+            {/* Grid of Reciter Stations - Compact sizing with generous spacing */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-12 sm:gap-14 md:gap-16 lg:gap-20">
               {reciters.map((reciter) => (
                 <Link
                   key={reciter.id}
                   href={reciter.link}
-                  className="group flex flex-col items-center text-center cursor-pointer transition-all duration-300 hover:opacity-80"
+                  className="group flex flex-col items-center text-center cursor-pointer transition-all duration-300 px-2 sm:px-3"
                 >
-                  {/* Square Image Card */}
-                  <div className="relative w-full aspect-square mb-2 rounded-md overflow-hidden bg-gray-200 shadow-sm group-hover:shadow-md transition-all duration-300">
+                  {/* Square Image Card - VERY COMPACT */}
+                  <div className="relative w-full aspect-square mb-3 rounded-sm overflow-hidden bg-gray-200 shadow-xs hover:shadow-sm transition-all duration-300">
                     <img
                       src={reciter.image}
                       alt={reciter.name}
@@ -266,15 +170,12 @@ export default function RadioPageQuranClone() {
                   <h3 className="text-xs font-medium text-gray-900 line-clamp-2 text-center">
                     {reciter.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{reciter.type}</p>
+                  <p className="text-xs text-gray-500 mt-0.5 text-center">{reciter.type}</p>
                 </Link>
               ))}
             </div>
           </div>
         </section>
-
-
-      </main>
     </div>
   );
 }

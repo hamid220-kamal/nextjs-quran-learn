@@ -55,6 +55,13 @@ export default function RadioPageQuranClone() {
       image: 'https://quran.com/_next/image?url=%2Fimages%2Fstations%2F4.jpeg&w=1080&q=75',
       featured: true,
     },
+    {
+      id: '5',
+      title: 'Surah Al-Baqarah',
+      description: 'The longest Surah of the Quran',
+      image: 'https://quran.com/_next/image?url=%2Fimages%2Fstations%2F5.jpeg&w=1080&q=75',
+      featured: true,
+    },
   ];
 
   // Reciter Stations Data - 14 top reciters from Quran.com (exact match)
@@ -181,13 +188,13 @@ export default function RadioPageQuranClone() {
         </header>
 
       <main>
-        {/* Curated Stations Section - EXACT QURAN.COM */}
-        <section className="bg-gradient-to-r from-teal-500 to-teal-600 py-6 px-6">
-          <div className="max-w-full">
-            <h2 className="text-white font-bold mb-4 px-4 sm:px-6 lg:px-8" style={{ fontSize: '18px' }}>Curated Stations</h2>
+        {/* Curated Stations Section - EXACT QURAN.COM FULL WIDTH */}
+        <section className="bg-gradient-to-r from-teal-500 to-teal-600 py-6 px-0">
+          <div className="w-full">
+            <h2 className="text-white font-bold mb-4 px-4 sm:px-6 md:px-8 lg:px-12" style={{ fontSize: '18px' }}>Curated Stations</h2>
 
-            {/* Horizontal Scroll - Card Grid */}
-            <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 pb-2">
+            {/* Horizontal Scroll - Responsive Grid Layout */}
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto hide-scrollbar px-4 sm:px-6 md:px-8 lg:px-12 pb-4">
               {curatedStations.map((station) => (
                 <button
                   key={station.id}
@@ -195,19 +202,18 @@ export default function RadioPageQuranClone() {
                     /* Station selected */
                   }}
                   className="group cursor-pointer flex-shrink-0 transition-all duration-300"
-                  style={{ width: '280px' }}
+                  style={{ width: 'calc(25% - 9px)', minWidth: '250px', maxWidth: '310px' }}
                 >
                   {/* Card Container */}
-                  <div className="flex flex-col overflow-hidden rounded-lg bg-white hover:shadow-lg transition-shadow">
-                    {/* Image Container - 280x160px */}
-                    <div className="relative overflow-hidden bg-gray-300 rounded-t-lg" style={{ width: '280px', height: '160px' }}>
+                  <div className="flex flex-col overflow-hidden rounded-lg bg-white hover:shadow-lg transition-shadow h-full">
+                    {/* Image Container - Responsive Height */}
+                    <div className="relative overflow-hidden bg-gray-300 rounded-t-lg" style={{ paddingBottom: '56.25%' }}>
                       <img
                         src={station.image}
                         alt={station.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                         title={station.title}
-                        style={{ width: '280px', height: '160px' }}
                       />
                       {/* Play Button Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
@@ -218,7 +224,7 @@ export default function RadioPageQuranClone() {
                     </div>
                     
                     {/* Title and Description */}
-                    <div className="bg-white p-3" style={{ width: '280px' }}>
+                    <div className="bg-white p-3 flex flex-col flex-grow">
                       <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">{station.title}</h3>
                       <p className="text-xs text-gray-600 line-clamp-1 flex items-center">
                         {station.description}
